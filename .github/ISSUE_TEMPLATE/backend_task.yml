@@ -1,6 +1,6 @@
 name: Backend task
 description: Créer une tâche backend structurée
-title: "feat(scope): "
+title: "[Domaine] "
 labels:
   - area:backend
   - type:feature

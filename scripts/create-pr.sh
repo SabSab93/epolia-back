@@ -36,15 +36,17 @@ if [ -z "$PR_TITLE" ]; then
   PR_TITLE="$DEFAULT_TITLE"
 fi
 
-if ! echo "$PR_TITLE" | grep -Eq '^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?: .+'; then
+if ! echo "$PR_TITLE" | grep -Eq '^((feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?: .+|\[[^][]+\] .+)$'; then
   echo "Invalid pull request title: $PR_TITLE"
   echo ""
-  echo "Expected format:"
+  echo "Expected formats:"
   echo "type(scope): description"
   echo "type: description"
+  echo "[Domaine] Issue title"
   echo ""
-  echo "Example:"
+  echo "Examples:"
   echo "chore(github): add templates and git conventions"
+  echo "[Authentification] Login utilisateur"
   exit 1
 fi
 

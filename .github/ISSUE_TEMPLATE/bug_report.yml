@@ -1,6 +1,6 @@
 name: Bug report
 description: Signaler un bug
-title: "fix(scope): "
+title: "[Bug] "
 labels:
   - type:bug
   - status:ready

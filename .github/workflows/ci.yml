@@ -40,12 +40,13 @@ jobs:
 
           echo "Pull request title: $TITLE"
 
-          if [[ "$TITLE" =~ ^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?:\ .+ ]]; then
+          if echo "$TITLE" | grep -Eq '^((feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?: .+|\[[^][]+\] .+)$'; then
             echo "Pull request title is valid"
           else
             echo "Invalid pull request title: $TITLE"
-            echo "Expected format: type(scope): description"
+            echo "Expected format: type(scope): description or [Domaine] Issue title"
             echo "Example: chore(github): add issue templates"
+            echo "Example: [Authentification] Login utilisateur"
             exit 1
           fi
 

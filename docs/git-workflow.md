@@ -207,8 +207,8 @@ ci(github): update workflow checks
 Chaque Pull Request doit :
 
 - être liée à une issue GitHub ;
-- avoir un titre au format Conventional Commits ;
-- reprendre le titre de l'issue quand celle-ci utilise déjà le format attendu ;
+- reprendre le titre de l'issue GitHub quand il utilise un domaine entre crochets ;
+- sinon avoir un titre au format Conventional Commits ;
 - rester limitée au périmètre de l’issue ;
 - contenir une description claire ;
 - préciser les tests réalisés ;
@@ -217,15 +217,18 @@ Chaque Pull Request doit :
 Format recommandé du titre de PR :
 
 ```txt
+[Domaine] Titre de l'issue
 type(scope): description courte
 ```
 
-Le format `type: description courte` est aussi accepté pour une PR transversale.
+Les formats `[Authentification] Titre de l'issue`, `[Paiement] Titre de l'issue`, `[Bug] Titre de l'issue` et `type: description courte` sont aussi acceptés.
 
 Exemple :
 
 ```txt
 chore(github): add templates and git conventions
+[Authentification] Connexion utilisateur
+[Bug] Erreur lors du paiement
 ```
 
 ---
