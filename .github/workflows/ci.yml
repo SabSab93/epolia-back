@@ -4,11 +4,94 @@ on:
   push:
     branches:
       - main
-      - develop
   pull_request:
 
 jobs:
-  build:
+  pr-checks:
+    name: PR checks
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate branch name
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF}"
+
+          echo "Branch name: $BRANCH_NAME"
+
+          if [[ "$BRANCH_NAME" =~ ^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)/[0-9]+-[a-z0-9-]+$ ]]; then
+            echo "Branch name is valid"
+          else
+            echo "Invalid branch name: $BRANCH_NAME"
+            echo "Expected format: type/issue-number-short-description"
+            echo "Example: feat/5-user-model"
+            exit 1
+          fi
+
+      - name: Validate pull request title
+        run: |
+          TITLE="$(jq -r '.pull_request.title // ""' "$GITHUB_EVENT_PATH")"
+
+          echo "Pull request title: $TITLE"
+
+          if echo "$TITLE" | grep -Eq '^((feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?: .+|\[[^][]+\] .+)$'; then
+            echo "Pull request title is valid"
+          else
+            echo "Invalid pull request title: $TITLE"
+            echo "Expected format: type(scope): description or [Domaine] Issue title"
+            echo "Example: chore(github): add issue templates"
+            echo "Example: [Authentification] Login utilisateur"
+            exit 1
+          fi
+
+      - name: Validate linked issue
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF}"
+
+          ISSUE_NUMBER="$(echo "$BRANCH_NAME" | sed -nE 's#^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)/([0-9]+)-[a-z0-9-]+$#\2#p')"
+
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "Unable to extract issue number from branch name"
+            exit 1
+          fi
+
+          PR_BODY="$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")"
+
+          echo "Expected linked issue: #$ISSUE_NUMBER"
+
+          if echo "$PR_BODY" | grep -Eiq "(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)[[:space:]]+#$ISSUE_NUMBER"; then
+            echo "Linked issue is valid"
+          else
+            echo "No closing keyword found in pull request body"
+            echo "The issue number is present in the branch name, so the pull request is considered linked"
+            echo "Recommended pull request body format:"
+            echo "Closes #$ISSUE_NUMBER"
+            echo "Fixes #$ISSUE_NUMBER"
+            echo "Resolves #$ISSUE_NUMBER"
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate commit messages
+        run: |
+          npx commitlint \
+            --from "${{ github.event.pull_request.base.sha }}" \
+            --to "${{ github.event.pull_request.head.sha }}" \
+            --verbose
+
+  build-and-test:
     name: Build and test
     runs-on: ubuntu-latest
 
@@ -26,7 +109,15 @@ jobs:
         run: npm ci
 
       - name: Generate Prisma client
-        run: npx prisma generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
+        run: |
+          if [ -f "prisma/schema.prisma" ]; then
+            npx prisma generate
+          else
+            echo "No Prisma schema found, skipping Prisma generation"
+          fi
 
       - name: Lint
         run: npm run lint
