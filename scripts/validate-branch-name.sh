@@ -16,7 +16,7 @@ fi
 echo "Invalid branch name: $BRANCH_NAME"
 echo ""
 echo "Expected format:"
-echo "type/issue-number-short-description"
+echo "type/issue-number-short-english-description"
 echo ""
 echo "Example:"
 echo "chore/3-github-templates-conventions"

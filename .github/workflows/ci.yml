@@ -28,7 +28,7 @@ jobs:
             echo "Branch name is valid"
           else
             echo "Invalid branch name: $BRANCH_NAME"
-            echo "Expected format: type/issue-number-short-description"
+            echo "Expected format: type/issue-number-short-english-description"
             echo "Example: feat/5-user-model"
             exit 1
           fi

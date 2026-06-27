@@ -91,8 +91,10 @@ Une tâche suit :
 Branches :
 
 ```txt
-type/numero-issue-description-courte
+type/issue-number-short-english-description
 ```
+
+La description de branche doit être un slug anglais, en minuscules, sans accents ni espaces.
 
 Commits :
 
