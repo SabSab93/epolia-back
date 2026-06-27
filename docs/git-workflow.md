@@ -36,7 +36,7 @@ Pour chaque nouvelle tâche :
 ```bash
 git checkout main
 git pull origin main
-git checkout -b type/numero-issue-description-courte
+git checkout -b type/issue-number-short-english-description
 ```
 
 Exemple :
@@ -78,7 +78,7 @@ Il récupère le titre de l'issue GitHub liée au numéro de branche et l'utilis
 Format obligatoire :
 
 ```txt
-type/numero-issue-description-courte
+type/issue-number-short-english-description
 ```
 
 Exemples :
@@ -112,6 +112,7 @@ hotfix
 Règles :
 
 - tout en minuscules ;
+- description courte en anglais ;
 - pas d’accents ;
 - pas d’espaces ;
 - mots séparés par des tirets ;
