@@ -15,6 +15,7 @@ ChatGPT + Codex + AGENTS.md + skills projet + Serena + Caveman
 - **ChatGPT** : architecture, clarification d'issue, arbitrages, revue générale.
 - **Codex** : modifications dans le repository, tests, petites automatisations.
 - **GitHub CLI** : issues, Pull Requests, checks et workflow Git.
+- **Agent GitHub backend** : agent spécialisé pour les issues backend Epolia.
 - **Serena MCP** : navigation symbolique quand le code grossit.
 - **Caveman** : réponses plus courtes quand le contexte est déjà clair.
 
@@ -31,6 +32,24 @@ ChatGPT + Codex + AGENTS.md + skills projet + Serena + Caveman
 - Lire le repository.
 - Lancer `npm run lint`, `npm run test`, `npm run build`.
 - Préparer une Pull Request.
+
+## Agent GitHub Backend
+
+L'agent GitHub backend est défini dans :
+
+```txt
+.github/agents/epolia-backend-agent.agent.md
+```
+
+L'utiliser pour les issues backend NestJS qui doivent respecter strictement le périmètre, les conventions Epolia et les validations locales.
+
+Cet agent doit rester sobre :
+
+- lire l'issue avant toute action ;
+- proposer un plan court ;
+- modifier uniquement les fichiers nécessaires ;
+- éviter toute sur-architecture ;
+- lancer `npm run lint`, `npm run test`, `npm run build` après modification.
 
 ## Mode Plan
 
