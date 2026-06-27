@@ -1,0 +1,37 @@
+name: Documentation task
+description: Créer ou modifier une documentation
+title: "[Docs] "
+labels:
+  - area:docs
+  - type:docs
+  - status:ready
+body:
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objectif documentaire
+      description: Quelle documentation doit être créée ou modifiée ?
+    validations:
+      required: true
+
+  - type: textarea
+    id: content
+    attributes:
+      label: Contenu attendu
+      placeholder: |
+        - Sujet à documenter
+        - Fichiers concernés
+        - Points importants
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      placeholder: |
+        - Documentation claire
+        - Fichier Markdown ajouté ou mis à jour
+        - Pas d'information obsolète
+    validations:
+      required: true
