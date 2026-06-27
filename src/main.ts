@@ -20,7 +20,11 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+    }),
+  );
   app.use(compression());
 
   app.useGlobalPipes(
