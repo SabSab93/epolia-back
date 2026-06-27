@@ -246,7 +246,7 @@ La branche `main` doit être protégée avec les règles suivantes :
 Les checks attendus sont :
 
 ```txt
-Validate Git conventions
+PR checks
 Build and test
 ```
 
