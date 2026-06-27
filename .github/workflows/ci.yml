@@ -36,7 +36,7 @@ jobs:
       - name: Validate pull request title
         if: github.event_name == 'pull_request'
         run: |
-          TITLE="${{ github.event.pull_request.title }}"
+          TITLE="$(jq -r '.pull_request.title // ""' "$GITHUB_EVENT_PATH")"
 
           echo "Pull request title: $TITLE"
 
@@ -46,6 +46,33 @@ jobs:
             echo "Invalid pull request title: $TITLE"
             echo "Expected format: type(scope): description"
             echo "Example: chore(github): add issue templates"
+            exit 1
+          fi
+
+      - name: Validate linked issue
+        if: github.event_name == 'pull_request'
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF}"
+
+          ISSUE_NUMBER="$(echo "$BRANCH_NAME" | sed -nE 's#^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)/([0-9]+)-[a-z0-9-]+$#\2#p')"
+
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "Unable to extract issue number from branch name"
+            exit 1
+          fi
+
+          PR_BODY="$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")"
+
+          echo "Expected linked issue: #$ISSUE_NUMBER"
+
+          if echo "$PR_BODY" | grep -Eiq "(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)[[:space:]]+#$ISSUE_NUMBER"; then
+            echo "Linked issue is valid"
+          else
+            echo "Missing linked issue in pull request body"
+            echo "Expected one of:"
+            echo "Closes #$ISSUE_NUMBER"
+            echo "Fixes #$ISSUE_NUMBER"
+            echo "Resolves #$ISSUE_NUMBER"
             exit 1
           fi
 
@@ -67,6 +94,9 @@ jobs:
             --verbose
 
       - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
         run: |
           if [ -f "prisma/schema.prisma" ]; then
             npx prisma generate
