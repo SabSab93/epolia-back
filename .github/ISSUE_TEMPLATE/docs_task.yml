@@ -1,6 +1,6 @@
 name: Documentation task
 description: Créer ou modifier une documentation
-title: "[Docs] "
+title: "docs(scope): "
 labels:
   - area:docs
   - type:docs

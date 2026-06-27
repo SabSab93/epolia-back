@@ -12,9 +12,21 @@ BRANCH_SLUG="$(echo "$BRANCH_NAME" | sed -nE 's#^[^/]+/[0-9]+-(.*)$#\1#p')"
 BRANCH_DESCRIPTION="$(echo "$BRANCH_SLUG" | tr '-' ' ')"
 DEFAULT_SCOPE="$(echo "$BRANCH_SLUG" | cut -d "-" -f 1)"
 
-DEFAULT_TITLE="$BRANCH_TYPE($DEFAULT_SCOPE): $BRANCH_DESCRIPTION"
+FALLBACK_TITLE="$BRANCH_TYPE($DEFAULT_SCOPE): $BRANCH_DESCRIPTION"
+ISSUE_TITLE="$(gh issue view "$ISSUE_NUMBER" --json title --jq '.title' 2>/dev/null || true)"
+
+if [ -n "$ISSUE_TITLE" ]; then
+  DEFAULT_TITLE="$ISSUE_TITLE"
+else
+  DEFAULT_TITLE="$FALLBACK_TITLE"
+fi
 
 echo "Detected issue: #$ISSUE_NUMBER"
+if [ -n "$ISSUE_TITLE" ]; then
+  echo "Issue title: $ISSUE_TITLE"
+else
+  echo "Unable to read issue title, using generated title"
+fi
 echo "Default PR title: $DEFAULT_TITLE"
 echo ""
 printf "PR title [%s]: " "$DEFAULT_TITLE"

@@ -63,6 +63,14 @@ git push -u origin nom-de-la-branche
 
 La branche est ensuite fusionnée dans `main` via une Pull Request.
 
+Le script local peut créer une Pull Request à partir de la branche courante :
+
+```bash
+npm run pr:create
+```
+
+Il récupère le titre de l'issue GitHub liée au numéro de branche et l'utilise comme titre par défaut de la Pull Request. Si le titre de l'issue n'est pas accessible, un titre Conventional Commits est généré depuis le nom de branche.
+
 ---
 
 ## Convention de branches
@@ -200,6 +208,7 @@ Chaque Pull Request doit :
 
 - être liée à une issue GitHub ;
 - avoir un titre au format Conventional Commits ;
+- reprendre le titre de l'issue quand celle-ci utilise déjà le format attendu ;
 - rester limitée au périmètre de l’issue ;
 - contenir une description claire ;
 - préciser les tests réalisés ;
