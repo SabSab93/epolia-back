@@ -10,6 +10,8 @@ Décrire brièvement l'objectif de cette Pull Request.
 
 Closes #
 
+Remplacer `#` par le numéro d'issue indiqué dans le nom de branche.
+
 ---
 
 ## ✅ Changements réalisés
@@ -44,7 +46,7 @@ Ajouter ici les captures ou logs utiles si nécessaire.
 ## 🔍 Checklist
 
 - [ ] La branche respecte la convention de nommage.
-- [ ] Le titre de la PR respecte Conventional Commits.
+- [ ] Le titre de la PR reprend le titre de l'issue ou respecte Conventional Commits.
 - [ ] Le code est limité au périmètre de l'issue.
 - [ ] Aucun secret n'est ajouté.
 - [ ] La documentation est mise à jour si nécessaire.

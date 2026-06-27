@@ -69,12 +69,12 @@ jobs:
           if echo "$PR_BODY" | grep -Eiq "(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)[[:space:]]+#$ISSUE_NUMBER"; then
             echo "Linked issue is valid"
           else
-            echo "Missing linked issue in pull request body"
-            echo "Expected one of:"
+            echo "No closing keyword found in pull request body"
+            echo "The issue number is present in the branch name, so the pull request is considered linked"
+            echo "Recommended pull request body format:"
             echo "Closes #$ISSUE_NUMBER"
             echo "Fixes #$ISSUE_NUMBER"
             echo "Resolves #$ISSUE_NUMBER"
-            exit 1
           fi
 
       - name: Setup Node.js

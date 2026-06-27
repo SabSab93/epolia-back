@@ -207,6 +207,7 @@ ci(github): update workflow checks
 Chaque Pull Request doit :
 
 - être liée à une issue GitHub ;
+- contenir idéalement `Closes #numero` dans sa description ;
 - reprendre le titre de l'issue GitHub quand il utilise un domaine entre crochets ;
 - sinon avoir un titre au format Conventional Commits ;
 - rester limitée au périmètre de l’issue ;
@@ -257,6 +258,7 @@ Avant merge, la CI doit vérifier :
 
 - le nom de la branche ;
 - le titre de la Pull Request ;
+- le numéro d'issue extrait de la branche, avec recommandation `Closes #numero` dans la description ;
 - les messages de commit ;
 - le lint ;
 - les tests ;
