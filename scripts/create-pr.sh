@@ -4,22 +4,15 @@ set -e
 
 BRANCH_NAME="$(git branch --show-current)"
 
+sh scripts/validate-branch-name.sh "$BRANCH_NAME"
+
 ISSUE_NUMBER="$(echo "$BRANCH_NAME" | sed -nE 's#^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)/([0-9]+)-[a-z0-9-]+$#\2#p')"
 BRANCH_TYPE="$(echo "$BRANCH_NAME" | cut -d "/" -f 1)"
-BRANCH_DESCRIPTION="$(echo "$BRANCH_NAME" | sed -nE 's#^[^/]+/[0-9]+-(.*)$#\1#p' | tr '-' ' ')"
+BRANCH_SLUG="$(echo "$BRANCH_NAME" | sed -nE 's#^[^/]+/[0-9]+-(.*)$#\1#p')"
+BRANCH_DESCRIPTION="$(echo "$BRANCH_SLUG" | tr '-' ' ')"
+DEFAULT_SCOPE="$(echo "$BRANCH_SLUG" | cut -d "-" -f 1)"
 
-if [ -z "$ISSUE_NUMBER" ]; then
-  echo "Invalid branch name: $BRANCH_NAME"
-  echo ""
-  echo "Expected format:"
-  echo "type/issue-number-short-description"
-  echo ""
-  echo "Example:"
-  echo "chore/2-github-templates-conventions"
-  exit 1
-fi
-
-DEFAULT_TITLE="$BRANCH_TYPE: $BRANCH_DESCRIPTION"
+DEFAULT_TITLE="$BRANCH_TYPE($DEFAULT_SCOPE): $BRANCH_DESCRIPTION"
 
 echo "Detected issue: #$ISSUE_NUMBER"
 echo "Default PR title: $DEFAULT_TITLE"
@@ -29,6 +22,18 @@ read PR_TITLE
 
 if [ -z "$PR_TITLE" ]; then
   PR_TITLE="$DEFAULT_TITLE"
+fi
+
+if ! echo "$PR_TITLE" | grep -Eq '^(feat|fix|chore|docs|test|refactor|ci|build|style|perf|hotfix)(\([a-z0-9-]+\))?: .+'; then
+  echo "Invalid pull request title: $PR_TITLE"
+  echo ""
+  echo "Expected format:"
+  echo "type(scope): description"
+  echo "type: description"
+  echo ""
+  echo "Example:"
+  echo "chore(github): add templates and git conventions"
+  exit 1
 fi
 
 TMP_BODY_FILE="$(mktemp)"

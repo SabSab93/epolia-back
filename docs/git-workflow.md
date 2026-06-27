@@ -119,8 +119,11 @@ Le projet utilise la convention **Conventional Commits**.
 Format obligatoire :
 
 ```txt
+type: message court
 type(scope): message court
 ```
+
+Le scope est recommandé pour préciser la zone concernée, mais il reste optionnel si le changement est transversal :
 
 Exemples :
 
@@ -208,6 +211,8 @@ Format recommandé du titre de PR :
 type(scope): description courte
 ```
 
+Le format `type: description courte` est aussi accepté pour une PR transversale.
+
 Exemple :
 
 ```txt
@@ -253,6 +258,23 @@ npm run lint
 npm run test
 npm run build
 ```
+
+---
+
+## Vérifications locales Husky
+
+Husky exécute des contrôles locaux avant certaines actions Git :
+
+- `.husky/commit-msg` vérifie le message de commit avec Commitlint ;
+- `.husky/pre-push` vérifie le nom de la branche avant push.
+
+La vérification de branche peut aussi être lancée manuellement :
+
+```bash
+npm run branch:check
+```
+
+Ces contrôles ne remplacent pas la CI, mais permettent de détecter les erreurs avant la Pull Request.
 
 ---
 
