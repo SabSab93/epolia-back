@@ -1,0 +1,3 @@
+interface:
+  display_name: "Test Writer"
+  short_description: "Write focused backend tests without brittle coverage"

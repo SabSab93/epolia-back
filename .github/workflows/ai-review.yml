@@ -1,0 +1,41 @@
+name: AI review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull Request number to review
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  request-ai-review:
+    name: Request AI review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Request Copilot review if available
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set +e
+
+          gh pr edit "$PR_NUMBER" --add-reviewer copilot
+          STATUS="$?"
+
+          if [ "$STATUS" -eq 0 ]; then
+            echo "Copilot review requested"
+            exit 0
+          fi
+
+          echo "Copilot review could not be requested. Adding manual fallback comment."
+
+          BODY=$'AI review requested manually.\n\nCopilot Code Review is not available or could not be assigned automatically.\n\nFallback:\n- ask Codex or ChatGPT to review the PR diff;\n- check scope, tests, secrets, dependencies and readability;\n- keep the review concise.'
+
+          gh pr comment "$PR_NUMBER" --body "$BODY"

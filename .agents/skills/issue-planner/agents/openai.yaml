@@ -1,0 +1,3 @@
+interface:
+  display_name: "Issue Planner"
+  short_description: "Plan issue scope, files, risks, and validation"

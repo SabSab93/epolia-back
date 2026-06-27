@@ -1,0 +1,3 @@
+interface:
+  display_name: "Simple Code Reviewer"
+  short_description: "Review code simplicity and consistency"

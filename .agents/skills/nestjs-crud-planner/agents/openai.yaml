@@ -1,0 +1,3 @@
+interface:
+  display_name: "NestJS CRUD Planner"
+  short_description: "Plan simple, consistent NestJS CRUD modules"

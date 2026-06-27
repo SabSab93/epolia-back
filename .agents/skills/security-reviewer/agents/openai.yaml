@@ -1,0 +1,3 @@
+interface:
+  display_name: "Security Reviewer"
+  short_description: "Review secrets, inputs, database access, and CI permissions"

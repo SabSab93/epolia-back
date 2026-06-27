@@ -1,0 +1,3 @@
+interface:
+  display_name: "Prisma Model Reviewer"
+  short_description: "Review Prisma models, relations, indexes, and migrations"
