@@ -7,3 +7,73 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+enum UserRole {
+  ETUDIANT
+  PARTICULIER
+  ADMIN
+}
+
+enum AccountStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_DELETION
+  DELETED
+}
+
+enum AuthProvider {
+  GOOGLE
+}
+
+/// Account rules:
+/// - an active user must have an email;
+/// - an active local user must have a passwordHash;
+/// - a Google user must have an AuthAccount row with provider GOOGLE and providerAccountId = Google sub;
+/// - a deleted user must have status DELETED and no email, phone, passwordHash, or authAccounts;
+/// - historical business data keeps referencing users.id, while public display uses "Utilisateur supprimé".
+model User {
+  id                  String        @id @default(uuid()) @db.Uuid
+  email               String?       @unique
+  phone               String?       @unique
+  passwordHash        String?       @map("password_hash")
+  status              AccountStatus @default(ACTIVE)
+  emailVerifiedAt     DateTime?     @map("email_verified_at") @db.Timestamptz(6)
+  deletionRequestedAt DateTime?     @map("deletion_requested_at") @db.Timestamptz(6)
+  deletedAt           DateTime?     @map("deleted_at") @db.Timestamptz(6)
+  anonymizedAt        DateTime?     @map("anonymized_at") @db.Timestamptz(6)
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  roles        UserRoleAssignment[]
+  authAccounts AuthAccount[]
+
+  @@map("users")
+}
+
+model UserRoleAssignment {
+  userId    String   @map("user_id") @db.Uuid
+  role      UserRole
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, role])
+  @@map("user_roles")
+}
+
+model AuthAccount {
+  id                String       @id @default(uuid()) @db.Uuid
+  userId            String       @map("user_id") @db.Uuid
+  provider          AuthProvider
+  providerAccountId String       @map("provider_account_id")
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLoginAt       DateTime?    @map("last_login_at") @db.Timestamptz(6)
+  unlinkedAt        DateTime?    @map("unlinked_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("auth_accounts")
+}
