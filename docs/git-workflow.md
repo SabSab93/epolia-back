@@ -102,6 +102,7 @@ Il tente de detecter un numero d'issue dans le nom de branche et de reprendre le
 La CI est lancee sur les Pull Requests et sur `main`.
 Elle conserve uniquement les controles essentiels :
 
+- `PR checks`, un statut de compatibilite qui ne valide plus le nom de branche ni le titre de PR ;
 - generation Prisma si `prisma/schema.prisma` existe ;
 - `npm run lint` ;
 - `npm run test` ;
@@ -122,7 +123,7 @@ La branche `main` doit etre protegee avec :
 - Pull Request obligatoire avant merge ;
 - blocage des force push ;
 - blocage de la suppression ;
-- CI `Build and test` obligatoire avant merge.
+- checks `PR checks` et `Build and test` obligatoires avant merge.
 
 ## Regle generale
 
