@@ -7,7 +7,7 @@ Ce document décrit le workflow Git recommandé pour garder un historique lisibl
 - `main` reste la branche principale.
 - `main` doit etre protegee.
 - Les changements passent par une Pull Request avant merge.
-- La CI doit passer avant merge.
+- Les validations sont lancees localement avant la Pull Request.
 - Aucun secret ne doit etre commite.
 
 ## Workflow recommande
@@ -24,7 +24,7 @@ Exemple :
 git checkout -b feat/6-simplify-github-ai-workflow
 ```
 
-Le lien issue -> branche -> Pull Request reste recommande quand une issue existe, mais le nom exact de branche ne bloque plus la CI.
+Le lien issue -> branche -> Pull Request reste recommande quand une issue existe.
 
 ## Branches
 
@@ -87,7 +87,7 @@ Contenu attendu :
 - changements realises ;
 - validations lancees.
 
-Le titre de PR doit etre clair. Il peut reprendre le titre de l'issue ou utiliser Conventional Commits, mais ce n'est plus verifie par la CI.
+Le titre de PR doit etre clair. Il peut reprendre le titre de l'issue ou utiliser Conventional Commits.
 
 Le script local peut aider a creer une PR :
 
@@ -97,16 +97,23 @@ npm run pr:create
 
 Il tente de detecter un numero d'issue dans le nom de branche et de reprendre le titre GitHub si disponible.
 
-## CI obligatoire
+## CI
 
-La CI conserve uniquement les controles essentiels :
+La CI est lancee sur `main` apres merge et conserve les controles essentiels :
 
 - generation Prisma si `prisma/schema.prisma` existe ;
 - `npm run lint` ;
 - `npm run test` ;
 - `npm run build`.
 
-Les validations de nom de branche, titre de PR et messages de commit ne bloquent plus les merges.
+Elle n'est pas lancee automatiquement sur les Pull Requests.
+Avant d'ouvrir ou de merger une PR, lancer localement :
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
 ## Protection de main
 
@@ -115,7 +122,7 @@ La branche `main` doit etre protegee avec :
 - Pull Request obligatoire avant merge ;
 - blocage des force push ;
 - blocage de la suppression ;
-- CI `Build and test` obligatoire avant merge.
+- pas de CI obligatoire sur Pull Request.
 
 ## Regle generale
 
@@ -125,6 +132,6 @@ Le workflow attendu reste simple :
 issue claire si necessaire
 branche dediee
 PR courte
-CI verte
+validations locales
 merge vers main
 ```
