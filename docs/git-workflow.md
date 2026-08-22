@@ -7,7 +7,7 @@ Ce document décrit le workflow Git recommandé pour garder un historique lisibl
 - `main` reste la branche principale.
 - `main` doit etre protegee.
 - Les changements passent par une Pull Request avant merge.
-- Les validations sont lancees localement avant la Pull Request.
+- La CI doit passer sur la Pull Request avant merge.
 - Aucun secret ne doit etre commite.
 
 ## Workflow recommande
@@ -99,15 +99,15 @@ Il tente de detecter un numero d'issue dans le nom de branche et de reprendre le
 
 ## CI
 
-La CI est lancee sur `main` apres merge et conserve les controles essentiels :
+La CI est lancee sur les Pull Requests et sur `main`.
+Elle conserve uniquement les controles essentiels :
 
 - generation Prisma si `prisma/schema.prisma` existe ;
 - `npm run lint` ;
 - `npm run test` ;
 - `npm run build`.
 
-Elle n'est pas lancee automatiquement sur les Pull Requests.
-Avant d'ouvrir ou de merger une PR, lancer localement :
+Avant d'ouvrir une PR, il reste recommande de lancer localement :
 
 ```bash
 npm run lint
@@ -122,7 +122,7 @@ La branche `main` doit etre protegee avec :
 - Pull Request obligatoire avant merge ;
 - blocage des force push ;
 - blocage de la suppression ;
-- pas de CI obligatoire sur Pull Request.
+- CI `Build and test` obligatoire avant merge.
 
 ## Regle generale
 
@@ -132,6 +132,6 @@ Le workflow attendu reste simple :
 issue claire si necessaire
 branche dediee
 PR courte
-validations locales
+CI verte
 merge vers main
 ```
