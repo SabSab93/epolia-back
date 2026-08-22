@@ -22,7 +22,11 @@ Avec l'avancement du projet, le retour d'experience montre aussi des limites pou
 - NestJS impose une courbe d'apprentissage importante ;
 - certaines abstractions masquent le fonctionnement HTTP reel ;
 - les decorators, modules et providers ajoutent du code technique avant meme la logique metier ;
-- la migration future vers plusieurs applications serait plus lisible avec une structure Express explicite.
+- une structure Express explicite rend plus lisibles les flux HTTP, les middlewares, les erreurs et les responsabilites des couches.
+
+NestJS permet tout a fait de construire des architectures distribuees. Le choix d'Express ne decoule donc pas d'une incapacite de NestJS a gerer plusieurs services, mais d'une volonte de reduire le niveau d'abstraction et de rendre les responsabilites plus explicites dans le contexte specifique d'Epolia.
+
+Cette reevaluation intervient aussi pendant la montee en competence sur React Native pour le client mobile. Reduire la courbe d'apprentissage cote backend permet de concentrer l'effort de veille sur le front tout en conservant une maitrise approfondie du serveur. Ce critere complete les arguments d'architecture, sans les remplacer.
 
 La rearchitecture doit rester progressive. Elle ne doit pas devenir une refonte globale ni changer le metier sans besoin.
 
@@ -72,7 +76,7 @@ Inconvenients :
 - courbe d'apprentissage plus forte ;
 - plus de concepts a expliquer et defendre ;
 - structure parfois lourde pour un projet ecole ;
-- extraction progressive vers plusieurs applications moins explicite pour ce contexte.
+- flux HTTP, middlewares et gestion d'erreurs moins visibles dans ce contexte d'apprentissage.
 
 ### Migrer vers Express + TypeScript
 
@@ -162,28 +166,40 @@ Responsabilites :
 
 Responsabilites :
 
-- profils ;
+- profils etudiant et particulier ;
 - competences ;
+- etudes ;
+- portfolio ;
+- disponibilites ;
+- favoris ;
+- recherche et geolocalisation ;
+- mise en relation ;
+- conversations liees au parcours metier tant que Communication n'est pas extrait ;
 - missions ;
-- candidatures ou demandes ;
 - avis ;
-- logique principale de mise en relation.
+- signalements metier.
 
 ### Payment/Finance
 
 Responsabilites :
 
-- paiements fictifs ou reels selon la phase du projet ;
-- wallet ;
+- integration Mangopay ;
+- paiements des missions ;
+- sequestre des fonds pendant la mission ;
+- wallets utilisateurs ;
 - transactions ;
-- commissions ;
-- integration future avec un prestataire de paiement si necessaire.
+- commissions Epolia ;
+- retraits vers compte bancaire ;
+- traitement des webhooks Mangopay ;
+- donnees financieres necessaires a la conformite DAC7.
 
 ### Communication
 
 Communication reste optionnel.
 
 Ce domaine ne sera extrait que si un besoin technique le justifie clairement, par exemple messagerie temps reel, notifications complexes ou volumetrie separee.
+
+Tant que la messagerie ne necessite pas un cycle de deploiement, une infrastructure temps reel ou une montee en charge distincte, elle reste integree au Marketplace/Core afin d'eviter une communication inter-services inutile.
 
 ### Admin
 
@@ -203,7 +219,11 @@ La strategie retenue est progressive :
 - pas d'acces direct d'un service aux tables d'un autre domaine sans justification ;
 - pas de multiplication de bases de donnees en premiere intention.
 
+Le partage d'une base de donnees ne signifie pas que tous les services sont autorises a manipuler toutes les tables. Chaque domaine reste proprietaire de ses donnees et les acces croises doivent etre evites.
+
 Une separation physique des bases pourra etre etudiee plus tard si elle resout un probleme reel : isolation forte, scalabilite, securite, autonomie de deploiement ou contraintes d'exploitation.
+
+Cette approche dissocie volontairement l'independance applicative de l'independance physique des donnees. Dans cette premiere etape, l'isolation est logique. Une separation physique prematuree imposerait de gerer de la coherence distribuee sans besoin produit reel.
 
 ## Decisions explicites
 
