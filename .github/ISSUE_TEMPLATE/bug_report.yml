@@ -8,38 +8,32 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Description du bug
-      description: Explique clairement le problème rencontré.
+      label: Problème
+      description: Décris le bug en quelques phrases.
     validations:
       required: true
 
   - type: textarea
     id: steps
     attributes:
-      label: Étapes pour reproduire
+      label: Reproduction
       placeholder: |
         1. Aller sur...
         2. Faire...
         3. Constater...
-    validations:
-      required: true
 
   - type: textarea
     id: expected
     attributes:
       label: Résultat attendu
-    validations:
-      required: true
 
   - type: textarea
     id: actual
     attributes:
       label: Résultat obtenu
-    validations:
-      required: true
 
   - type: textarea
     id: context
     attributes:
-      label: Contexte technique
-      placeholder: Version Node, navigateur, environnement, logs utiles...
+      label: Notes utiles
+      placeholder: Logs, environnement, capture, hypothèse...

@@ -1,99 +1,40 @@
-# Stratégie Git - Epolia Backend
+# Strategie Git - Epolia Backend
 
-Ce document définit les règles Git utilisées pour le backend Epolia.
+Ce document décrit le workflow Git recommandé pour garder un historique lisible sans ajouter de blocages inutiles.
 
-L’objectif est de garder un historique propre, lisible et professionnel.
+## Regles a conserver
 
----
+- `main` reste la branche principale.
+- `main` doit etre protegee.
+- Les changements passent par une Pull Request avant merge.
+- La CI doit passer avant merge.
+- Aucun secret ne doit etre commite.
 
-## Branche principale
-
-La branche principale du projet est :
-
-```txt
-main
-```
-
-La branche `main` est protégée.
-
-Aucun développement ne doit être fait directement sur `main`.
-
-Toutes les évolutions passent par :
-
-```txt
-1 issue GitHub
-1 branche dédiée
-1 Pull Request
-1 merge vers main
-```
-
----
-
-## Workflow de développement
-
-Pour chaque nouvelle tâche :
+## Workflow recommande
 
 ```bash
 git checkout main
 git pull origin main
-git checkout -b type/issue-number-short-english-description
+git checkout -b type/issue-number-short-description
 ```
 
 Exemple :
 
 ```bash
-git checkout -b chore/2-github-templates-conventions
+git checkout -b feat/6-simplify-github-ai-workflow
 ```
 
-Une fois le développement terminé :
+Le lien issue -> branche -> Pull Request reste recommande quand une issue existe, mais le nom exact de branche ne bloque plus la CI.
 
-```bash
-npm run lint
-npm run test
-npm run build
-```
+## Branches
 
-Puis :
-
-```bash
-git add .
-git commit -m "type(scope): description courte"
-git push -u origin nom-de-la-branche
-```
-
-La branche est ensuite fusionnée dans `main` via une Pull Request.
-
-Le script local peut créer une Pull Request à partir de la branche courante :
-
-```bash
-npm run pr:create
-```
-
-Il récupère le titre de l'issue GitHub liée au numéro de branche et l'utilise comme titre par défaut de la Pull Request. Si le titre de l'issue n'est pas accessible, un titre Conventional Commits est généré depuis le nom de branche.
-
----
-
-## Convention de branches
-
-Format obligatoire :
+Format recommande :
 
 ```txt
-type/issue-number-short-english-description
+type/issue-number-short-description
 ```
 
-Exemples :
-
-```txt
-chore/2-github-templates-conventions
-ci/3-update-github-actions
-feat/5-user-model
-feat/6-user-crud
-test/7-user-tests
-fix/12-auth-refresh-token
-docs/15-architecture-note
-```
-
-Types autorisés :
+Types courants :
 
 ```txt
 feat
@@ -109,200 +50,81 @@ perf
 hotfix
 ```
 
-Règles :
+Ce format aide a retrouver l'issue et le contexte. Il reste une recommandation, pas une validation bloquante.
 
-- tout en minuscules ;
-- description courte en anglais ;
-- pas d’accents ;
-- pas d’espaces ;
-- mots séparés par des tirets ;
-- numéro d’issue obligatoire ;
-- la branche doit être liée à une issue GitHub.
-
----
-
-## Convention de commits
-
-Le projet utilise la convention **Conventional Commits**.
-
-Format obligatoire :
-
-```txt
-type: message court
-type(scope): message court
-```
-
-Le scope est recommandé pour préciser la zone concernée, mais il reste optionnel si le changement est transversal :
-
-Exemples :
-
-```txt
-chore(github): add issue templates
-ci(github): validate branch names
-feat(users): create user model
-feat(auth): add login endpoint
-fix(auth): handle invalid refresh token
-test(users): add user service tests
-docs(database): document mld choices
-refactor(payments): simplify payment status handling
-```
-
----
-
-## Types de commits
-
-| Type | Usage |
-|---|---|
-| `feat` | Nouvelle fonctionnalité |
-| `fix` | Correction de bug |
-| `chore` | Tâche technique sans impact métier |
-| `docs` | Documentation |
-| `test` | Ajout ou modification de tests |
-| `refactor` | Refactorisation sans changement fonctionnel |
-| `ci` | Intégration continue / GitHub Actions |
-| `build` | Build, dépendances, packaging |
-| `style` | Formatage uniquement |
-| `perf` | Optimisation de performance |
-| `hotfix` | Correction urgente |
-
----
-
-## Scopes recommandés
-
-Les scopes permettent d’indiquer la zone concernée.
-
-Exemples de scopes utilisés dans Epolia :
-
-```txt
-github
-ci
-docs
-config
-database
-prisma
-users
-auth
-profiles
-missions
-payments
-messaging
-reviews
-admin
-compliance
-tests
-```
-
-Exemples :
-
-```txt
-feat(users): create user model
-feat(auth): add login endpoint
-docs(database): explain mld choices
-ci(github): update workflow checks
-```
-
----
-
-## Pull Requests
-
-Chaque Pull Request doit :
-
-- être liée à une issue GitHub ;
-- contenir idéalement `Closes #numero` dans sa description ;
-- reprendre le titre de l'issue GitHub quand il utilise un domaine entre crochets ;
-- sinon avoir un titre au format Conventional Commits ;
-- rester limitée au périmètre de l’issue ;
-- contenir une description claire ;
-- préciser les tests réalisés ;
-- passer la CI avant merge.
-
-Format recommandé du titre de PR :
-
-```txt
-[Domaine] Titre de l'issue
-type(scope): description courte
-```
-
-Les formats `[Authentification] Titre de l'issue`, `[Paiement] Titre de l'issue`, `[Bug] Titre de l'issue` et `type: description courte` sont aussi acceptés.
-
-Exemple :
-
-```txt
-chore(github): add templates and git conventions
-[Authentification] Connexion utilisateur
-[Bug] Erreur lors du paiement
-```
-
----
-
-## Protection de `main`
-
-La branche `main` doit être protégée avec les règles suivantes :
-
-- blocage des force push ;
-- blocage de la suppression ;
-- Pull Request obligatoire avant merge ;
-- CI obligatoire avant merge.
-
-Les checks attendus sont :
-
-```txt
-PR checks
-Build and test
-```
-
----
-
-## CI obligatoire
-
-Avant merge, la CI doit vérifier :
-
-- le nom de la branche ;
-- le titre de la Pull Request ;
-- le numéro d'issue extrait de la branche, avec recommandation `Closes #numero` dans la description ;
-- les messages de commit ;
-- le lint ;
-- les tests ;
-- le build ;
-- la génération Prisma si un schéma Prisma existe.
-
-Commandes principales :
-
-```bash
-npm run lint
-npm run test
-npm run build
-```
-
----
-
-## Vérifications locales Husky
-
-Husky exécute des contrôles locaux avant certaines actions Git :
-
-- `.husky/commit-msg` vérifie le message de commit avec Commitlint ;
-- `.husky/pre-push` vérifie le nom de la branche avant push.
-
-La vérification de branche peut aussi être lancée manuellement :
+La verification locale existe encore comme aide :
 
 ```bash
 npm run branch:check
 ```
 
-Ces contrôles ne remplacent pas la CI, mais permettent de détecter les erreurs avant la Pull Request.
+## Commits
 
----
-
-## Règle d’or
-
-Une Pull Request doit être petite, lisible et liée à une issue.
-
-Le workflow attendu est :
+Conventional Commits reste recommande :
 
 ```txt
-une issue claire
-une branche dédiée
-une PR courte
-une CI verte
-un merge vers main
+type(scope): message court
+```
+
+Exemples :
+
+```txt
+docs(github): simplify issue templates
+ci(github): keep quality checks only
+feat(users): add user endpoint
+```
+
+Commitlint est garde comme aide locale Husky. Il affiche un avertissement mais ne bloque plus le commit.
+
+## Pull Requests
+
+Une Pull Request doit rester courte et lisible.
+
+Contenu attendu :
+
+- objectif ;
+- issue liee si elle existe, par exemple `Closes #6` ;
+- changements realises ;
+- validations lancees.
+
+Le titre de PR doit etre clair. Il peut reprendre le titre de l'issue ou utiliser Conventional Commits, mais ce n'est plus verifie par la CI.
+
+Le script local peut aider a creer une PR :
+
+```bash
+npm run pr:create
+```
+
+Il tente de detecter un numero d'issue dans le nom de branche et de reprendre le titre GitHub si disponible.
+
+## CI obligatoire
+
+La CI conserve uniquement les controles essentiels :
+
+- generation Prisma si `prisma/schema.prisma` existe ;
+- `npm run lint` ;
+- `npm run test` ;
+- `npm run build`.
+
+Les validations de nom de branche, titre de PR et messages de commit ne bloquent plus les merges.
+
+## Protection de main
+
+La branche `main` doit etre protegee avec :
+
+- Pull Request obligatoire avant merge ;
+- blocage des force push ;
+- blocage de la suppression ;
+- CI `Build and test` obligatoire avant merge.
+
+## Regle generale
+
+Le workflow attendu reste simple :
+
+```txt
+issue claire si necessaire
+branche dediee
+PR courte
+CI verte
+merge vers main
 ```

@@ -1,160 +1,59 @@
 # Workflow IA - Epolia Backend
 
-Cette documentation cadre l'usage de l'IA pour aider le développement backend sans alourdir le projet.
+L'IA est une assistance manuelle pour clarifier, coder, tester et relire. Elle ne doit pas bloquer un merge ni ajouter de gouvernance inutile.
 
-## Stack IA
+## Outils utiles
 
-Le projet privilégie une stack IA sobre :
+- **ChatGPT** : clarification d'issue, arbitrage, explication, preparation de review.
+- **Codex** : modifications dans le repository, tests locaux, documentation, petites automatisations.
+- **GitHub CLI** : creation d'issues, Pull Requests et consultation des checks.
+- **Skills projet** : procedures courtes pour les taches repetitives.
 
-```txt
-ChatGPT + Codex + AGENTS.md + skills projet + Serena + Caveman
-```
+## Creation d'issue
 
-## Outils
-
-- **ChatGPT** : architecture, clarification d'issue, arbitrages, revue générale.
-- **Codex** : modifications dans le repository, tests, petites automatisations.
-- **GitHub CLI** : issues, Pull Requests, checks et workflow Git.
-- **Agent GitHub backend** : agent spécialisé pour les issues backend Epolia.
-- **Serena MCP** : navigation symbolique quand le code grossit.
-- **Caveman** : réponses plus courtes quand le contexte est déjà clair.
-
-## Quand utiliser ChatGPT
-
-- Clarifier une fonctionnalité avant codage.
-- Comparer deux approches.
-- Préparer une issue ou une review.
-- Demander une explication pédagogique.
-
-## Quand utiliser Codex
-
-- Modifier le code ou la documentation.
-- Lire le repository.
-- Lancer `npm run lint`, `npm run test`, `npm run build`.
-- Préparer une Pull Request.
-
-## Agent GitHub Backend
-
-L'agent GitHub backend est défini dans :
+Utiliser le skill projet :
 
 ```txt
-.github/agents/epolia-backend-agent.agent.md
+issue-creator
 ```
 
-L'utiliser pour les issues backend NestJS qui doivent respecter strictement le périmètre, les conventions Epolia et les validations locales.
+Il aide a transformer une idee en issue courte avec :
 
-Cet agent doit rester sobre :
+- objectif ;
+- taches a faire ;
+- validation ;
+- hors perimetre si utile.
 
-- lire l'issue avant toute action ;
-- proposer un plan court ;
-- modifier uniquement les fichiers nécessaires ;
-- éviter toute sur-architecture ;
-- lancer `npm run lint`, `npm run test`, `npm run build` après modification.
+Les templates GitHub restent simples et les issues vides sont autorisees pour ne pas bloquer la prise de notes rapide.
 
-## Mode Plan
+## Utilisation de Codex
 
-Utiliser le mode Plan quand :
+Demander a Codex de :
 
-- le périmètre est ambigu ;
-- plusieurs fichiers ou modules sont concernés ;
-- une décision d'architecture est nécessaire.
-
-Éviter le mode Plan pour une correction simple et évidente.
-
-## Réduire les tokens
-
-- Donner le lien ou le texte complet de l'issue.
-- Demander une réponse courte.
-- Demander une review ciblée.
-- Éviter de redemander le contexte déjà documenté dans `AGENTS.md`.
-- Utiliser Serena pour retrouver les symboles au lieu de charger trop de fichiers.
-
-## Serena MCP
-
-Serena est utilisé pour aider les agents IA à naviguer dans le code au niveau des symboles.
-
-Installation locale :
-
-```bash
-uv tool install -p 3.13 serena-agent
-serena init
-```
-
-Usage recommandé :
-
-- comprendre un module existant ;
-- retrouver les classes, services, DTO ;
-- analyser les dépendances ;
-- préparer un refactor ;
-- éviter de charger trop de fichiers dans le contexte IA.
-
-Serena ne doit pas modifier le code sans validation explicite.
-
-Serena est un outil local développeuse. Il ne doit pas être ajouté comme dépendance npm du backend.
-
-## Caveman
-
-Caveman sert à réduire la verbosité des agents IA.
-
-Installation :
-
-```bash
-npx skills add JuliusBrussee/caveman
-```
-
-Option CLI globale :
-
-```bash
-npm i -g @juliusbrussee/caveman-code
-```
-
-Usage recommandé :
-
-- réponses très courtes ;
-- plans courts ;
-- reviews courtes ;
-- résumés rapides ;
-- éviter les longues explications répétitives.
-
-Caveman ne doit pas remplacer les instructions projet.
-Il doit être utilisé comme option de compression, pas comme architecture de travail.
-
-Ne pas utiliser Caveman quand une explication pédagogique détaillée est nécessaire.
+- lire l'issue ou le contexte fourni ;
+- confirmer le perimetre ;
+- faire un plan court si plusieurs fichiers sont touches ;
+- modifier uniquement les fichiers necessaires ;
+- lancer `npm run lint`, `npm run test` et `npm run build`.
 
 ## Review IA
 
-Pour demander une review IA :
+Le workflow GitHub `AI review` reste manuel :
 
-1. ouvrir une Pull Request courte ;
-2. vérifier que la CI passe ;
-3. lancer le workflow manuel `AI review` si souhaité ;
-4. si Copilot Code Review n'est pas disponible, demander une review manuelle à ChatGPT ou Codex avec le diff.
+```txt
+Actions -> AI review -> Run workflow
+```
 
-La review IA ne remplace pas la décision humaine.
+Il n'est pas appele automatiquement et ne doit pas etre requis dans la protection de branche.
 
-## Workflow propre
+Si Copilot Code Review n'est pas disponible, demander une review manuelle a ChatGPT ou Codex avec le diff.
 
-1. Lire l'issue et confirmer le périmètre.
-2. Créer une branche dédiée.
-3. Faire des modifications courtes et ciblées.
-4. Lancer les validations locales.
-5. Ouvrir une Pull Request avec le titre de l'issue.
-6. Demander une review humaine, et une review IA manuelle si utile.
+La review IA aide a detecter les risques, mais la decision de merge reste humaine.
 
-## Outils non installés pour le moment
+## Regles simples
 
-Les outils suivants sont identifiés mais non installés afin d'éviter une stack IA trop lourde :
-
-- BMAD Method ;
-- Aider ;
-- GitHub MCP avec permissions larges ;
-- Context7 MCP ;
-- Cline ;
-- Roo Code ;
-- workflows IA payants automatiques.
-
-Ils pourront être évalués plus tard si un vrai besoin apparaît.
-
-## Règle générale
-
-L'IA aide à produire des changements plus propres, mais ne doit pas ajouter de code métier, de secret, de dépendance ou d'automatisation hors périmètre.
+- Ne pas ajouter de secret.
+- Ne pas ajouter de dependance sans justification.
+- Ne pas creer de code metier hors issue.
+- Ne pas lancer de refactor global non demande.
+- Respecter l'architecture existante sauf issue de migration explicite.

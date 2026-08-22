@@ -6,9 +6,9 @@ Epolia est une marketplace fictive de fin de master entre particuliers et étudi
 
 ## Architecture
 
-Le backend est un monolithe modulaire NestJS.
+Le backend actuel utilise NestJS.
 
-- Ne pas créer de microservices.
+- Respecter l'architecture existante tant qu'une issue ne demande pas explicitement une migration.
 - Ne pas ajouter de complexité inutile.
 - Ne pas développer hors périmètre de l'issue.
 
@@ -45,11 +45,11 @@ Le code doit rester simple, lisible et maintenable.
 
 - Privilégier du code prévisible.
 - Éviter les abstractions inutiles.
-- Éviter CQRS, event sourcing ou patterns complexes sans besoin réel.
-- Garder les CRUD homogènes d'un module à l'autre.
+- Éviter les patterns complexes sans besoin réel.
+- Garder les modules homogènes.
 - Ne pas mélanger plusieurs domaines métier dans une même issue.
 
-Pour les futurs CRUD NestJS :
+Pour les CRUD tant que NestJS est utilisé :
 
 ```txt
 module/
@@ -82,21 +82,21 @@ npm run build
 
 ## Git
 
-Une tâche suit :
+Workflow recommandé :
 
 ```txt
 1 issue = 1 branche = 1 Pull Request
 ```
 
-Branches :
+Branches recommandées :
 
 ```txt
 type/issue-number-short-english-description
 ```
 
-La description de branche doit être un slug anglais, en minuscules, sans accents ni espaces.
+Ce format aide la traçabilité mais ne doit pas bloquer le travail.
 
-Commits :
+Commits recommandés :
 
 ```txt
 type(scope): message court

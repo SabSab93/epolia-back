@@ -9,29 +9,24 @@ body:
   - type: textarea
     id: objective
     attributes:
-      label: Objectif documentaire
-      description: Quelle documentation doit être créée ou modifiée ?
+      label: Objectif
+      description: Quelle documentation doit changer ?
     validations:
       required: true
 
   - type: textarea
     id: content
     attributes:
-      label: Contenu attendu
+      label: À faire
       placeholder: |
-        - Sujet à documenter
-        - Fichiers concernés
-        - Points importants
+        -
     validations:
       required: true
 
   - type: textarea
-    id: acceptance
+    id: notes
     attributes:
-      label: Critères d'acceptation
+      label: Notes utiles
       placeholder: |
-        - Documentation claire
-        - Fichier Markdown ajouté ou mis à jour
-        - Pas d'information obsolète
-    validations:
-      required: true
+        - Fichier concerné :
+        - Hors périmètre :
