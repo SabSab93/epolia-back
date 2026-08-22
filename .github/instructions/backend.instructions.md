@@ -1,6 +1,6 @@
 # Backend instructions
 
-- Garder un monolithe modulaire NestJS.
-- Un module doit rester lisible : module, controller, service, DTO, tests si nécessaire.
-- Ne pas ajouter de microservices, CQRS ou repository générique sans demande explicite.
-- Prisma reste dans les services, pas dans les controllers.
+- Respecter l'architecture existante sauf issue de migration explicite.
+- Garder les modules lisibles et homogènes.
+- Ne pas ajouter de pattern complexe sans besoin réel.
+- Respecter les conventions techniques déjà présentes dans les fichiers modifiés.

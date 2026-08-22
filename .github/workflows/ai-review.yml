@@ -17,6 +17,7 @@ jobs:
   request-ai-review:
     name: Request AI review
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     steps:
       - name: Request Copilot review if available

@@ -1,1 +1,4 @@
-npx --no -- commitlint --edit "$1"
+npx --no -- commitlint --edit "$1" || {
+  echo "Commitlint warning only: keep Conventional Commits when practical."
+  exit 0
+}

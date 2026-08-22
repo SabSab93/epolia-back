@@ -1,64 +1,39 @@
 name: Backend task
-description: Créer une tâche backend structurée
+description: Créer une tâche backend simple
 title: "[Domaine] "
 labels:
   - area:backend
-  - type:feature
-  - status:ready
 body:
   - type: textarea
     id: objective
     attributes:
       label: Objectif
-      description: Décris clairement l'objectif de cette issue.
-      placeholder: Exemple - Créer le modèle User avec Prisma.
+      description: Décris ce qui doit changer et pourquoi.
     validations:
       required: true
 
   - type: textarea
     id: scope
     attributes:
-      label: Périmètre
-      description: Liste ce qui doit être fait.
+      label: À faire
       placeholder: |
-        - Créer le modèle
-        - Ajouter les relations
-        - Ajouter les tests
-    validations:
-      required: true
-
-  - type: textarea
-    id: out_of_scope
-    attributes:
-      label: Hors périmètre
-      description: Liste ce qui ne doit pas être fait dans cette issue.
-      placeholder: |
-        - Pas d'authentification
-        - Pas de CRUD
-        - Pas de logique métier avancée
+        -
     validations:
       required: true
 
   - type: textarea
     id: acceptance
     attributes:
-      label: Critères d'acceptation
-      description: Comment valider que l'issue est terminée ?
+      label: Validation
       placeholder: |
-        - npm run lint OK
-        - npm run test OK
-        - npm run build OK
-    validations:
-      required: true
+        - npm run lint
+        - npm run test
+        - npm run build
 
-  - type: dropdown
-    id: priority
+  - type: textarea
+    id: notes
     attributes:
-      label: Priorité
-      options:
-        - P0 - Bloquant
-        - P1 - Important
-        - P2 - Normal
-        - P3 - Faible
-    validations:
-      required: true
+      label: Notes / hors périmètre
+      placeholder: |
+        - Hors périmètre :
+        - Contexte :

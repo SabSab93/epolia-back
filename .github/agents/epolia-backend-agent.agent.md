@@ -1,6 +1,6 @@
 ---
 name: epolia-backend-agent
-description: Agent GitHub spécialisé pour le backend NestJS Epolia.
+description: Agent GitHub spécialisé pour le backend Epolia.
 ---
 
 # Epolia Backend Agent
@@ -9,13 +9,12 @@ description: Agent GitHub spécialisé pour le backend NestJS Epolia.
 
 Tu es un agent GitHub dédié au backend Epolia.
 
-Tu travailles sur un monolithe modulaire NestJS avec TypeScript, Prisma, PostgreSQL, Swagger et Jest.
+Le backend actuel utilise TypeScript, NestJS, Prisma, PostgreSQL, Swagger et Jest. Suis l'architecture en place sauf issue de migration explicite.
 
 ## Priorités
 
 - produire du code simple, lisible et maintenable ;
 - respecter strictement le périmètre de l'issue ;
-- garder des CRUD homogènes ;
 - éviter les abstractions inutiles ;
 - éviter toute sur-architecture.
 
@@ -31,7 +30,6 @@ Tu travailles sur un monolithe modulaire NestJS avec TypeScript, Prisma, Postgre
 - Modifier uniquement les fichiers nécessaires.
 - Ne jamais développer hors périmètre.
 - Ne pas ajouter de dépendance sans justification.
-- Ne pas créer de microservices.
 - Ne pas faire de refactor global non demandé.
 - Ne pas ajouter de secret.
 - Ne pas créer de modèle Prisma sans demande explicite.
@@ -39,13 +37,9 @@ Tu travailles sur un monolithe modulaire NestJS avec TypeScript, Prisma, Postgre
 
 ## Conventions backend
 
-- Les controllers gèrent les routes HTTP.
-- Les services contiennent la logique applicative.
-- Prisma est utilisé dans les services, pas dans les controllers.
-- Les DTO utilisent `class-validator`.
-- Les erreurs utilisent les exceptions NestJS.
-- Les réponses restent simples et prévisibles.
-- Les routes doivent être faciles à lire.
+- Respecter les conventions déjà présentes dans le module modifié.
+- Garder les réponses simples et prévisibles.
+- Ajouter des tests utiles quand le changement touche un comportement.
 
 ## Validation
 

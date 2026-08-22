@@ -1,53 +1,40 @@
 # Pull Request
 
-## 🎯 Objectif
+## Objectif
 
 Décrire brièvement l'objectif de cette Pull Request.
 
 ---
 
-## 🔗 Issue liée
+## Issue liée
 
 Closes #
 
-Remplacer `#` par le numéro d'issue indiqué dans le nom de branche.
+À compléter si une issue existe.
 
 ---
 
-## ✅ Changements réalisés
-
-- [ ] 
-- [ ] 
-- [ ] 
-
----
-
-## 📌 Hors périmètre
+## Changements réalisés
 
 - 
 
 ---
 
-## 🧪 Tests effectués
+## Tests effectués
 
 - [ ] npm run lint
 - [ ] npm run test
 - [ ] npm run build
-- [ ] Vérification manuelle si nécessaire
 
 ---
 
-## 📸 Captures / Swagger / Logs
+## Notes
 
-Ajouter ici les captures ou logs utiles si nécessaire.
+Ajouter les limites, captures, logs ou vérifications manuelles utiles.
 
 ---
 
-## 🔍 Checklist
+## Checklist
 
-- [ ] La branche respecte la convention de nommage.
-- [ ] Le titre de la PR reprend le titre de l'issue ou respecte Conventional Commits.
 - [ ] Le code est limité au périmètre de l'issue.
 - [ ] Aucun secret n'est ajouté.
-- [ ] La documentation est mise à jour si nécessaire.
-- [ ] Les tests passent.
