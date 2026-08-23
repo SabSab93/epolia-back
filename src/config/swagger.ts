@@ -194,6 +194,101 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/v1/student-profiles': {
+      post: {
+        summary: 'Create the authenticated student profile',
+        tags: ['StudentProfile'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['title', 'hourlyRateCents'],
+                properties: {
+                  title: { type: 'string', example: 'Developpeuse web' },
+                  description: {
+                    type: 'string',
+                    example: 'Creation de sites vitrines et applications web.',
+                  },
+                  hourlyRateCents: { type: 'integer', example: 2500 },
+                  level: { type: 'string', example: 'MBA1' },
+                  status: { type: 'string', example: 'ACTIVE' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Student profile created' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          409: { description: 'Student profile already exists' },
+        },
+      },
+    },
+    '/api/v1/student-profiles/me': {
+      get: {
+        summary: 'Get the authenticated student profile',
+        tags: ['StudentProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Authenticated student profile found' },
+          401: { description: 'Authentication required' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+      patch: {
+        summary: 'Update the authenticated student profile',
+        tags: ['StudentProfile'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string', example: 'Developpeuse web' },
+                  description: {
+                    type: 'string',
+                    example: 'Creation de sites vitrines et applications web.',
+                  },
+                  hourlyRateCents: { type: 'integer', example: 3000 },
+                  level: { type: 'string', example: 'MBA1' },
+                  status: { type: 'string', example: 'ACTIVE' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Student profile updated' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/student-profile': {
+      get: {
+        summary: 'Get a student profile by user id',
+        tags: ['StudentProfile'],
+        parameters: [
+          {
+            name: 'userId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: { description: 'Student profile found' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
