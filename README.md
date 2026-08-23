@@ -46,7 +46,7 @@ docker compose up -d
 
 ```bash
 npm run prisma:generate
-npm run prisma:format
+npm run prisma:migrate
 ```
 
 Voir aussi [docs/prisma-postgresql.md](docs/prisma-postgresql.md) pour les commandes PostgreSQL, Prisma et le test de connexion.
@@ -58,7 +58,7 @@ Les modèles métier seront ajoutés progressivement dans des branches dédiées
 En développement :
 
 ```bash
-npm run start:dev
+npm run dev
 ```
 
 Après build :
