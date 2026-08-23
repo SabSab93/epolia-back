@@ -86,7 +86,7 @@ Avantages :
 - structure plus explicite et plus simple a expliquer ;
 - moins de magie framework ;
 - migration progressive plus facile a documenter ;
-- meilleur controle sur le decoupage routes, controllers, services, repositories.
+- meilleur controle sur le decoupage, sans imposer de couches avant besoin reel.
 
 Inconvenients :
 
@@ -97,26 +97,30 @@ Inconvenients :
 
 ## Convention commune
 
-Chaque application Express doit suivre la meme organisation logique :
+Le socle Express doit rester volontairement simple.
+
+Pour la phase actuelle, le flux privilegie est :
 
 ```txt
-routes -> controllers -> services -> repositories
-                         |
-                         v
-validators, errors, middlewares
+routes -> Prisma
 ```
 
-Responsabilites :
+Responsabilites actuelles :
 
-- `routes` : declarent les endpoints et branchent les middlewares necessaires ;
-- `controllers` : lisent la requete HTTP, appellent le service et formatent la reponse ;
-- `services` : portent la logique applicative et les regles metier ;
-- `repositories` : isolent l'acces aux donnees via Prisma ;
-- `validators` : valident les entrees avant la logique metier ;
+- `routes` : declarent les endpoints, lisent la requete HTTP, appellent Prisma et formatent la reponse ;
 - `errors` : exposent des erreurs typees et previsibles ;
-- `middlewares` : gerent les preoccupations transverses comme auth, logs, erreurs et securite HTTP.
+- `middlewares` : gerent les preoccupations transverses comme erreurs, securite HTTP et parsing des requetes.
 
-La logique metier ne doit pas etre placee dans les routes, les controllers ou la Gateway.
+Des couches supplementaires pourront etre ajoutees progressivement si elles repondent a un besoin concret :
+
+```txt
+routes -> services -> Prisma
+routes -> services -> repositories -> Prisma
+```
+
+Ce choix evite d'introduire prematurement des controllers, DTO, schemas ou repositories dont le seul role serait d'encapsuler une ligne Prisma.
+
+La logique metier ne doit pas etre placee dans la Gateway.
 
 ## Monorepo
 

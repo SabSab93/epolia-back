@@ -1,7 +1,7 @@
 import { AccountStatus, AuthProvider, UserRole } from '@prisma/client';
 import express from 'express';
 import request from 'supertest';
-import { AppError } from '../shared/errors/app-error';
+import { AppError } from '../errors/app-error';
 import { errorHandler } from '../middlewares/error.middleware';
 import { prisma } from '../prisma/client';
 import { usersRouter } from './users.routes';
@@ -22,12 +22,10 @@ jest.mock('../prisma/client', () => {
       deleteMany: jest.fn(),
     },
     $transaction: jest.fn(),
-    $disconnect: jest.fn(),
   };
 
   return {
     prisma: mockPrisma,
-    disconnectPrisma: jest.fn(),
   };
 });
 
