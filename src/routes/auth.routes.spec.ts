@@ -69,7 +69,7 @@ function firstCallArg<T>(mock: SingleArgMock): T {
 
 describe('Auth routes', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('registers a local user with a hashed password', async () => {
@@ -231,6 +231,8 @@ describe('Auth routes', () => {
   });
 
   it('returns the authenticated user from the JWT', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(userMock);
+
     const accessToken = jwt.sign(
       {
         sub: userMock.id,
@@ -249,6 +251,46 @@ describe('Auth routes', () => {
       id: userMock.id,
       email: userMock.email,
       roles: [UserRole.PARTICULIER],
+    });
+    expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
+      where: { id: userMock.id },
+      select: {
+        id: true,
+        email: true,
+        status: true,
+        roles: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
+  });
+
+  it('rejects a valid JWT when the account is not active anymore', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      status: AccountStatus.SUSPENDED,
+    });
+
+    const accessToken = jwt.sign(
+      {
+        sub: userMock.id,
+        email: userMock.email,
+        roles: [UserRole.PARTICULIER],
+      },
+      config.jwtSecret,
+    );
+
+    const response = await request(createTestApp())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({
+      status: 403,
+      code: 'ACCOUNT_NOT_ACTIVE',
+      message: 'Account is not active',
     });
   });
 

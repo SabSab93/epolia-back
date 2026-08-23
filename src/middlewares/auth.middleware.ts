@@ -1,8 +1,9 @@
-import { UserRole } from '@prisma/client';
+import { AccountStatus, UserRole } from '@prisma/client';
 import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '@/config/env';
 import { AppError } from '@/errors/app-error';
+import { prisma } from '@/prisma/client';
 
 export type AuthUser = {
   id: string;
@@ -16,7 +17,7 @@ type JwtPayload = {
   roles?: UserRole[];
 };
 
-export const requireAuth: RequestHandler = (request, response, next) => {
+export const requireAuth: RequestHandler = async (request, response, next) => {
   const authorization = request.headers.authorization;
 
   if (!authorization?.startsWith('Bearer ')) {
@@ -37,10 +38,36 @@ export const requireAuth: RequestHandler = (request, response, next) => {
       return;
     }
 
+    const user = await prisma.user.findUnique({
+      where: {
+        id: payload.sub,
+      },
+      select: {
+        id: true,
+        email: true,
+        status: true,
+        roles: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
+      return;
+    }
+
+    if (user.status !== AccountStatus.ACTIVE) {
+      next(new AppError(403, 'ACCOUNT_NOT_ACTIVE', 'Account is not active'));
+      return;
+    }
+
     response.locals.authUser = {
-      id: payload.sub,
-      email: payload.email ?? null,
-      roles: payload.roles,
+      id: user.id,
+      email: user.email,
+      roles: user.roles.map((role) => role.role),
     } satisfies AuthUser;
 
     next();
