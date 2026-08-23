@@ -31,7 +31,7 @@ studentProfilesRouter.post(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = (request.body ?? {}) as Record<string, unknown>;
+    const body = request.body;
     const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
     if (!authUser.roles.includes(UserRole.ETUDIANT)) {
@@ -134,7 +134,7 @@ studentProfilesRouter.patch(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = (request.body ?? {}) as Record<string, unknown>;
+    const body = request.body;
     const title = cleanText(body.title);
     const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
