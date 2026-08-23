@@ -46,8 +46,26 @@ model User {
 
   roles        UserRoleAssignment[]
   authAccounts AuthAccount[]
+  profile      UserProfile?
 
   @@map("users")
+}
+
+model UserProfile {
+  userId     String   @id @map("user_id") @db.Uuid
+  firstName  String   @map("first_name")
+  lastName   String?  @map("last_name")
+  photoUrl   String?  @map("photo_url")
+  address    String?
+  postalCode String?  @map("postal_code")
+  city       String?
+  country    String   @default("FR")
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
 }
 
 model UserRoleAssignment {

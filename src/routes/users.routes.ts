@@ -98,12 +98,7 @@ usersRouter.get('/users/:userId', async (request, response) => {
 });
 
 usersRouter.post('/users/local', async (request, response) => {
-  const body =
-    typeof request.body === 'object' &&
-    request.body !== null &&
-    !Array.isArray(request.body)
-      ? (request.body as Record<string, unknown>)
-      : {};
+  const body = (request.body ?? {}) as Record<string, unknown>;
   const { email, passwordHash, phone, roles } = body;
 
   if (
@@ -150,12 +145,7 @@ usersRouter.post('/users/local', async (request, response) => {
 });
 
 usersRouter.post('/users/:userId/roles', async (request, response) => {
-  const body =
-    typeof request.body === 'object' &&
-    request.body !== null &&
-    !Array.isArray(request.body)
-      ? (request.body as Record<string, unknown>)
-      : {};
+  const body = (request.body ?? {}) as Record<string, unknown>;
   const role = body.role;
 
   if (
@@ -201,12 +191,7 @@ usersRouter.delete('/users/:userId/roles/:role', async (request, response) => {
 });
 
 usersRouter.patch('/users/:userId/status', async (request, response) => {
-  const body =
-    typeof request.body === 'object' &&
-    request.body !== null &&
-    !Array.isArray(request.body)
-      ? (request.body as Record<string, unknown>)
-      : {};
+  const body = (request.body ?? {}) as Record<string, unknown>;
   const status = body.status;
 
   if (
