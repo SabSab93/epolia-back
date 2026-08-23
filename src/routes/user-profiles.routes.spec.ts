@@ -15,7 +15,7 @@ jest.mock('@/prisma/client', () => {
     },
     userProfile: {
       findUnique: jest.fn(),
-      upsert: jest.fn(),
+      create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
     },
@@ -58,7 +58,7 @@ type PrismaMock = {
   };
   userProfile: {
     findUnique: SingleArgMock;
-    upsert: SingleArgMock;
+    create: SingleArgMock;
     update: SingleArgMock;
     delete: SingleArgMock;
   };
@@ -106,8 +106,8 @@ describe('User profile routes', () => {
     prismaMock.user.findUnique.mockResolvedValue(userMock);
   });
 
-  it('creates or updates the authenticated user profile', async () => {
-    prismaMock.userProfile.upsert.mockResolvedValue(profileMock);
+  it('creates the authenticated user profile', async () => {
+    prismaMock.userProfile.create.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
       .post('/api/v1/user-profiles')
@@ -120,7 +120,7 @@ describe('User profile routes', () => {
         city: 'Paris',
       });
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
       userId: userMock.id,
       firstName: 'Sabrina',
@@ -130,20 +130,9 @@ describe('User profile routes', () => {
       city: 'Paris',
       country: 'FR',
     });
-    expect(firstCallArg(prismaMock.userProfile.upsert)).toMatchObject({
-      where: {
+    expect(firstCallArg(prismaMock.userProfile.create)).toMatchObject({
+      data: {
         userId: userMock.id,
-      },
-      create: {
-        userId: userMock.id,
-        firstName: 'Sabrina',
-        lastName: 'Hammadi',
-        address: '10 rue de Paris',
-        postalCode: '75001',
-        city: 'Paris',
-        country: 'FR',
-      },
-      update: {
         firstName: 'Sabrina',
         lastName: 'Hammadi',
         address: '10 rue de Paris',
@@ -168,15 +157,15 @@ describe('User profile routes', () => {
       code: 'VALIDATION_ERROR',
       message: 'firstName is required',
     });
-    expect(prismaMock.userProfile.upsert).not.toHaveBeenCalled();
+    expect(prismaMock.userProfile.create).not.toHaveBeenCalled();
   });
 
-  it('returns a profile by user id', async () => {
+  it('returns the authenticated user full profile', async () => {
     prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
 
-    const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}/profile`,
-    );
+    const response = await request(createTestApp())
+      .get('/api/v1/user-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -187,13 +176,44 @@ describe('User profile routes', () => {
       city: 'Paris',
       country: 'FR',
     });
-    expect(prismaMock.userProfile.findUnique).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: {
-          userId: userMock.id,
-        },
-      }),
+    expect(prismaMock.userProfile.findUnique).toHaveBeenCalledWith({
+      where: {
+        userId: userMock.id,
+      },
+    });
+  });
+
+  it('returns a public profile by user id', async () => {
+    prismaMock.userProfile.findUnique.mockResolvedValue({
+      userId: userMock.id,
+      firstName: 'Sabrina',
+      lastName: 'Hammadi',
+      photoUrl: null,
+      city: 'Paris',
+      country: 'FR',
+    });
+
+    const response = await request(createTestApp()).get(
+      `/api/v1/users/${userMock.id}/profile`,
     );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({
+      userId: userMock.id,
+      firstName: 'Sabrina',
+      city: 'Paris',
+      country: 'FR',
+    });
+    expect(response.body).not.toHaveProperty('address');
+    expect(response.body).not.toHaveProperty('postalCode');
+    const prismaCall = firstCallArg<{
+      where: { userId: string };
+      select: Record<string, boolean>;
+    }>(prismaMock.userProfile.findUnique);
+
+    expect(prismaCall.where.userId).toBe(userMock.id);
+    expect(prismaCall.select).not.toHaveProperty('address');
+    expect(prismaCall.select).not.toHaveProperty('postalCode');
   });
 
   it('returns 404 when a profile does not exist', async () => {
@@ -233,6 +253,32 @@ describe('User profile routes', () => {
       },
       data: {
         city: 'Lyon',
+      },
+    });
+  });
+
+  it('clears nullable profile fields', async () => {
+    prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.userProfile.update.mockResolvedValue({
+      ...profileMock,
+      address: null,
+    });
+
+    const response = await request(createTestApp())
+      .patch('/api/v1/user-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        address: null,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.address).toBeNull();
+    expect(firstCallArg(prismaMock.userProfile.update)).toMatchObject({
+      where: {
+        userId: userMock.id,
+      },
+      data: {
+        address: null,
       },
     });
   });

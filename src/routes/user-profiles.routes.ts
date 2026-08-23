@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
@@ -6,6 +7,10 @@ import { prisma } from '@/prisma/client';
 export const userProfilesRouter = Router();
 
 function cleanText(value: unknown) {
+  if (value === null) {
+    return null;
+  }
+
   if (typeof value !== 'string') {
     return undefined;
   }
@@ -42,16 +47,47 @@ userProfilesRouter.post(
       country: cleanCountry(body.country) ?? 'FR',
     };
 
-    const profile = await prisma.userProfile.upsert({
+    try {
+      const profile = await prisma.userProfile.create({
+        data: {
+          userId: authUser.id,
+          ...profileData,
+        },
+      });
+
+      response.status(201).json(profile);
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new AppError(
+          409,
+          'PROFILE_ALREADY_EXISTS',
+          'Profile already exists',
+        );
+      }
+
+      throw error;
+    }
+  },
+);
+
+userProfilesRouter.get(
+  '/user-profiles/me',
+  requireAuth,
+  async (_request, response) => {
+    const authUser = response.locals.authUser as AuthUser;
+
+    const profile = await prisma.userProfile.findUnique({
       where: {
         userId: authUser.id,
       },
-      update: profileData,
-      create: {
-        userId: authUser.id,
-        ...profileData,
-      },
     });
+
+    if (!profile) {
+      throw new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
+    }
 
     response.status(200).json(profile);
   },
@@ -61,6 +97,14 @@ userProfilesRouter.get('/users/:userId/profile', async (request, response) => {
   const profile = await prisma.userProfile.findUnique({
     where: {
       userId: request.params.userId,
+    },
+    select: {
+      userId: true,
+      firstName: true,
+      lastName: true,
+      photoUrl: true,
+      city: true,
+      country: true,
     },
   });
 

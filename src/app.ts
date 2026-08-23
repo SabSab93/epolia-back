@@ -132,7 +132,7 @@ const swaggerDocument = {
     },
     '/api/v1/user-profiles': {
       post: {
-        summary: 'Create or update the authenticated user profile',
+        summary: 'Create the authenticated user profile',
         tags: ['UserProfile'],
         security: [{ bearerAuth: [] }],
         requestBody: {
@@ -159,15 +159,16 @@ const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'Profile saved' },
+          201: { description: 'Profile created' },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
+          409: { description: 'Profile already exists' },
         },
       },
     },
     '/api/v1/users/{userId}/profile': {
       get: {
-        summary: 'Get a user profile by user id',
+        summary: 'Get a public user profile by user id',
         tags: ['UserProfile'],
         parameters: [
           {
@@ -178,12 +179,22 @@ const swaggerDocument = {
           },
         ],
         responses: {
-          200: { description: 'Profile found' },
+          200: { description: 'Public profile found' },
           404: { description: 'Profile not found' },
         },
       },
     },
     '/api/v1/user-profiles/me': {
+      get: {
+        summary: 'Get the authenticated user full profile',
+        tags: ['UserProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Authenticated user profile found' },
+          401: { description: 'Authentication required' },
+          404: { description: 'Profile not found' },
+        },
+      },
       patch: {
         summary: 'Update the authenticated user profile',
         tags: ['UserProfile'],
