@@ -1,7 +1,7 @@
 import { AccountStatus, AuthProvider, Prisma, UserRole } from '@prisma/client';
 import { Router } from 'express';
 import { prisma } from '../prisma/client';
-import { AppError } from '../shared/errors/app-error';
+import { AppError } from '../errors/app-error';
 
 const userSelect = {
   id: true,

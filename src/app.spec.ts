@@ -2,7 +2,7 @@ import express from 'express';
 import request from 'supertest';
 import app from './app';
 import { errorHandler } from './middlewares/error.middleware';
-import { AppError } from './shared/errors/app-error';
+import { AppError } from './errors/app-error';
 
 interface HealthBody {
   status: string;
