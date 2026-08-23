@@ -1,10 +1,11 @@
 import compression from 'compression';
 import cors from 'cors';
-import express, { type Router } from 'express';
+import express, { Router } from 'express';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { getAppConfig, type AppConfig } from './config/env';
 import { createHealthRouter } from './modules/health/health.routes';
+import { usersRouter } from './routes/users.routes';
 import {
   errorHandler,
   notFoundHandler,
@@ -48,12 +49,21 @@ export function createApp(options: CreateAppOptions = {}) {
     }),
   );
 
-  app.use('/api/v1', options.apiRouter ?? createHealthRouter());
+  app.use('/api/v1', options.apiRouter ?? createApiRouter());
 
   app.use(notFoundHandler);
   app.use(errorHandler);
 
   return app;
+}
+
+function createApiRouter(): Router {
+  const router = Router();
+
+  router.use(createHealthRouter());
+  router.use(usersRouter);
+
+  return router;
 }
 
 function createOpenApiDocument() {
