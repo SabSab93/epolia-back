@@ -1,8 +1,6 @@
-import { createApp } from './app';
+import app from './app';
 import { config } from './config/env';
 import { disconnectPrisma } from './prisma/client';
-
-const app = createApp({ config });
 
 const server = app.listen(config.port, () => {
   console.log(`Epolia Express API listening on port ${config.port}`);

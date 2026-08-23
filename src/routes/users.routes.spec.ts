@@ -2,7 +2,7 @@ import { AccountStatus, AuthProvider, UserRole } from '@prisma/client';
 import express from 'express';
 import request from 'supertest';
 import { AppError } from '../shared/errors/app-error';
-import { errorHandler } from '../shared/middleware/error.middleware';
+import { errorHandler } from '../middlewares/error.middleware';
 import { prisma } from '../prisma/client';
 import { usersRouter } from './users.routes';
 
