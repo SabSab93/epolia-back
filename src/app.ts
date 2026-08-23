@@ -8,6 +8,7 @@ import { config } from '@/config/env';
 import { swaggerDocument } from '@/config/swagger';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
 import { authRouter } from '@/routes/auth.routes';
+import { customerProfilesRouter } from '@/routes/customer-profiles.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { userProfilesRouter } from '@/routes/user-profiles.routes';
 import { usersRouter } from '@/routes/users.routes';
@@ -42,6 +43,7 @@ app.get('/api/v1/health', (_req, res) => {
 });
 
 app.use('/api/v1', authRouter);
+app.use('/api/v1', customerProfilesRouter);
 app.use('/api/v1', studentProfilesRouter);
 app.use('/api/v1', userProfilesRouter);
 app.use('/api/v1', usersRouter);

@@ -289,6 +289,61 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/v1/customer-profiles': {
+      post: {
+        summary: 'Create the authenticated customer profile',
+        tags: ['CustomerProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          201: { description: 'Customer profile created' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
+          409: { description: 'Customer profile already exists' },
+        },
+      },
+    },
+    '/api/v1/customer-profiles/me': {
+      get: {
+        summary: 'Get the authenticated customer profile',
+        tags: ['CustomerProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Authenticated customer profile found' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Customer profile not found' },
+        },
+      },
+      delete: {
+        summary: 'Delete the authenticated customer profile',
+        tags: ['CustomerProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          204: { description: 'Customer profile deleted' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
+          404: { description: 'Customer profile not found' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/customer-profile': {
+      get: {
+        summary: 'Get a customer profile by user id',
+        tags: ['CustomerProfile'],
+        parameters: [
+          {
+            name: 'userId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: { description: 'Customer profile found' },
+          404: { description: 'Customer profile not found' },
+        },
+      },
+    },
   },
   components: {
     securitySchemes: {
