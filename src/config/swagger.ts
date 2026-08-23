@@ -294,19 +294,6 @@ export const swaggerDocument = {
         summary: 'Create the authenticated customer profile',
         tags: ['CustomerProfile'],
         security: [{ bearerAuth: [] }],
-        requestBody: {
-          required: false,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  status: { type: 'string', example: 'ACTIVE' },
-                },
-              },
-            },
-          },
-        },
         responses: {
           201: { description: 'Customer profile created' },
           401: { description: 'Authentication required' },
@@ -322,30 +309,6 @@ export const swaggerDocument = {
         security: [{ bearerAuth: [] }],
         responses: {
           200: { description: 'Authenticated customer profile found' },
-          401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
-          404: { description: 'Customer profile not found' },
-        },
-      },
-      patch: {
-        summary: 'Update the authenticated customer profile',
-        tags: ['CustomerProfile'],
-        security: [{ bearerAuth: [] }],
-        requestBody: {
-          required: false,
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  status: { type: 'string', example: 'ACTIVE' },
-                },
-              },
-            },
-          },
-        },
-        responses: {
-          200: { description: 'Customer profile updated' },
           401: { description: 'Authentication required' },
           403: { description: 'Forbidden' },
           404: { description: 'Customer profile not found' },

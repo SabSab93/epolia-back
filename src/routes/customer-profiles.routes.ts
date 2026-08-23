@@ -6,18 +6,6 @@ import { prisma } from '@/prisma/client';
 
 export const customerProfilesRouter = Router();
 
-function cleanText(value: unknown) {
-  if (value === null) {
-    return null;
-  }
-
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  return value.trim() || null;
-}
-
 customerProfilesRouter.post(
   '/customer-profiles',
   requireAuth,
@@ -28,13 +16,10 @@ customerProfilesRouter.post(
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
 
-    const body = request.body || {};
-
     try {
       const profile = await prisma.customerProfile.create({
         data: {
           userId: authUser.id,
-          status: cleanText(body.status) ?? 'ACTIVE',
         },
       });
 
@@ -100,45 +85,6 @@ customerProfilesRouter.get(
         'Customer profile not found',
       );
     }
-
-    response.status(200).json(profile);
-  },
-);
-
-customerProfilesRouter.patch(
-  '/customer-profiles/me',
-  requireAuth,
-  async (request, response) => {
-    const authUser = response.locals.authUser as AuthUser;
-
-    if (!authUser.roles.includes(UserRole.PARTICULIER)) {
-      throw new AppError(403, 'FORBIDDEN', 'Forbidden');
-    }
-
-    const body = request.body || {};
-
-    const existingProfile = await prisma.customerProfile.findUnique({
-      where: {
-        userId: authUser.id,
-      },
-    });
-
-    if (!existingProfile) {
-      throw new AppError(
-        404,
-        'CUSTOMER_PROFILE_NOT_FOUND',
-        'Customer profile not found',
-      );
-    }
-
-    const profile = await prisma.customerProfile.update({
-      where: {
-        userId: authUser.id,
-      },
-      data: {
-        status: cleanText(body.status) ?? undefined,
-      },
-    });
 
     response.status(200).json(profile);
   },

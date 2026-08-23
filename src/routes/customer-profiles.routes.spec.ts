@@ -16,7 +16,6 @@ jest.mock('@/prisma/client', () => {
     customerProfile: {
       findUnique: jest.fn(),
       create: jest.fn(),
-      update: jest.fn(),
       delete: jest.fn(),
     },
   };
@@ -38,8 +37,8 @@ const userMock = {
 };
 
 const profileMock = {
+  id: '5f7d3d42-6339-4d63-b1f8-8b6d9ea20246',
   userId: userMock.id,
-  status: 'ACTIVE',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
 };
@@ -53,7 +52,6 @@ type PrismaMock = {
   customerProfile: {
     findUnique: SingleArgMock;
     create: SingleArgMock;
-    update: SingleArgMock;
     delete: SingleArgMock;
   };
 };
@@ -109,13 +107,12 @@ describe('Customer profile routes', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
+      id: profileMock.id,
       userId: userMock.id,
-      status: 'ACTIVE',
     });
     expect(firstCallArg(prismaMock.customerProfile.create)).toMatchObject({
       data: {
         userId: userMock.id,
-        status: 'ACTIVE',
       },
     });
   });
@@ -152,8 +149,8 @@ describe('Customer profile routes', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
+      id: profileMock.id,
       userId: userMock.id,
-      status: 'ACTIVE',
     });
     expect(prismaMock.customerProfile.findUnique).toHaveBeenCalledWith({
       where: {
@@ -171,8 +168,8 @@ describe('Customer profile routes', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
+      id: profileMock.id,
       userId: userMock.id,
-      status: 'ACTIVE',
     });
   });
 
@@ -188,32 +185,6 @@ describe('Customer profile routes', () => {
       status: 404,
       code: 'CUSTOMER_PROFILE_NOT_FOUND',
       message: 'Customer profile not found',
-    });
-  });
-
-  it('updates the authenticated customer profile', async () => {
-    prismaMock.customerProfile.findUnique.mockResolvedValue(profileMock);
-    prismaMock.customerProfile.update.mockResolvedValue({
-      ...profileMock,
-      status: 'SUSPENDED',
-    });
-
-    const response = await request(createTestApp())
-      .patch('/api/v1/customer-profiles/me')
-      .set('Authorization', `Bearer ${createAccessToken()}`)
-      .send({
-        status: 'SUSPENDED',
-      });
-
-    expect(response.status).toBe(200);
-    expect(response.body.status).toBe('SUSPENDED');
-    expect(firstCallArg(prismaMock.customerProfile.update)).toMatchObject({
-      where: {
-        userId: userMock.id,
-      },
-      data: {
-        status: 'SUSPENDED',
-      },
     });
   });
 

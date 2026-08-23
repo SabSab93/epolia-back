@@ -86,8 +86,8 @@ model StudentProfile {
 }
 
 model CustomerProfile {
-  userId    String   @id @map("user_id") @db.Uuid
-  status    String   @default("ACTIVE")
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @map("user_id") @db.Uuid
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
