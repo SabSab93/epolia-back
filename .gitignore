@@ -1,72 +1,32 @@
 # Dependencies
 node_modules/
-.pnp/
-.pnp.js
 
-# Build outputs
+# Build
 dist/
-build/
 coverage/
-.nyc_output/
-
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+*.tsbuildinfo
 
 # Environment variables
 .env
 .env.*
 !.env.example
 
-# Prisma
+# Logs
+*.log
+
+# Prisma local database
 prisma/*.db
 prisma/*.db-journal
 
-# Generated files
-generated/
-*.tsbuildinfo
-
-# NestJS / TypeScript
-*.js.map
-*.d.ts.map
-
-# Testing
-jest-cache/
-test-results/
-
-# OS files
+# IDE / OS
 .DS_Store
-Thumbs.db
-
-# IDEs
 .idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+.vscode/
 
 # Temporary files
 tmp/
 temp/
 .cache/
 
-# Uploads / local storage
-uploads/
-storage/
-
-# Docker
-docker-compose.override.yml
-
-# Supabase local
-.supabase/
-
-# Security / certificates
-*.pem
-*.key
-*.cert
-
-# Misc
-*.local
+# Documentation locale
+docs/
