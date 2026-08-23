@@ -2,7 +2,7 @@
 
 ## Statut
 
-Accepte.
+Accepte. Le socle Express autonome est devenu l'architecture active du repository pendant l'issue #24.
 
 ## Contexte
 
@@ -32,7 +32,7 @@ La rearchitecture doit rester progressive. Elle ne doit pas devenir une refonte 
 
 ## Decision
 
-Epolia migrera progressivement du socle NestJS actuel vers Express + TypeScript, puis vers un nombre limite d'applications backend dans un monorepo unique.
+Epolia migre progressivement du socle NestJS initial vers Express + TypeScript, puis vers un nombre limite d'applications backend dans un monorepo unique.
 
 La cible de travail est :
 
@@ -49,7 +49,7 @@ Identity/Auth | Marketplace/Core | Payment/Finance
 Communication, seulement si justifie plus tard
 ```
 
-La migration se fera par etapes :
+La migration se fait par etapes :
 
 1. formaliser l'ADR et la structure cible ;
 2. initialiser le socle Express ;

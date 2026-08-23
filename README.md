@@ -8,7 +8,7 @@ Epolia est une application fictive de fin de master permettant de mettre en rela
 
 - Node.js
 - TypeScript
-- NestJS
+- Express
 - PostgreSQL
 - Prisma
 - Swagger / OpenAPI
@@ -16,7 +16,7 @@ Epolia est une application fictive de fin de master permettant de mettre en rela
 
 ## Architecture cible
 
-Le backend démarre sous forme de monolithe modulaire.
+Le backend démarre sous forme de monolithe Express simple.
 
 Ce choix permet :
 - d'éviter des microservices prématurés ;
@@ -55,8 +55,17 @@ Les modèles métier seront ajoutés progressivement dans des branches dédiées
 
 ## Lancement
 
+En développement :
+
 ```bash
 npm run start:dev
+```
+
+Après build :
+
+```bash
+npm run build
+npm run start
 ```
 
 ## Swagger
