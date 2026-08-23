@@ -21,7 +21,7 @@ git checkout -b type/issue-number-short-description
 Exemple :
 
 ```bash
-git checkout -b feat/6-simplify-github-ai-workflow
+git checkout -b feat/23-migrate-users-express
 ```
 
 Le lien issue -> branche -> Pull Request reste recommande quand une issue existe.
