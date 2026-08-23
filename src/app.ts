@@ -48,6 +48,17 @@ const swaggerDocument = {
     version: '1.0.0',
   },
   paths: {
+    '/api/v1/health': {
+      get: {
+        summary: 'Check API health',
+        tags: ['Health'],
+        responses: {
+          200: {
+            description: 'API is running',
+          },
+        },
+      },
+    },
     '/api/v1/auth/register': {
       post: {
         summary: 'Register a local user',
