@@ -7,6 +7,7 @@ import swaggerUi from 'swagger-ui-express';
 import { config } from '@/config/env';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
 import { authRouter } from '@/routes/auth.routes';
+import { userProfilesRouter } from '@/routes/user-profiles.routes';
 import { usersRouter } from '@/routes/users.routes';
 
 const app = express();
@@ -39,6 +40,7 @@ app.get('/api/v1/health', (_req, res) => {
 });
 
 app.use('/api/v1', authRouter);
+app.use('/api/v1', userProfilesRouter);
 app.use('/api/v1', usersRouter);
 
 const swaggerDocument = {
@@ -125,6 +127,104 @@ const swaggerDocument = {
         responses: {
           200: { description: 'Authenticated user' },
           401: { description: 'Authentication required' },
+        },
+      },
+    },
+    '/api/v1/user-profiles': {
+      post: {
+        summary: 'Create or update the authenticated user profile',
+        tags: ['UserProfile'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['firstName'],
+                properties: {
+                  firstName: { type: 'string', example: 'Sabrina' },
+                  lastName: { type: 'string', example: 'Hammadi' },
+                  photoUrl: {
+                    type: 'string',
+                    example: 'https://example.com/photo.jpg',
+                  },
+                  address: { type: 'string', example: '10 rue de Paris' },
+                  postalCode: { type: 'string', example: '75001' },
+                  city: { type: 'string', example: 'Paris' },
+                  country: { type: 'string', example: 'FR' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Profile saved' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/profile': {
+      get: {
+        summary: 'Get a user profile by user id',
+        tags: ['UserProfile'],
+        parameters: [
+          {
+            name: 'userId',
+            in: 'path',
+            required: true,
+            schema: { type: 'string', format: 'uuid' },
+          },
+        ],
+        responses: {
+          200: { description: 'Profile found' },
+          404: { description: 'Profile not found' },
+        },
+      },
+    },
+    '/api/v1/user-profiles/me': {
+      patch: {
+        summary: 'Update the authenticated user profile',
+        tags: ['UserProfile'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  firstName: { type: 'string', example: 'Sabrina' },
+                  lastName: { type: 'string', example: 'Hammadi' },
+                  photoUrl: {
+                    type: 'string',
+                    example: 'https://example.com/photo.jpg',
+                  },
+                  address: { type: 'string', example: '10 rue de Paris' },
+                  postalCode: { type: 'string', example: '75001' },
+                  city: { type: 'string', example: 'Paris' },
+                  country: { type: 'string', example: 'FR' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Profile updated' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          404: { description: 'Profile not found' },
+        },
+      },
+      delete: {
+        summary: 'Delete the authenticated user profile',
+        tags: ['UserProfile'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          204: { description: 'Profile deleted' },
+          401: { description: 'Authentication required' },
+          404: { description: 'Profile not found' },
         },
       },
     },
