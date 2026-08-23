@@ -44,10 +44,11 @@ model User {
   createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  roles          UserRoleAssignment[]
-  authAccounts   AuthAccount[]
-  profile        UserProfile?
-  studentProfile StudentProfile?
+  roles           UserRoleAssignment[]
+  authAccounts    AuthAccount[]
+  profile         UserProfile?
+  studentProfile  StudentProfile?
+  customerProfile CustomerProfile?
 
   @@map("users")
 }
@@ -82,6 +83,17 @@ model StudentProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("student_profiles")
+}
+
+model CustomerProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  status    String   @default("ACTIVE")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("customer_profiles")
 }
 
 model UserRoleAssignment {
