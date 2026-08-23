@@ -4,9 +4,9 @@ import express from 'express';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 
-import { config } from './config/env';
-import { usersRouter } from './routes/users.routes';
-import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
+import { config } from '@/config/env';
+import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
+import { usersRouter } from '@/routes/users.routes';
 
 const app = express();
 
