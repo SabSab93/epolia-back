@@ -31,7 +31,7 @@ userProfilesRouter.post(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = request.body;
+    const body = request.body || {};
 
     if (typeof body.firstName !== 'string' || body.firstName.trim() === '') {
       throw new AppError(400, 'VALIDATION_ERROR', 'firstName is required');
@@ -120,7 +120,7 @@ userProfilesRouter.patch(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = request.body;
+    const body = request.body || {};
 
     const existingProfile = await prisma.userProfile.findUnique({
       where: {

@@ -154,6 +154,20 @@ describe('Student profile routes', () => {
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
   });
 
+  it('rejects profile creation without a body', async () => {
+    const response = await request(createTestApp())
+      .post('/api/v1/student-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'title is required',
+    });
+    expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+  });
+
   it('rejects profile creation for a non student user', async () => {
     prismaMock.user.findUnique.mockResolvedValue({
       ...userMock,
@@ -253,6 +267,29 @@ describe('Student profile routes', () => {
       },
       data: {
         hourlyRateCents: 3000,
+      },
+    });
+  });
+
+  it('does not fail with a 500 when update has no body', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.studentProfile.update.mockResolvedValue(profileMock);
+
+    const response = await request(createTestApp())
+      .patch('/api/v1/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`);
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.studentProfile.update).toHaveBeenCalledWith({
+      where: {
+        userId: userMock.id,
+      },
+      data: {
+        title: undefined,
+        description: undefined,
+        hourlyRateCents: undefined,
+        level: undefined,
+        status: undefined,
       },
     });
   });

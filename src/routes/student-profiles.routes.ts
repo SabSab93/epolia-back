@@ -31,12 +31,13 @@ studentProfilesRouter.post(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = request.body;
-    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
     if (!authUser.roles.includes(UserRole.ETUDIANT)) {
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
+
+    const body = request.body || {};
+    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
     if (typeof body.title !== 'string' || body.title.trim() === '') {
       throw new AppError(400, 'VALIDATION_ERROR', 'title is required');
@@ -134,13 +135,14 @@ studentProfilesRouter.patch(
   requireAuth,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
-    const body = request.body;
-    const title = cleanText(body.title);
-    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
     if (!authUser.roles.includes(UserRole.ETUDIANT)) {
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
+
+    const body = request.body || {};
+    const title = cleanText(body.title);
+    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
 
     const existingProfile = await prisma.studentProfile.findUnique({
       where: {
