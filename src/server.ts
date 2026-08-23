@@ -1,8 +1,6 @@
-import { createApp } from './app';
-import { getAppConfig } from './config/env';
-
-const config = getAppConfig();
-const app = createApp({ config });
+import app from './app';
+import { config } from './config/env';
+import { disconnectPrisma } from './prisma/client';
 
 const server = app.listen(config.port, () => {
   console.log(`Epolia Express API listening on port ${config.port}`);
@@ -11,7 +9,9 @@ const server = app.listen(config.port, () => {
 function shutdown(signal: NodeJS.Signals): void {
   console.log(`${signal} received, shutting down Express API`);
   server.close(() => {
-    process.exit(0);
+    void disconnectPrisma().finally(() => {
+      process.exit(0);
+    });
   });
 }
 

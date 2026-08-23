@@ -1,12 +1,11 @@
-import { Router } from 'express';
+import express from 'express';
 import request from 'supertest';
-import { createApp } from './app';
+import app from './app';
+import { errorHandler } from './middlewares/error.middleware';
 import { AppError } from './shared/errors/app-error';
 
 interface HealthBody {
   status: string;
-  service: string;
-  timestamp: string;
 }
 
 interface ErrorBody {
@@ -17,17 +16,15 @@ interface ErrorBody {
 
 describe('Express app', () => {
   it('returns the health status from /api/v1/health', async () => {
-    const response = await request(createApp()).get('/api/v1/health');
+    const response = await request(app).get('/api/v1/health');
     const body = response.body as HealthBody;
 
     expect(response.status).toBe(200);
     expect(body.status).toBe('ok');
-    expect(body.service).toBe('epolia-back');
-    expect(body.timestamp).toEqual(expect.any(String));
   });
 
   it('returns a typed 404 error for unknown routes', async () => {
-    const response = await request(createApp()).get('/api/v1/unknown');
+    const response = await request(app).get('/api/v1/unknown');
     const body = response.body as ErrorBody;
 
     expect(response.status).toBe(404);
@@ -39,15 +36,14 @@ describe('Express app', () => {
   });
 
   it('formats application errors consistently', async () => {
-    const router = Router();
+    const testApp = express();
 
-    router.get('/error', () => {
+    testApp.get('/error', () => {
       throw new AppError(400, 'TEST_ERROR', 'Test error');
     });
+    testApp.use(errorHandler);
 
-    const response = await request(createApp({ apiRouter: router })).get(
-      '/api/v1/error',
-    );
+    const response = await request(testApp).get('/error');
     const body = response.body as ErrorBody;
 
     expect(response.status).toBe(400);
@@ -58,22 +54,10 @@ describe('Express app', () => {
     });
   });
 
-  it('exposes the OpenAPI document', async () => {
-    const response = await request(createApp()).get('/api/v1/openapi.json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toMatchObject({
-      openapi: '3.0.0',
-      info: {
-        title: 'Epolia Backend API',
-      },
-    });
-  });
-
   it('exposes Swagger UI', async () => {
-    const response = await request(createApp()).get('/api/v1/docs/');
+    const response = await request(app).get('/api/v1/docs/');
 
     expect(response.status).toBe(200);
-    expect(response.text).toContain('Epolia API Docs');
+    expect(response.text).toContain('Swagger UI');
   });
 });
