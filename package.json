@@ -6,10 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
     "start": "node dist/server.js",
-    "start:dev": "ts-node src/server.ts",
+    "start:dev": "ts-node -r tsconfig-paths/register src/server.ts",
     "lint": "eslint \"src/**/*.ts\" --ignore-pattern \"**/*.spec.ts\"",
     "prisma:generate": "prisma generate",
     "prisma:format": "prisma format",
@@ -55,6 +55,8 @@
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
   },
@@ -73,6 +75,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    }
   }
 }
