@@ -1,8 +1,7 @@
 import { createApp } from './app';
-import { getAppConfig } from './config/env';
+import { config } from './config/env';
 import { disconnectPrisma } from './prisma/client';
 
-const config = getAppConfig();
 const app = createApp({ config });
 
 const server = app.listen(config.port, () => {

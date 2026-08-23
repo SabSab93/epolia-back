@@ -3,7 +3,7 @@ import cors from 'cors';
 import express, { Router } from 'express';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
-import { getAppConfig, type AppConfig } from './config/env';
+import { config } from './config/env';
 import { createHealthRouter } from './modules/health/health.routes';
 import { usersRouter } from './routes/users.routes';
 import {
@@ -12,12 +12,12 @@ import {
 } from './shared/middleware/error.middleware';
 
 interface CreateAppOptions {
-  config?: AppConfig;
+  config?: typeof config;
   apiRouter?: Router;
 }
 
 export function createApp(options: CreateAppOptions = {}) {
-  const config = options.config ?? getAppConfig();
+  const appConfig = options.config ?? config;
   const app = express();
   const openApiDocument = createOpenApiDocument();
 
@@ -30,12 +30,12 @@ export function createApp(options: CreateAppOptions = {}) {
   );
   app.use(
     cors({
-      origin: config.corsOrigin,
+      origin: appConfig.corsOrigin,
       credentials: true,
     }),
   );
   app.use(compression());
-  app.use(express.json({ limit: config.jsonBodyLimit }));
+  app.use(express.json({ limit: appConfig.jsonBodyLimit }));
   app.use(express.urlencoded({ extended: true }));
 
   app.get('/api/v1/openapi.json', (_request, response) => {
