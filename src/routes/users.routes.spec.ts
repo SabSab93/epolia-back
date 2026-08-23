@@ -6,7 +6,7 @@ import { errorHandler } from '@/middlewares/error.middleware';
 import { prisma } from '@/prisma/client';
 import { usersRouter } from '@/routes/users.routes';
 
-jest.mock('../prisma/client', () => {
+jest.mock('@/prisma/client', () => {
   const mockPrisma = {
     user: {
       findUnique: jest.fn(),

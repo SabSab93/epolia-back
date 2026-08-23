@@ -75,21 +75,3 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
     next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
   }
 };
-
-export function requireRole(...allowedRoles: UserRole[]): RequestHandler {
-  return (_request, response, next) => {
-    const authUser = response.locals.authUser as AuthUser | undefined;
-
-    if (!authUser) {
-      next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
-      return;
-    }
-
-    if (!authUser.roles.some((role) => allowedRoles.includes(role))) {
-      next(new AppError(403, 'FORBIDDEN', 'Forbidden'));
-      return;
-    }
-
-    next();
-  };
-}

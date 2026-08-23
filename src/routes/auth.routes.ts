@@ -82,12 +82,7 @@ function formatUser(user: {
 }
 
 authRouter.post('/auth/register', async (request, response) => {
-  const body =
-    typeof request.body === 'object' &&
-    request.body !== null &&
-    !Array.isArray(request.body)
-      ? (request.body as Record<string, unknown>)
-      : {};
+  const body = (request.body ?? {}) as Record<string, unknown>;
   const { email, password, role } = body;
 
   if (
@@ -145,12 +140,7 @@ authRouter.post('/auth/register', async (request, response) => {
 });
 
 authRouter.post('/auth/login', async (request, response) => {
-  const body =
-    typeof request.body === 'object' &&
-    request.body !== null &&
-    !Array.isArray(request.body)
-      ? (request.body as Record<string, unknown>)
-      : {};
+  const body = (request.body ?? {}) as Record<string, unknown>;
   const { email, password } = body;
 
   if (
