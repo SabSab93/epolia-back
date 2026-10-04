@@ -32,7 +32,7 @@ const userMock = {
   status: AccountStatus.ACTIVE,
   roles: [
     {
-      role: UserRole.PARTICULIER,
+      role: UserRole.CUSTOMER,
     },
   ],
 };
@@ -42,10 +42,9 @@ const profileMock = {
   firstName: 'Sabrina',
   lastName: 'Hammadi',
   photoUrl: null,
-  address: '10 rue de Paris',
-  postalCode: '75001',
   city: 'Paris',
-  country: 'FR',
+  latitude: 48.8566,
+  longitude: 2.3522,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
 };
@@ -71,7 +70,7 @@ function createAccessToken() {
     {
       sub: userMock.id,
       email: userMock.email,
-      roles: [UserRole.PARTICULIER],
+      roles: [UserRole.CUSTOMER],
     },
     config.jwtSecret,
   );
@@ -81,7 +80,7 @@ function createTestApp() {
   const app = express();
 
   app.use(express.json());
-  app.use('/api/v1', userProfilesRouter);
+  app.use('/api', userProfilesRouter);
   app.use((_request, _response, next) => {
     next(new AppError(404, 'NOT_FOUND', 'Route not found'));
   });
@@ -110,14 +109,14 @@ describe('User profile routes', () => {
     prismaMock.userProfile.create.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .post('/api/v1/user-profiles')
+      .post('/api/user-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         firstName: ' Sabrina ',
         lastName: 'Hammadi',
-        address: '10 rue de Paris',
-        postalCode: '75001',
         city: 'Paris',
+        latitude: 48.8566,
+        longitude: 2.3522,
       });
 
     expect(response.status).toBe(201);
@@ -125,27 +124,25 @@ describe('User profile routes', () => {
       userId: userMock.id,
       firstName: 'Sabrina',
       lastName: 'Hammadi',
-      address: '10 rue de Paris',
-      postalCode: '75001',
       city: 'Paris',
-      country: 'FR',
+      latitude: 48.8566,
+      longitude: 2.3522,
     });
     expect(firstCallArg(prismaMock.userProfile.create)).toMatchObject({
       data: {
         userId: userMock.id,
         firstName: 'Sabrina',
         lastName: 'Hammadi',
-        address: '10 rue de Paris',
-        postalCode: '75001',
         city: 'Paris',
-        country: 'FR',
+        latitude: 48.8566,
+        longitude: 2.3522,
       },
     });
   });
 
   it('rejects profile creation without firstName', async () => {
     const response = await request(createTestApp())
-      .post('/api/v1/user-profiles')
+      .post('/api/user-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         city: 'Paris',
@@ -164,17 +161,16 @@ describe('User profile routes', () => {
     prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .get('/api/v1/user-profiles/me')
+      .get('/api/user-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
       userId: userMock.id,
       firstName: 'Sabrina',
-      address: '10 rue de Paris',
-      postalCode: '75001',
       city: 'Paris',
-      country: 'FR',
+      latitude: 48.8566,
+      longitude: 2.3522,
     });
     expect(prismaMock.userProfile.findUnique).toHaveBeenCalledWith({
       where: {
@@ -190,11 +186,12 @@ describe('User profile routes', () => {
       lastName: 'Hammadi',
       photoUrl: null,
       city: 'Paris',
-      country: 'FR',
+      latitude: 48.8566,
+      longitude: 2.3522,
     });
 
     const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}/profile`,
+      `/api/users/${userMock.id}/profile`,
     );
 
     expect(response.status).toBe(200);
@@ -202,25 +199,22 @@ describe('User profile routes', () => {
       userId: userMock.id,
       firstName: 'Sabrina',
       city: 'Paris',
-      country: 'FR',
+      latitude: 48.8566,
+      longitude: 2.3522,
     });
-    expect(response.body).not.toHaveProperty('address');
-    expect(response.body).not.toHaveProperty('postalCode');
     const prismaCall = firstCallArg<{
       where: { userId: string };
       select: Record<string, boolean>;
     }>(prismaMock.userProfile.findUnique);
 
     expect(prismaCall.where.userId).toBe(userMock.id);
-    expect(prismaCall.select).not.toHaveProperty('address');
-    expect(prismaCall.select).not.toHaveProperty('postalCode');
   });
 
   it('returns 404 when a profile does not exist', async () => {
     prismaMock.userProfile.findUnique.mockResolvedValue(null);
 
     const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}/profile`,
+      `/api/users/${userMock.id}/profile`,
     );
 
     expect(response.status).toBe(404);
@@ -239,7 +233,7 @@ describe('User profile routes', () => {
     });
 
     const response = await request(createTestApp())
-      .patch('/api/v1/user-profiles/me')
+      .patch('/api/user-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         city: 'Lyon',
@@ -261,24 +255,24 @@ describe('User profile routes', () => {
     prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
     prismaMock.userProfile.update.mockResolvedValue({
       ...profileMock,
-      address: null,
+      latitude: null,
     });
 
     const response = await request(createTestApp())
-      .patch('/api/v1/user-profiles/me')
+      .patch('/api/user-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
-        address: null,
+        latitude: null,
       });
 
     expect(response.status).toBe(200);
-    expect(response.body.address).toBeNull();
+    expect(response.body.latitude).toBeNull();
     expect(firstCallArg(prismaMock.userProfile.update)).toMatchObject({
       where: {
         userId: userMock.id,
       },
       data: {
-        address: null,
+        latitude: null,
       },
     });
   });
@@ -288,7 +282,7 @@ describe('User profile routes', () => {
     prismaMock.userProfile.delete.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .delete('/api/v1/user-profiles/me')
+      .delete('/api/user-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(204);

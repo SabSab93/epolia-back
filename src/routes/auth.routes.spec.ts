@@ -28,7 +28,7 @@ const userMock = {
   passwordHash: 'salt:hash',
   roles: [
     {
-      role: UserRole.PARTICULIER,
+      role: UserRole.CUSTOMER,
     },
   ],
 };
@@ -48,7 +48,7 @@ function createTestApp() {
   const app = express();
 
   app.use(express.json());
-  app.use('/api/v1', authRouter);
+  app.use('/api', authRouter);
   app.use((_request, _response, next) => {
     next(new AppError(404, 'NOT_FOUND', 'Route not found'));
   });
@@ -92,11 +92,11 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/register')
+      .post('/api/auth/register')
       .send({
         email: 'USER@example.com',
         password: 'password123',
-        role: UserRole.ETUDIANT,
+        role: UserRole.STUDENT,
       });
 
     const createCall = firstCallArg<{
@@ -111,10 +111,10 @@ describe('Auth routes', () => {
     expect(createCall.data.email).toBe('user@example.com');
     expect(createCall.data.passwordHash).not.toBe('password123');
     expect(createCall.data.passwordHash).toContain(':');
-    expect(createCall.data.roles.create).toEqual([{ role: UserRole.ETUDIANT }]);
+    expect(createCall.data.roles.create).toEqual([{ role: UserRole.STUDENT }]);
     expect(response.body.user).toMatchObject({
       email: 'user@example.com',
-      roles: [UserRole.ETUDIANT],
+      roles: [UserRole.STUDENT],
     });
     expect(typeof response.body.accessToken).toBe('string');
   });
@@ -132,7 +132,7 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/v1/auth/register').send({
+    await request(createTestApp()).post('/api/auth/register').send({
       email: userMock.email,
       password: 'password123',
     });
@@ -143,7 +143,7 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'password123',
@@ -154,7 +154,7 @@ describe('Auth routes', () => {
       id: userMock.id,
       email: userMock.email,
       status: AccountStatus.ACTIVE,
-      roles: [UserRole.PARTICULIER],
+      roles: [UserRole.CUSTOMER],
     });
     expect(typeof response.body.accessToken).toBe('string');
   });
@@ -163,7 +163,7 @@ describe('Auth routes', () => {
     prismaMock.user.findUnique.mockResolvedValue(null);
 
     const unknownEmailResponse = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: 'missing@example.com',
         password: 'password123',
@@ -175,7 +175,7 @@ describe('Auth routes', () => {
     });
 
     const wrongPasswordResponse = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'wrong-password',
@@ -204,7 +204,7 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/v1/auth/register').send({
+    await request(createTestApp()).post('/api/auth/register').send({
       email: userMock.email,
       password: 'password123',
     });
@@ -216,7 +216,7 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'password123',
@@ -237,20 +237,20 @@ describe('Auth routes', () => {
       {
         sub: userMock.id,
         email: userMock.email,
-        roles: [UserRole.PARTICULIER],
+        roles: [UserRole.CUSTOMER],
       },
       config.jwtSecret,
     );
 
     const response = await request(createTestApp())
-      .get('/api/v1/auth/me')
+      .get('/api/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       id: userMock.id,
       email: userMock.email,
-      roles: [UserRole.PARTICULIER],
+      roles: [UserRole.CUSTOMER],
     });
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { id: userMock.id },
@@ -277,13 +277,13 @@ describe('Auth routes', () => {
       {
         sub: userMock.id,
         email: userMock.email,
-        roles: [UserRole.PARTICULIER],
+        roles: [UserRole.CUSTOMER],
       },
       config.jwtSecret,
     );
 
     const response = await request(createTestApp())
-      .get('/api/v1/auth/me')
+      .get('/api/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(403);
@@ -295,7 +295,7 @@ describe('Auth routes', () => {
   });
 
   it('rejects authenticated routes without a token', async () => {
-    const response = await request(createTestApp()).get('/api/v1/auth/me');
+    const response = await request(createTestApp()).get('/api/auth/me');
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({

@@ -100,15 +100,15 @@ authRouter.post('/auth/register', async (request, response) => {
 
   if (
     role !== undefined &&
-    role !== UserRole.ETUDIANT &&
-    role !== UserRole.PARTICULIER
+    role !== UserRole.STUDENT &&
+    role !== UserRole.CUSTOMER
   ) {
     throw new AppError(400, 'VALIDATION_ERROR', 'role is invalid');
   }
 
   const passwordHash = await hashPassword(password);
   const userRole =
-    role === UserRole.ETUDIANT ? UserRole.ETUDIANT : UserRole.PARTICULIER;
+    role === UserRole.STUDENT ? UserRole.STUDENT : UserRole.CUSTOMER;
 
   try {
     const user = await prisma.user.create({

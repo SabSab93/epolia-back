@@ -1,4 +1,4 @@
-import { Prisma, UserRole } from '@prisma/client';
+import { Prisma, ProfileStatus, UserRole } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
@@ -18,12 +18,19 @@ function cleanText(value: unknown) {
   return value.trim() || null;
 }
 
-function getHourlyRate(value: unknown): number | undefined {
-  if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
+function cleanProfileStatus(value: unknown) {
+  if (value === undefined) {
     return undefined;
   }
 
-  return value;
+  if (
+    typeof value !== 'string' ||
+    !Object.values(ProfileStatus).includes(value as ProfileStatus)
+  ) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'status is invalid');
+  }
+
+  return value as ProfileStatus;
 }
 
 studentProfilesRouter.post(
@@ -32,34 +39,30 @@ studentProfilesRouter.post(
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
-    if (!authUser.roles.includes(UserRole.ETUDIANT)) {
+    if (!authUser.roles.includes(UserRole.STUDENT)) {
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
 
     const body = request.body || {};
-    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
+    const title = cleanText(body.title);
+    const status = cleanProfileStatus(body.status);
 
-    if (typeof body.title !== 'string' || body.title.trim() === '') {
-      throw new AppError(400, 'VALIDATION_ERROR', 'title is required');
+    if (typeof body.domainId !== 'string' || body.domainId.trim() === '') {
+      throw new AppError(400, 'VALIDATION_ERROR', 'domainId is required');
     }
 
-    if (!hourlyRateCents) {
-      throw new AppError(
-        400,
-        'VALIDATION_ERROR',
-        'hourlyRateCents must be a positive integer',
-      );
+    if (body.title !== undefined && !title) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
     }
 
     try {
       const profile = await prisma.studentProfile.create({
         data: {
           userId: authUser.id,
-          title: body.title.trim(),
+          domainId: body.domainId.trim(),
+          title,
           description: cleanText(body.description),
-          hourlyRateCents,
-          level: cleanText(body.level),
-          status: cleanText(body.status) ?? 'DRAFT',
+          status: status ?? ProfileStatus.DRAFT,
         },
       });
 
@@ -87,7 +90,7 @@ studentProfilesRouter.get(
   async (_request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
-    if (!authUser.roles.includes(UserRole.ETUDIANT)) {
+    if (!authUser.roles.includes(UserRole.STUDENT)) {
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
 
@@ -136,13 +139,13 @@ studentProfilesRouter.patch(
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
-    if (!authUser.roles.includes(UserRole.ETUDIANT)) {
+    if (!authUser.roles.includes(UserRole.STUDENT)) {
       throw new AppError(403, 'FORBIDDEN', 'Forbidden');
     }
 
     const body = request.body || {};
     const title = cleanText(body.title);
-    const hourlyRateCents = getHourlyRate(body.hourlyRateCents);
+    const status = cleanProfileStatus(body.status);
 
     const existingProfile = await prisma.studentProfile.findUnique({
       where: {
@@ -159,15 +162,7 @@ studentProfilesRouter.patch(
     }
 
     if (body.title !== undefined && !title) {
-      throw new AppError(400, 'VALIDATION_ERROR', 'title is required');
-    }
-
-    if (body.hourlyRateCents !== undefined && !hourlyRateCents) {
-      throw new AppError(
-        400,
-        'VALIDATION_ERROR',
-        'hourlyRateCents must be a positive integer',
-      );
+      throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
     }
 
     const profile = await prisma.studentProfile.update({
@@ -175,11 +170,13 @@ studentProfilesRouter.patch(
         userId: authUser.id,
       },
       data: {
+        domainId:
+          typeof body.domainId === 'string' && body.domainId.trim() !== ''
+            ? body.domainId.trim()
+            : undefined,
         title: title ?? undefined,
         description: cleanText(body.description),
-        hourlyRateCents,
-        level: cleanText(body.level),
-        status: cleanText(body.status) ?? undefined,
+        status,
       },
     });
 
