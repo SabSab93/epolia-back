@@ -71,13 +71,13 @@ npm run start
 ## Swagger
 
 ```txt
-http://localhost:3000/api/v1/docs
+http://localhost:3000/api/docs
 ```
 
 ## Health check
 
 ```txt
-GET http://localhost:3000/api/v1/health
+GET http://localhost:3000/api/health
 ```
 
 ## Tests

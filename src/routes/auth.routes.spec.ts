@@ -48,7 +48,7 @@ function createTestApp() {
   const app = express();
 
   app.use(express.json());
-  app.use('/api/v1', authRouter);
+  app.use('/api', authRouter);
   app.use((_request, _response, next) => {
     next(new AppError(404, 'NOT_FOUND', 'Route not found'));
   });
@@ -92,7 +92,7 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/register')
+      .post('/api/auth/register')
       .send({
         email: 'USER@example.com',
         password: 'password123',
@@ -132,7 +132,7 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/v1/auth/register').send({
+    await request(createTestApp()).post('/api/auth/register').send({
       email: userMock.email,
       password: 'password123',
     });
@@ -143,7 +143,7 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'password123',
@@ -163,7 +163,7 @@ describe('Auth routes', () => {
     prismaMock.user.findUnique.mockResolvedValue(null);
 
     const unknownEmailResponse = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: 'missing@example.com',
         password: 'password123',
@@ -175,7 +175,7 @@ describe('Auth routes', () => {
     });
 
     const wrongPasswordResponse = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'wrong-password',
@@ -204,7 +204,7 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/v1/auth/register').send({
+    await request(createTestApp()).post('/api/auth/register').send({
       email: userMock.email,
       password: 'password123',
     });
@@ -216,7 +216,7 @@ describe('Auth routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/auth/login')
+      .post('/api/auth/login')
       .send({
         email: userMock.email,
         password: 'password123',
@@ -243,7 +243,7 @@ describe('Auth routes', () => {
     );
 
     const response = await request(createTestApp())
-      .get('/api/v1/auth/me')
+      .get('/api/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(200);
@@ -283,7 +283,7 @@ describe('Auth routes', () => {
     );
 
     const response = await request(createTestApp())
-      .get('/api/v1/auth/me')
+      .get('/api/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.status).toBe(403);
@@ -295,7 +295,7 @@ describe('Auth routes', () => {
   });
 
   it('rejects authenticated routes without a token', async () => {
-    const response = await request(createTestApp()).get('/api/v1/auth/me');
+    const response = await request(createTestApp()).get('/api/auth/me');
 
     expect(response.status).toBe(401);
     expect(response.body).toEqual({

@@ -76,7 +76,7 @@ function createTestApp() {
   const app = express();
 
   app.use(express.json());
-  app.use('/api/v1', studentProfilesRouter);
+  app.use('/api', studentProfilesRouter);
   app.use((_request, _response, next) => {
     next(new AppError(404, 'NOT_FOUND', 'Route not found'));
   });
@@ -105,7 +105,7 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.create.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .post('/api/v1/student-profiles')
+      .post('/api/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: ' Developpeuse web ',
@@ -134,7 +134,7 @@ describe('Student profile routes', () => {
 
   it('rejects profile creation without a domain id', async () => {
     const response = await request(createTestApp())
-      .post('/api/v1/student-profiles')
+      .post('/api/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: 'Developpeuse web',
@@ -151,7 +151,7 @@ describe('Student profile routes', () => {
 
   it('rejects profile creation without a body', async () => {
     const response = await request(createTestApp())
-      .post('/api/v1/student-profiles')
+      .post('/api/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(400);
@@ -174,7 +174,7 @@ describe('Student profile routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post('/api/v1/student-profiles')
+      .post('/api/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: 'Developpeuse web',
@@ -194,7 +194,7 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .get('/api/v1/student-profiles/me')
+      .get('/api/student-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(200);
@@ -213,7 +213,7 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}/student-profile`,
+      `/api/users/${userMock.id}/student-profile`,
     );
 
     expect(response.status).toBe(200);
@@ -228,7 +228,7 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.findUnique.mockResolvedValue(null);
 
     const response = await request(createTestApp())
-      .get('/api/v1/student-profiles/me')
+      .get('/api/student-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(404);
@@ -247,7 +247,7 @@ describe('Student profile routes', () => {
     });
 
     const response = await request(createTestApp())
-      .patch('/api/v1/student-profiles/me')
+      .patch('/api/student-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: 'Developpeuse mobile',
@@ -270,7 +270,7 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.update.mockResolvedValue(profileMock);
 
     const response = await request(createTestApp())
-      .patch('/api/v1/student-profiles/me')
+      .patch('/api/student-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(200);

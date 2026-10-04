@@ -35,18 +35,18 @@ app.use(
   }),
 );
 
-app.get('/api/v1/health', (_req, res) => {
+app.get('/api/health', (_req, res) => {
   res.status(200).json({
     status: 'ok',
   });
 });
 
-app.use('/api/v1', authRouter);
-app.use('/api/v1', studentProfilesRouter);
-app.use('/api/v1', userProfilesRouter);
-app.use('/api/v1', usersRouter);
+app.use('/api', authRouter);
+app.use('/api', studentProfilesRouter);
+app.use('/api', userProfilesRouter);
+app.use('/api', usersRouter);
 
-app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(notFoundHandler);
 app.use(errorHandler);

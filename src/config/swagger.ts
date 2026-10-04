@@ -5,7 +5,7 @@ export const swaggerDocument = {
     version: '1.0.0',
   },
   paths: {
-    '/api/v1/health': {
+    '/api/health': {
       get: {
         summary: 'Check API health',
         tags: ['Health'],
@@ -14,7 +14,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/auth/register': {
+    '/api/auth/register': {
       post: {
         summary: 'Register a local user',
         tags: ['Auth'],
@@ -45,7 +45,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/auth/login': {
+    '/api/auth/login': {
       post: {
         summary: 'Login with email and password',
         tags: ['Auth'],
@@ -72,7 +72,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/auth/me': {
+    '/api/auth/me': {
       get: {
         summary: 'Return the authenticated user',
         tags: ['Auth'],
@@ -84,7 +84,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/user-profiles': {
+    '/api/user-profiles': {
       post: {
         summary: 'Create the authenticated user profile',
         tags: ['UserProfile'],
@@ -105,7 +105,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/user-profiles/me': {
+    '/api/user-profiles/me': {
       get: {
         summary: 'Get the authenticated user profile',
         tags: ['UserProfile'],
@@ -146,7 +146,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/profile': {
+    '/api/users/{userId}/profile': {
       get: {
         summary: 'Get a public user profile by user id',
         tags: ['UserProfile'],
@@ -157,7 +157,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/student-profiles': {
+    '/api/student-profiles': {
       post: {
         summary: 'Create the authenticated student profile',
         tags: ['StudentProfile'],
@@ -179,7 +179,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/student-profiles/me': {
+    '/api/student-profiles/me': {
       get: {
         summary: 'Get the authenticated student profile',
         tags: ['StudentProfile'],
@@ -212,7 +212,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/student-profile': {
+    '/api/users/{userId}/student-profile': {
       get: {
         summary: 'Get a student profile by user id',
         tags: ['StudentProfile'],
@@ -223,7 +223,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/local': {
+    '/api/users/local': {
       post: {
         summary: 'Create a local user',
         tags: ['UsersAdmin'],
@@ -235,7 +235,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/roles': {
+    '/api/users/{userId}/roles': {
       post: {
         summary: 'Assign a role to a user',
         tags: ['UsersAdmin'],
@@ -248,7 +248,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/roles/{role}': {
+    '/api/users/{userId}/roles/{role}': {
       delete: {
         summary: 'Remove a role from a user',
         tags: ['UsersAdmin'],
@@ -269,7 +269,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/status': {
+    '/api/users/{userId}/status': {
       patch: {
         summary: 'Update a user account status',
         tags: ['UsersAdmin'],
@@ -282,7 +282,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/deletion-request': {
+    '/api/users/{userId}/deletion-request': {
       post: {
         summary: 'Create a GDPR deletion request for a user',
         tags: ['UsersAdmin'],
@@ -294,7 +294,7 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/anonymize': {
+    '/api/users/{userId}/anonymize': {
       post: {
         summary: 'Anonymize a deleted user',
         tags: ['UsersAdmin'],

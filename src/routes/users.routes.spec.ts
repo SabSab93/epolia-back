@@ -101,7 +101,7 @@ function createTestApp() {
   const app = express();
 
   app.use(express.json());
-  app.use('/api/v1', usersRouter);
+  app.use('/api', usersRouter);
   app.use((_request, _response, next) => {
     next(new AppError(404, 'NOT_FOUND', 'Route not found'));
   });
@@ -156,7 +156,7 @@ describe('Users routes', () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(userMock);
 
     const response = await request(createTestApp())
-      .get(`/api/v1/users/${userMock.id}`)
+      .get(`/api/users/${userMock.id}`)
       .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
@@ -181,7 +181,7 @@ describe('Users routes', () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null);
 
     const response = await request(createTestApp())
-      .get(`/api/v1/users/${userMock.id}`)
+      .get(`/api/users/${userMock.id}`)
       .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(404);
@@ -196,7 +196,7 @@ describe('Users routes', () => {
     prismaMock.user.create.mockResolvedValue(userMock);
 
     const response = await request(createTestApp())
-      .post('/api/v1/users/local')
+      .post('/api/users/local')
       .set('Authorization', adminAuthorizationHeader())
       .send({
         email: 'user@example.com',
@@ -220,7 +220,7 @@ describe('Users routes', () => {
 
   it('rejects local user creation without required fields', async () => {
     const response = await request(createTestApp())
-      .post('/api/v1/users/local')
+      .post('/api/users/local')
       .set('Authorization', adminAuthorizationHeader())
       .send({ email: 'user@example.com' });
 
@@ -235,7 +235,7 @@ describe('Users routes', () => {
 
   it('rejects an invalid role', async () => {
     const response = await request(createTestApp())
-      .post(`/api/v1/users/${userMock.id}/roles`)
+      .post(`/api/users/${userMock.id}/roles`)
       .set('Authorization', adminAuthorizationHeader())
       .send({ role: 'INVALID' });
 
@@ -252,7 +252,7 @@ describe('Users routes', () => {
     prismaMock.authAccount.findUnique.mockResolvedValue({ user: userMock });
 
     const response = await request(createTestApp())
-      .get('/api/v1/users/auth-accounts/GOOGLE/google-sub')
+      .get('/api/users/auth-accounts/GOOGLE/google-sub')
       .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
@@ -275,7 +275,7 @@ describe('Users routes', () => {
     });
 
     const response = await request(createTestApp())
-      .patch(`/api/v1/users/${userMock.id}/status`)
+      .patch(`/api/users/${userMock.id}/status`)
       .set('Authorization', adminAuthorizationHeader())
       .send({ status: AccountStatus.SUSPENDED });
 
@@ -298,7 +298,7 @@ describe('Users routes', () => {
     });
 
     const response = await request(createTestApp())
-      .post(`/api/v1/users/${userMock.id}/anonymize`)
+      .post(`/api/users/${userMock.id}/anonymize`)
       .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
@@ -326,7 +326,7 @@ describe('Users routes', () => {
     prismaMock.user.update.mockResolvedValue(userMock);
 
     const response = await request(createTestApp())
-      .post(`/api/v1/users/${userMock.id}/deletion-request`)
+      .post(`/api/users/${userMock.id}/deletion-request`)
       .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
