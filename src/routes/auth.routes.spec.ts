@@ -28,7 +28,7 @@ const userMock = {
   passwordHash: 'salt:hash',
   roles: [
     {
-      role: UserRole.PARTICULIER,
+      role: UserRole.CUSTOMER,
     },
   ],
 };
@@ -96,7 +96,7 @@ describe('Auth routes', () => {
       .send({
         email: 'USER@example.com',
         password: 'password123',
-        role: UserRole.ETUDIANT,
+        role: UserRole.STUDENT,
       });
 
     const createCall = firstCallArg<{
@@ -111,10 +111,10 @@ describe('Auth routes', () => {
     expect(createCall.data.email).toBe('user@example.com');
     expect(createCall.data.passwordHash).not.toBe('password123');
     expect(createCall.data.passwordHash).toContain(':');
-    expect(createCall.data.roles.create).toEqual([{ role: UserRole.ETUDIANT }]);
+    expect(createCall.data.roles.create).toEqual([{ role: UserRole.STUDENT }]);
     expect(response.body.user).toMatchObject({
       email: 'user@example.com',
-      roles: [UserRole.ETUDIANT],
+      roles: [UserRole.STUDENT],
     });
     expect(typeof response.body.accessToken).toBe('string');
   });
@@ -154,7 +154,7 @@ describe('Auth routes', () => {
       id: userMock.id,
       email: userMock.email,
       status: AccountStatus.ACTIVE,
-      roles: [UserRole.PARTICULIER],
+      roles: [UserRole.CUSTOMER],
     });
     expect(typeof response.body.accessToken).toBe('string');
   });
@@ -237,7 +237,7 @@ describe('Auth routes', () => {
       {
         sub: userMock.id,
         email: userMock.email,
-        roles: [UserRole.PARTICULIER],
+        roles: [UserRole.CUSTOMER],
       },
       config.jwtSecret,
     );
@@ -250,7 +250,7 @@ describe('Auth routes', () => {
     expect(response.body).toEqual({
       id: userMock.id,
       email: userMock.email,
-      roles: [UserRole.PARTICULIER],
+      roles: [UserRole.CUSTOMER],
     });
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
       where: { id: userMock.id },
@@ -277,7 +277,7 @@ describe('Auth routes', () => {
       {
         sub: userMock.id,
         email: userMock.email,
-        roles: [UserRole.PARTICULIER],
+        roles: [UserRole.CUSTOMER],
       },
       config.jwtSecret,
     );

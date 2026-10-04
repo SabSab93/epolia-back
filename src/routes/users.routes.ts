@@ -1,6 +1,13 @@
-import { AccountStatus, AuthProvider, Prisma, UserRole } from '@prisma/client';
+import {
+  AccountStatus,
+  AuthProvider,
+  Prisma,
+  PrivacyRequestType,
+  UserRole,
+} from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
+import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 
 const userSelect = {
@@ -23,6 +30,26 @@ const userSelect = {
 } satisfies Prisma.UserSelect;
 
 export const usersRouter = Router();
+
+usersRouter.use((request, _response, next) => {
+  if (!request.path.startsWith('/users')) {
+    next('router');
+    return;
+  }
+
+  next();
+});
+usersRouter.use(requireAuth);
+usersRouter.use((_request, response, next) => {
+  const authUser = response.locals.authUser as AuthUser;
+
+  if (!authUser.roles.includes(UserRole.ADMIN)) {
+    next(new AppError(403, 'FORBIDDEN', 'Forbidden'));
+    return;
+  }
+
+  next();
+});
 
 usersRouter.get('/users/by-email', async (request, response) => {
   const email = request.query.email;
@@ -213,13 +240,21 @@ usersRouter.patch('/users/:userId/status', async (request, response) => {
 usersRouter.post(
   '/users/:userId/deletion-request',
   async (request, response) => {
-    const user = await prisma.user.update({
-      where: { id: request.params.userId },
-      data: {
-        status: AccountStatus.PENDING_DELETION,
-        deletionRequestedAt: new Date(),
-      },
-      select: userSelect,
+    const user = await prisma.$transaction(async (tx) => {
+      await tx.privacyRequest.create({
+        data: {
+          userId: request.params.userId,
+          type: PrivacyRequestType.DELETION,
+        },
+      });
+
+      return tx.user.update({
+        where: { id: request.params.userId },
+        data: {
+          deletionRequestedAt: new Date(),
+        },
+        select: userSelect,
+      });
     });
 
     response.status(200).json(user);

@@ -1,6 +1,13 @@
-import { AccountStatus, AuthProvider, UserRole } from '@prisma/client';
+import {
+  AccountStatus,
+  AuthProvider,
+  PrivacyRequestType,
+  UserRole,
+} from '@prisma/client';
 import express from 'express';
+import jwt from 'jsonwebtoken';
 import request from 'supertest';
+import { config } from '@/config/env';
 import { AppError } from '@/errors/app-error';
 import { errorHandler } from '@/middlewares/error.middleware';
 import { prisma } from '@/prisma/client';
@@ -20,6 +27,9 @@ jest.mock('@/prisma/client', () => {
     userRoleAssignment: {
       upsert: jest.fn(),
       deleteMany: jest.fn(),
+    },
+    privacyRequest: {
+      create: jest.fn(),
     },
     $transaction: jest.fn(),
   };
@@ -42,7 +52,19 @@ const userMock = {
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   roles: [
     {
-      role: UserRole.ETUDIANT,
+      role: UserRole.STUDENT,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    },
+  ],
+};
+
+const adminUserMock = {
+  ...userMock,
+  id: 'b42c1e76-cfc8-4f38-84c7-3c2f304285d0',
+  email: 'admin@example.com',
+  roles: [
+    {
+      role: UserRole.ADMIN,
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
     },
   ],
@@ -67,6 +89,9 @@ type PrismaMock = {
     upsert: SingleArgMock;
     deleteMany: SingleArgMock;
   };
+  privacyRequest: {
+    create: SingleArgMock;
+  };
   $transaction: jest.MockedFunction<TransactionMock>;
 };
 
@@ -86,7 +111,15 @@ function createTestApp() {
 }
 
 function firstCallArg<T>(mock: SingleArgMock): T {
-  const call = mock.mock.calls[0];
+  return callArg<T>(mock, 0);
+}
+
+function secondCallArg<T>(mock: SingleArgMock): T {
+  return callArg<T>(mock, 1);
+}
+
+function callArg<T>(mock: SingleArgMock, index: number): T {
+  const call = mock.mock.calls[index];
 
   if (!call) {
     throw new Error('Expected mock to have been called');
@@ -95,20 +128,36 @@ function firstCallArg<T>(mock: SingleArgMock): T {
   return call[0] as T;
 }
 
+function createAdminAccessToken() {
+  return jwt.sign(
+    {
+      sub: adminUserMock.id,
+      email: adminUserMock.email,
+      roles: [UserRole.ADMIN],
+    },
+    config.jwtSecret,
+  );
+}
+
+function adminAuthorizationHeader() {
+  return `Bearer ${createAdminAccessToken()}`;
+}
+
 describe('Users routes', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     const transaction: TransactionMock = (callback) => callback(prismaMock);
 
     prismaMock.$transaction.mockImplementation(transaction);
+    prismaMock.user.findUnique.mockResolvedValueOnce(adminUserMock);
   });
 
   it('returns a user by id', async () => {
-    prismaMock.user.findUnique.mockResolvedValue(userMock);
+    prismaMock.user.findUnique.mockResolvedValueOnce(userMock);
 
-    const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}`,
-    );
+    const response = await request(createTestApp())
+      .get(`/api/v1/users/${userMock.id}`)
+      .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -122,18 +171,18 @@ describe('Users routes', () => {
       }),
     );
 
-    const findCall = firstCallArg<{ select: Record<string, unknown> }>(
+    const findCall = secondCallArg<{ select: Record<string, unknown> }>(
       prismaMock.user.findUnique,
     );
     expect(findCall.select).not.toHaveProperty('passwordHash');
   });
 
   it('returns 404 when a user does not exist', async () => {
-    prismaMock.user.findUnique.mockResolvedValue(null);
+    prismaMock.user.findUnique.mockResolvedValueOnce(null);
 
-    const response = await request(createTestApp()).get(
-      `/api/v1/users/${userMock.id}`,
-    );
+    const response = await request(createTestApp())
+      .get(`/api/v1/users/${userMock.id}`)
+      .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
@@ -148,11 +197,12 @@ describe('Users routes', () => {
 
     const response = await request(createTestApp())
       .post('/api/v1/users/local')
+      .set('Authorization', adminAuthorizationHeader())
       .send({
         email: 'user@example.com',
         passwordHash: 'hashed-password',
         phone: '+33600000000',
-        roles: [UserRole.ETUDIANT, UserRole.ETUDIANT],
+        roles: [UserRole.STUDENT, UserRole.STUDENT],
       });
 
     expect(response.status).toBe(201);
@@ -162,7 +212,7 @@ describe('Users routes', () => {
         passwordHash: 'hashed-password',
         phone: '+33600000000',
         roles: {
-          create: [{ role: UserRole.ETUDIANT }],
+          create: [{ role: UserRole.STUDENT }],
         },
       },
     });
@@ -171,6 +221,7 @@ describe('Users routes', () => {
   it('rejects local user creation without required fields', async () => {
     const response = await request(createTestApp())
       .post('/api/v1/users/local')
+      .set('Authorization', adminAuthorizationHeader())
       .send({ email: 'user@example.com' });
 
     expect(response.status).toBe(400);
@@ -185,6 +236,7 @@ describe('Users routes', () => {
   it('rejects an invalid role', async () => {
     const response = await request(createTestApp())
       .post(`/api/v1/users/${userMock.id}/roles`)
+      .set('Authorization', adminAuthorizationHeader())
       .send({ role: 'INVALID' });
 
     expect(response.status).toBe(400);
@@ -199,9 +251,9 @@ describe('Users routes', () => {
   it('finds a user by auth account', async () => {
     prismaMock.authAccount.findUnique.mockResolvedValue({ user: userMock });
 
-    const response = await request(createTestApp()).get(
-      '/api/v1/users/auth-accounts/GOOGLE/google-sub',
-    );
+    const response = await request(createTestApp())
+      .get('/api/v1/users/auth-accounts/GOOGLE/google-sub')
+      .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
     expect(prismaMock.authAccount.findUnique).toHaveBeenCalledWith(
@@ -224,6 +276,7 @@ describe('Users routes', () => {
 
     const response = await request(createTestApp())
       .patch(`/api/v1/users/${userMock.id}/status`)
+      .set('Authorization', adminAuthorizationHeader())
       .send({ status: AccountStatus.SUSPENDED });
 
     expect(response.status).toBe(200);
@@ -244,9 +297,9 @@ describe('Users routes', () => {
       status: AccountStatus.DELETED,
     });
 
-    const response = await request(createTestApp()).post(
-      `/api/v1/users/${userMock.id}/anonymize`,
-    );
+    const response = await request(createTestApp())
+      .post(`/api/v1/users/${userMock.id}/anonymize`)
+      .set('Authorization', adminAuthorizationHeader());
 
     expect(response.status).toBe(200);
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
@@ -260,6 +313,33 @@ describe('Users routes', () => {
         phone: null,
         passwordHash: null,
         status: AccountStatus.DELETED,
+      },
+    });
+  });
+
+  it('creates a GDPR deletion request for a user', async () => {
+    prismaMock.privacyRequest.create.mockResolvedValue({
+      id: '7aa348fc-1894-401f-8f56-e41a0c5d33d9',
+      userId: userMock.id,
+      type: PrivacyRequestType.DELETION,
+    });
+    prismaMock.user.update.mockResolvedValue(userMock);
+
+    const response = await request(createTestApp())
+      .post(`/api/v1/users/${userMock.id}/deletion-request`)
+      .set('Authorization', adminAuthorizationHeader());
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.privacyRequest.create).toHaveBeenCalledWith({
+      data: {
+        userId: userMock.id,
+        type: PrivacyRequestType.DELETION,
+      },
+    });
+    expect(firstCallArg(prismaMock.user.update)).toMatchObject({
+      where: { id: userMock.id },
+      data: {
+        deletionRequestedAt: expect.any(Date),
       },
     });
   });

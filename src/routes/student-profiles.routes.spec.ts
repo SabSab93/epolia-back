@@ -1,4 +1,4 @@
-import { AccountStatus, UserRole } from '@prisma/client';
+import { AccountStatus, ProfileStatus, UserRole } from '@prisma/client';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
@@ -31,18 +31,17 @@ const userMock = {
   status: AccountStatus.ACTIVE,
   roles: [
     {
-      role: UserRole.ETUDIANT,
+      role: UserRole.STUDENT,
     },
   ],
 };
 
 const profileMock = {
   userId: userMock.id,
+  domainId: '9324c24d-a476-41db-a0e3-12479bd81ed7',
   title: 'Developpeuse web',
   description: 'Creation de sites vitrines.',
-  hourlyRateCents: 2500,
-  level: 'MBA1',
-  status: 'ACTIVE',
+  status: ProfileStatus.VISIBLE,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
 };
@@ -67,7 +66,7 @@ function createAccessToken() {
     {
       sub: userMock.id,
       email: userMock.email,
-      roles: [UserRole.ETUDIANT],
+      roles: [UserRole.STUDENT],
     },
     config.jwtSecret,
   );
@@ -111,45 +110,41 @@ describe('Student profile routes', () => {
       .send({
         title: ' Developpeuse web ',
         description: 'Creation de sites vitrines.',
-        hourlyRateCents: 2500,
-        level: 'MBA1',
-        status: 'ACTIVE',
+        domainId: profileMock.domainId,
+        status: ProfileStatus.VISIBLE,
       });
 
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({
       userId: userMock.id,
+      domainId: profileMock.domainId,
       title: 'Developpeuse web',
-      hourlyRateCents: 2500,
-      level: 'MBA1',
-      status: 'ACTIVE',
+      status: ProfileStatus.VISIBLE,
     });
     expect(firstCallArg(prismaMock.studentProfile.create)).toMatchObject({
       data: {
         userId: userMock.id,
+        domainId: profileMock.domainId,
         title: 'Developpeuse web',
         description: 'Creation de sites vitrines.',
-        hourlyRateCents: 2500,
-        level: 'MBA1',
-        status: 'ACTIVE',
+        status: ProfileStatus.VISIBLE,
       },
     });
   });
 
-  it('rejects profile creation with an invalid hourly rate', async () => {
+  it('rejects profile creation without a domain id', async () => {
     const response = await request(createTestApp())
       .post('/api/v1/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: 'Developpeuse web',
-        hourlyRateCents: 0,
       });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
       status: 400,
       code: 'VALIDATION_ERROR',
-      message: 'hourlyRateCents must be a positive integer',
+      message: 'domainId is required',
     });
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
   });
@@ -163,7 +158,7 @@ describe('Student profile routes', () => {
     expect(response.body).toEqual({
       status: 400,
       code: 'VALIDATION_ERROR',
-      message: 'title is required',
+      message: 'domainId is required',
     });
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
   });
@@ -173,7 +168,7 @@ describe('Student profile routes', () => {
       ...userMock,
       roles: [
         {
-          role: UserRole.PARTICULIER,
+          role: UserRole.CUSTOMER,
         },
       ],
     });
@@ -183,7 +178,7 @@ describe('Student profile routes', () => {
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
         title: 'Developpeuse web',
-        hourlyRateCents: 2500,
+        domainId: profileMock.domainId,
       });
 
     expect(response.status).toBe(403);
@@ -206,7 +201,6 @@ describe('Student profile routes', () => {
     expect(response.body).toMatchObject({
       userId: userMock.id,
       title: 'Developpeuse web',
-      hourlyRateCents: 2500,
     });
     expect(prismaMock.studentProfile.findUnique).toHaveBeenCalledWith({
       where: {
@@ -226,7 +220,7 @@ describe('Student profile routes', () => {
     expect(response.body).toMatchObject({
       userId: userMock.id,
       title: 'Developpeuse web',
-      status: 'ACTIVE',
+      status: ProfileStatus.VISIBLE,
     });
   });
 
@@ -249,24 +243,24 @@ describe('Student profile routes', () => {
     prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
     prismaMock.studentProfile.update.mockResolvedValue({
       ...profileMock,
-      hourlyRateCents: 3000,
+      title: 'Developpeuse mobile',
     });
 
     const response = await request(createTestApp())
       .patch('/api/v1/student-profiles/me')
       .set('Authorization', `Bearer ${createAccessToken()}`)
       .send({
-        hourlyRateCents: 3000,
+        title: 'Developpeuse mobile',
       });
 
     expect(response.status).toBe(200);
-    expect(response.body.hourlyRateCents).toBe(3000);
+    expect(response.body.title).toBe('Developpeuse mobile');
     expect(firstCallArg(prismaMock.studentProfile.update)).toMatchObject({
       where: {
         userId: userMock.id,
       },
       data: {
-        hourlyRateCents: 3000,
+        title: 'Developpeuse mobile',
       },
     });
   });
@@ -287,8 +281,7 @@ describe('Student profile routes', () => {
       data: {
         title: undefined,
         description: undefined,
-        hourlyRateCents: undefined,
-        level: undefined,
+        domainId: undefined,
         status: undefined,
       },
     });

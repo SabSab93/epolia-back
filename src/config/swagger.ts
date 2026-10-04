@@ -10,9 +10,7 @@ export const swaggerDocument = {
         summary: 'Check API health',
         tags: ['Health'],
         responses: {
-          200: {
-            description: 'API is running',
-          },
+          200: { description: 'API is running' },
         },
       },
     },
@@ -32,8 +30,8 @@ export const swaggerDocument = {
                   password: { type: 'string', example: 'password123' },
                   role: {
                     type: 'string',
-                    enum: ['ETUDIANT', 'PARTICULIER'],
-                    example: 'PARTICULIER',
+                    enum: ['STUDENT', 'CUSTOMER'],
+                    example: 'CUSTOMER',
                   },
                 },
               },
@@ -76,12 +74,13 @@ export const swaggerDocument = {
     },
     '/api/v1/auth/me': {
       get: {
-        summary: 'Return the authenticated user from the JWT',
+        summary: 'Return the authenticated user',
         tags: ['Auth'],
         security: [{ bearerAuth: [] }],
         responses: {
           200: { description: 'Authenticated user' },
           401: { description: 'Authentication required' },
+          403: { description: 'Account is not active' },
         },
       },
     },
@@ -94,22 +93,7 @@ export const swaggerDocument = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                required: ['firstName'],
-                properties: {
-                  firstName: { type: 'string', example: 'Sabrina' },
-                  lastName: { type: 'string', example: 'Hammadi' },
-                  photoUrl: {
-                    type: 'string',
-                    example: 'https://example.com/photo.jpg',
-                  },
-                  address: { type: 'string', example: '10 rue de Paris' },
-                  postalCode: { type: 'string', example: '75001' },
-                  city: { type: 'string', example: 'Paris' },
-                  country: { type: 'string', example: 'FR' },
-                },
-              },
+              schema: { $ref: '#/components/schemas/UserProfileInput' },
             },
           },
         },
@@ -121,27 +105,9 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/v1/users/{userId}/profile': {
-      get: {
-        summary: 'Get a public user profile by user id',
-        tags: ['UserProfile'],
-        parameters: [
-          {
-            name: 'userId',
-            in: 'path',
-            required: true,
-            schema: { type: 'string', format: 'uuid' },
-          },
-        ],
-        responses: {
-          200: { description: 'Public profile found' },
-          404: { description: 'Profile not found' },
-        },
-      },
-    },
     '/api/v1/user-profiles/me': {
       get: {
-        summary: 'Get the authenticated user full profile',
+        summary: 'Get the authenticated user profile',
         tags: ['UserProfile'],
         security: [{ bearerAuth: [] }],
         responses: {
@@ -158,21 +124,7 @@ export const swaggerDocument = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  firstName: { type: 'string', example: 'Sabrina' },
-                  lastName: { type: 'string', example: 'Hammadi' },
-                  photoUrl: {
-                    type: 'string',
-                    example: 'https://example.com/photo.jpg',
-                  },
-                  address: { type: 'string', example: '10 rue de Paris' },
-                  postalCode: { type: 'string', example: '75001' },
-                  city: { type: 'string', example: 'Paris' },
-                  country: { type: 'string', example: 'FR' },
-                },
-              },
+              schema: { $ref: '#/components/schemas/UserProfileInput' },
             },
           },
         },
@@ -194,6 +146,17 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/v1/users/{userId}/profile': {
+      get: {
+        summary: 'Get a public user profile by user id',
+        tags: ['UserProfile'],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
+        responses: {
+          200: { description: 'Public profile found' },
+          404: { description: 'Profile not found' },
+        },
+      },
+    },
     '/api/v1/student-profiles': {
       post: {
         summary: 'Create the authenticated student profile',
@@ -203,20 +166,7 @@ export const swaggerDocument = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                required: ['title', 'hourlyRateCents'],
-                properties: {
-                  title: { type: 'string', example: 'Developpeuse web' },
-                  description: {
-                    type: 'string',
-                    example: 'Creation de sites vitrines et applications web.',
-                  },
-                  hourlyRateCents: { type: 'integer', example: 2500 },
-                  level: { type: 'string', example: 'MBA1' },
-                  status: { type: 'string', example: 'ACTIVE' },
-                },
-              },
+              schema: { $ref: '#/components/schemas/StudentProfileInput' },
             },
           },
         },
@@ -224,6 +174,7 @@ export const swaggerDocument = {
           201: { description: 'Student profile created' },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
           409: { description: 'Student profile already exists' },
         },
       },
@@ -236,6 +187,7 @@ export const swaggerDocument = {
         responses: {
           200: { description: 'Authenticated student profile found' },
           401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
           404: { description: 'Student profile not found' },
         },
       },
@@ -247,19 +199,7 @@ export const swaggerDocument = {
           required: true,
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  title: { type: 'string', example: 'Developpeuse web' },
-                  description: {
-                    type: 'string',
-                    example: 'Creation de sites vitrines et applications web.',
-                  },
-                  hourlyRateCents: { type: 'integer', example: 3000 },
-                  level: { type: 'string', example: 'MBA1' },
-                  status: { type: 'string', example: 'ACTIVE' },
-                },
-              },
+              schema: { $ref: '#/components/schemas/StudentProfileInput' },
             },
           },
         },
@@ -267,6 +207,7 @@ export const swaggerDocument = {
           200: { description: 'Student profile updated' },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
           404: { description: 'Student profile not found' },
         },
       },
@@ -275,77 +216,144 @@ export const swaggerDocument = {
       get: {
         summary: 'Get a student profile by user id',
         tags: ['StudentProfile'],
-        parameters: [
-          {
-            name: 'userId',
-            in: 'path',
-            required: true,
-            schema: { type: 'string', format: 'uuid' },
-          },
-        ],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'Student profile found' },
           404: { description: 'Student profile not found' },
         },
       },
     },
-    '/api/v1/customer-profiles': {
+    '/api/v1/users/local': {
       post: {
-        summary: 'Create the authenticated customer profile',
-        tags: ['CustomerProfile'],
+        summary: 'Create a local user',
+        tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
         responses: {
-          201: { description: 'Customer profile created' },
-          401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
-          409: { description: 'Customer profile already exists' },
+          201: { description: 'User created' },
+          400: { description: 'Validation error' },
+          403: { description: 'Admin role required' },
         },
       },
     },
-    '/api/v1/customer-profiles/me': {
-      get: {
-        summary: 'Get the authenticated customer profile',
-        tags: ['CustomerProfile'],
+    '/api/v1/users/{userId}/roles': {
+      post: {
+        summary: 'Assign a role to a user',
+        tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
-          200: { description: 'Authenticated customer profile found' },
-          401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
-          404: { description: 'Customer profile not found' },
+          200: { description: 'Role assigned' },
+          400: { description: 'Validation error' },
+          403: { description: 'Admin role required' },
         },
       },
+    },
+    '/api/v1/users/{userId}/roles/{role}': {
       delete: {
-        summary: 'Delete the authenticated customer profile',
-        tags: ['CustomerProfile'],
+        summary: 'Remove a role from a user',
+        tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
-        responses: {
-          204: { description: 'Customer profile deleted' },
-          401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
-          404: { description: 'Customer profile not found' },
-        },
-      },
-    },
-    '/api/v1/users/{userId}/customer-profile': {
-      get: {
-        summary: 'Get a customer profile by user id',
-        tags: ['CustomerProfile'],
         parameters: [
+          { $ref: '#/components/parameters/UserId' },
           {
-            name: 'userId',
+            name: 'role',
             in: 'path',
             required: true,
-            schema: { type: 'string', format: 'uuid' },
+            schema: { type: 'string', enum: ['STUDENT', 'CUSTOMER', 'ADMIN'] },
           },
         ],
         responses: {
-          200: { description: 'Customer profile found' },
-          404: { description: 'Customer profile not found' },
+          204: { description: 'Role removed' },
+          400: { description: 'Validation error' },
+          403: { description: 'Admin role required' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/status': {
+      patch: {
+        summary: 'Update a user account status',
+        tags: ['UsersAdmin'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
+        responses: {
+          200: { description: 'Status updated' },
+          400: { description: 'Validation error' },
+          403: { description: 'Admin role required' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/deletion-request': {
+      post: {
+        summary: 'Create a GDPR deletion request for a user',
+        tags: ['UsersAdmin'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
+        responses: {
+          200: { description: 'Deletion request created' },
+          403: { description: 'Admin role required' },
+        },
+      },
+    },
+    '/api/v1/users/{userId}/anonymize': {
+      post: {
+        summary: 'Anonymize a deleted user',
+        tags: ['UsersAdmin'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/UserId' }],
+        responses: {
+          200: { description: 'User anonymized' },
+          403: { description: 'Admin role required' },
         },
       },
     },
   },
   components: {
+    parameters: {
+      UserId: {
+        name: 'userId',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', format: 'uuid' },
+      },
+    },
+    schemas: {
+      UserProfileInput: {
+        type: 'object',
+        required: ['firstName'],
+        properties: {
+          firstName: { type: 'string', example: 'Sabrina' },
+          lastName: { type: 'string', example: 'Hammadi' },
+          photoUrl: {
+            type: 'string',
+            example: 'https://example.com/photo.jpg',
+          },
+          city: { type: 'string', example: 'Paris' },
+          latitude: { type: 'number', example: 48.8566 },
+          longitude: { type: 'number', example: 2.3522 },
+        },
+      },
+      StudentProfileInput: {
+        type: 'object',
+        required: ['domainId'],
+        properties: {
+          domainId: {
+            type: 'string',
+            format: 'uuid',
+            example: '9324c24d-a476-41db-a0e3-12479bd81ed7',
+          },
+          title: { type: 'string', example: 'Developpeuse web' },
+          description: {
+            type: 'string',
+            example: 'Creation de sites vitrines et applications web.',
+          },
+          status: {
+            type: 'string',
+            enum: ['DRAFT', 'VISIBLE', 'SUSPENDED'],
+            example: 'DRAFT',
+          },
+        },
+      },
+    },
     securitySchemes: {
       bearerAuth: {
         type: 'http',

@@ -18,12 +18,16 @@ function cleanText(value: unknown) {
   return value.trim() || null;
 }
 
-function cleanCountry(value: unknown) {
-  if (typeof value !== 'string' || value.trim() === '') {
+function cleanCoordinate(value: unknown) {
+  if (value === null) {
+    return null;
+  }
+
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
     return undefined;
   }
 
-  return value.trim().toUpperCase();
+  return value;
 }
 
 userProfilesRouter.post(
@@ -41,10 +45,9 @@ userProfilesRouter.post(
       firstName: body.firstName.trim(),
       lastName: cleanText(body.lastName),
       photoUrl: cleanText(body.photoUrl),
-      address: cleanText(body.address),
-      postalCode: cleanText(body.postalCode),
       city: cleanText(body.city),
-      country: cleanCountry(body.country) ?? 'FR',
+      latitude: cleanCoordinate(body.latitude),
+      longitude: cleanCoordinate(body.longitude),
     };
 
     try {
@@ -104,7 +107,8 @@ userProfilesRouter.get('/users/:userId/profile', async (request, response) => {
       lastName: true,
       photoUrl: true,
       city: true,
-      country: true,
+      latitude: true,
+      longitude: true,
     },
   });
 
@@ -146,10 +150,9 @@ userProfilesRouter.patch(
         firstName: firstName ?? undefined,
         lastName: cleanText(body.lastName),
         photoUrl: cleanText(body.photoUrl),
-        address: cleanText(body.address),
-        postalCode: cleanText(body.postalCode),
         city: cleanText(body.city),
-        country: cleanCountry(body.country),
+        latitude: cleanCoordinate(body.latitude),
+        longitude: cleanCoordinate(body.longitude),
       },
     });
 
