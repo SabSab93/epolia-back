@@ -1,28 +1,18 @@
-# Note d'architecture - Initialisation Epolia Backend
+# Note d'architecture - Backend Epolia
 
 Le backend Epolia utilise maintenant un socle Express + TypeScript autonome.
 
-À cette étape, l'objectif est de garder une fondation technique propre et simple :
+L'objectif reste de garder une fondation technique propre et simple :
 
 - configuration Express ;
 - Swagger ;
 - sécurité HTTP de base ;
-- Prisma initialisé ;
+- Prisma aligné sur le MLD final ;
 - PostgreSQL local via Docker ;
 - CI GitHub Actions ;
 - Jest conservé.
 
-La première migration métier concerne le domaine Users avec Prisma.
+La première migration active représente désormais le MLD final validé :
+users / auth, profils, catalogue étudiant, favoris, messagerie, missions, paiements, wallet, retraits, avis, signalements, vérifications, RGPD, DAC7, notifications et audit admin.
 
-Les autres domaines seront ajoutés progressivement dans des branches dédiées :
-
-1. users / auth ;
-2. profils ;
-3. compétences / portfolio / disponibilités ;
-4. missions ;
-5. paiements Mangopay / wallet ;
-6. messagerie ;
-7. avis / signalements ;
-8. admin / RGPD / DAC7.
-
-Ce choix évite un gros commit initial illisible et permet de construire le backend proprement, modèle par modèle.
+Les CRUD métier seront ajoutés progressivement au-dessus de ce socle, sans réintroduire de modèles obsolètes comme `CustomerProfile`.

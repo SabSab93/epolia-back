@@ -1,6 +1,6 @@
 # PostgreSQL et Prisma
 
-Cette page vérifie la base PostgreSQL locale / Supabase et les commandes Prisma utiles avant la création des modèles métier.
+Cette page vérifie la base PostgreSQL locale / Supabase et les commandes Prisma utiles pour le MLD final Epolia.
 
 ## Variables d'environnement
 
@@ -72,22 +72,16 @@ Générer Prisma Client :
 npm run prisma:generate
 ```
 
-Formater le schéma Prisma :
+Valider le schéma Prisma :
 
 ```bash
-npm run prisma:format
+npx prisma validate
 ```
 
 Créer une migration en développement :
 
 ```bash
-npm run prisma:migrate:dev
-```
-
-Pousser le schéma sans migration :
-
-```bash
-npm run db:push
+npm run prisma:migrate
 ```
 
 Ouvrir Prisma Studio :
@@ -104,6 +98,6 @@ Après démarrage de PostgreSQL local, tester la connexion avec Prisma :
 printf 'SELECT 1;' | npx prisma db execute --schema prisma/schema.prisma --stdin
 ```
 
-Ce test ne crée aucun modèle métier et ne modifie pas le schéma.
+Ce test ne modifie pas le schéma.
 
 Si Prisma retourne `P1001`, la base PostgreSQL n'est pas joignable. Vérifier que Docker Desktop est lancé puis relancer `docker compose up -d postgres`.

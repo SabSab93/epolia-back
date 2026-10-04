@@ -51,7 +51,7 @@ npm run prisma:migrate
 
 Voir aussi [docs/prisma-postgresql.md](docs/prisma-postgresql.md) pour les commandes PostgreSQL, Prisma et le test de connexion.
 
-Les modèles métier seront ajoutés progressivement dans des branches dédiées.
+Le schéma Prisma représente le MLD final validé : identité, profils, catalogue étudiant, missions, paiements, messagerie, avis, conformité RGPD/DAC7 et notifications.
 
 ## Lancement
 
@@ -84,4 +84,11 @@ GET http://localhost:3000/api/v1/health
 
 ```bash
 npm run test
+```
+
+Vérifications utiles avant une PR :
+
+```bash
+npm run lint
+npm run build
 ```
