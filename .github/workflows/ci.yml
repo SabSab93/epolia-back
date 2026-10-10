@@ -2,23 +2,16 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  pr-checks:
-    name: PR checks
+  checks:
+    name: Install, lint, test and build
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Keep pull request status compatible
-        run: echo "PR metadata checks are disabled. Pull request template only."
-
-  build-and-test:
-    name: Build and test
-    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
 
     steps:
       - name: Checkout repository
@@ -34,15 +27,7 @@ jobs:
         run: npm ci
 
       - name: Generate Prisma client
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
-          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/epolia?schema=public
-        run: |
-          if [ -f "prisma/schema.prisma" ]; then
-            npx prisma generate
-          else
-            echo "No Prisma schema found, skipping Prisma generation"
-          fi
+        run: npm run prisma:generate
 
       - name: Lint
         run: npm run lint

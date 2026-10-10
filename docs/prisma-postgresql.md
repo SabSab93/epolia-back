@@ -75,19 +75,19 @@ npm run prisma:generate
 Formater le schéma Prisma :
 
 ```bash
-npm run prisma:format
+npx prisma format
 ```
 
 Créer une migration en développement :
 
 ```bash
-npm run prisma:migrate:dev
+npm run prisma:migrate
 ```
 
 Pousser le schéma sans migration :
 
 ```bash
-npm run db:push
+npx prisma db push
 ```
 
 Ouvrir Prisma Studio :

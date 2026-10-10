@@ -52,11 +52,7 @@ hotfix
 
 Ce format aide a retrouver l'issue et le contexte. Il reste une recommandation, pas une validation bloquante.
 
-La verification locale existe encore comme aide :
-
-```bash
-npm run branch:check
-```
+Le hook Git local affiche un avertissement si le nom de branche ne suit pas ce format. Il ne bloque pas les pushes.
 
 ## Commits
 
@@ -89,21 +85,13 @@ Contenu attendu :
 
 Le titre de PR doit etre clair. Il peut reprendre le titre de l'issue ou utiliser Conventional Commits.
 
-Le script local peut aider a creer une PR :
-
-```bash
-npm run pr:create
-```
-
-Il tente de detecter un numero d'issue dans le nom de branche et de reprendre le titre GitHub si disponible.
-
 ## CI
 
-La CI est lancee sur les Pull Requests et sur `main`.
-Elle conserve uniquement les controles essentiels :
+La CI est lancee sur les Pull Requests et sur chaque push de branche.
+Elle conserve un seul job avec les controles essentiels :
 
-- `PR checks`, un statut de compatibilite qui ne valide plus le nom de branche ni le titre de PR ;
-- generation Prisma si `prisma/schema.prisma` existe ;
+- installation des dependances avec `npm ci` ;
+- generation du client Prisma avec `npm run prisma:generate` ;
 - `npm run lint` ;
 - `npm run test` ;
 - `npm run build`.
@@ -123,7 +111,7 @@ La branche `main` doit etre protegee avec :
 - Pull Request obligatoire avant merge ;
 - blocage des force push ;
 - blocage de la suppression ;
-- checks `PR checks` et `Build and test` obligatoires avant merge.
+- check `Install, lint, test and build` obligatoire avant merge.
 
 ## Regle generale
 
