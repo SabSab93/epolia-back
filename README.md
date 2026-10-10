@@ -21,6 +21,22 @@ Adapter les variables de `.env`, notamment `JWT_SECRET`. La configuration fourni
 
 La migration initiale du MLD final est prévue pour une base neuve. Une base utilisant les anciennes migrations nécessite une migration de transition pour conserver ses données.
 
+## Environnements
+
+Le projet utilise les mêmes variables pour les environnements local, développement et production. Les valeurs changent selon l'environnement, pas la structure de configuration.
+
+Variables principales :
+
+- `NODE_ENV` : `development`, `test` ou `production`.
+- `PORT` : port HTTP du backend, `3000` par défaut.
+- `DATABASE_URL` et `DIRECT_URL` : connexions PostgreSQL utilisées par Prisma.
+- `CORS_ORIGIN` : origines web autorisées, séparées par des virgules.
+- `JWT_SECRET` : secret JWT, obligatoire et non générique en production.
+
+En local, `CORS_ORIGIN` peut contenir les URLs du front web et du serveur de développement mobile, par exemple `http://localhost:3000,http://localhost:8081`. En production, `CORS_ORIGIN` doit être limité à des origines connues. Les applications mobiles natives ne sont pas bloquées par CORS de la même façon qu'un navigateur, mais leurs vues web éventuelles le sont.
+
+Le fichier `.env` reste local et ne doit pas être commité.
+
 ## API
 
 | Point d'entrée | URL locale                       |
@@ -53,3 +69,17 @@ npm run lint
 npm run test
 npm run build
 ```
+
+## CI GitHub Actions
+
+La CI se déclenche sur chaque push de branche et sur les Pull Requests ouvertes, mises à jour ou rouvertes.
+
+Elle exécute un seul job qui vérifie :
+
+1. `npm ci`
+2. `npm run prisma:generate`
+3. `npm run lint`
+4. `npm run test`
+5. `npm run build`
+
+La CI ne déploie pas l'application et ne crée aucune ressource externe.
