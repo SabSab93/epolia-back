@@ -73,6 +73,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
+      "^@prisma/client$": "<rootDir>/../node_modules/.prisma/client/default.js",
       "^@/(.*)$": "<rootDir>/$1"
     }
   }

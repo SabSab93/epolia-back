@@ -1,87 +1,55 @@
 # Epolia Backend
 
-Backend de la marketplace Epolia.
+API de la marketplace Epolia, un projet de fin de master mettant en relation des particuliers et des étudiants pour des services de proximité.
 
-Epolia est une application fictive de fin de master permettant de mettre en relation des particuliers et des étudiants pour des services de proximité.
+Le backend utilise Express, TypeScript, PostgreSQL et Prisma. Swagger documente l'API et Jest couvre les routes.
 
-## Stack
+## Démarrage local
 
-- Node.js
-- TypeScript
-- Express
-- PostgreSQL
-- Prisma
-- Swagger / OpenAPI
-- Jest
-
-## Architecture cible
-
-Le backend démarre sous forme de monolithe Express simple.
-
-Ce choix permet :
-- d'éviter des microservices prématurés ;
-- de garder un backend maintenable ;
-- d'ajouter les modules métier progressivement ;
-- de préparer une évolution future si le projet grandit.
-
-## Installation
-
-```bash
-npm install
-```
-
-## Configuration
+Prérequis : Node.js 20, npm et Docker avec Docker Compose.
 
 ```bash
 cp .env.example .env
-```
-
-## Base PostgreSQL locale
-
-```bash
-docker compose up -d
-```
-
-## Prisma
-
-```bash
+npm ci
+docker compose up -d postgres
 npm run prisma:generate
 npm run prisma:migrate
-```
-
-Voir aussi [docs/prisma-postgresql.md](docs/prisma-postgresql.md) pour les commandes PostgreSQL, Prisma et le test de connexion.
-
-Les modèles métier seront ajoutés progressivement dans des branches dédiées.
-
-## Lancement
-
-En développement :
-
-```bash
 npm run dev
 ```
 
-Après build :
+Adapter les variables de `.env`, notamment `JWT_SECRET`. La configuration fournie utilise PostgreSQL sur le port `5433` et l'API sur le port `3000`.
+
+La migration initiale du MLD final est prévue pour une base neuve. Une base utilisant les anciennes migrations nécessite une migration de transition pour conserver ses données.
+
+## API
+
+| Point d'entrée | URL locale                       |
+| -------------- | -------------------------------- |
+| Swagger        | http://localhost:3000/api/docs   |
+| Health check   | http://localhost:3000/api/health |
+
+Les routes utilisent le préfixe `/api`. L'authentification locale, les profils utilisateur et étudiant, et l'administration des utilisateurs sont implémentés.
+
+Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
+
+## Commandes
+
+| Commande                  | Usage                                                 |
+| ------------------------- | ----------------------------------------------------- |
+| `npm run dev`             | Démarrer en développement                             |
+| `npm run build`           | Compiler dans `dist/`                                 |
+| `npm run start`           | Démarrer la version compilée                          |
+| `npm run lint`            | Vérifier le code hors fichiers de tests               |
+| `npm run test`            | Exécuter les tests Jest                               |
+| `npm run format`          | Formater les fichiers TypeScript                      |
+| `npm run prisma:generate` | Générer le client Prisma                              |
+| `npm run prisma:migrate`  | Appliquer les migrations et en créer en développement |
+| `npm run prisma:studio`   | Ouvrir Prisma Studio                                  |
+
+Avant une PR :
 
 ```bash
-npm run build
-npm run start
-```
-
-## Swagger
-
-```txt
-http://localhost:3000/api/v1/docs
-```
-
-## Health check
-
-```txt
-GET http://localhost:3000/api/v1/health
-```
-
-## Tests
-
-```bash
+npm run lint
 npm run test
+npm run build
 ```

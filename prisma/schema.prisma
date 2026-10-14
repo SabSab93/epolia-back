@@ -9,15 +9,14 @@ datasource db {
 }
 
 enum UserRole {
-  ETUDIANT
-  PARTICULIER
+  STUDENT
+  CUSTOMER
   ADMIN
 }
 
 enum AccountStatus {
   ACTIVE
   SUSPENDED
-  PENDING_DELETION
   DELETED
 }
 
@@ -25,16 +24,91 @@ enum AuthProvider {
   GOOGLE
 }
 
-/// Account rules:
-/// - an active user must have an email;
-/// - an active local user must have a passwordHash;
-/// - a Google user must have an AuthAccount row with provider GOOGLE and providerAccountId = Google sub;
-/// - a deleted user must have status DELETED and no email, phone, passwordHash, or authAccounts;
-/// - historical business data keeps referencing users.id, while public display uses "Utilisateur supprimé".
+enum ProfileStatus {
+  DRAFT
+  VISIBLE
+  SUSPENDED
+}
+
+enum PricingType {
+  HOURLY
+  FIXED
+}
+
+enum PortfolioMediaType {
+  IMAGE
+  VIDEO
+  LINK
+}
+
+enum MissionStatus {
+  PROPOSED
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  VALIDATED
+  DISPUTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  HELD
+  RELEASED
+  REFUNDED
+  FAILED
+  CANCELLED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum ReviewStatus {
+  PUBLISHED
+  HIDDEN
+}
+
+enum ReportStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum Dac7ReportStatus {
+  DRAFT
+  GENERATED
+  VALIDATED
+}
+
+enum PrivacyRequestType {
+  EXPORT
+  DELETION
+  RECTIFICATION
+}
+
+enum PrivacyRequestStatus {
+  PENDING
+  PROCESSED
+  REJECTED
+}
+
 model User {
   id                  String        @id @default(uuid()) @db.Uuid
   email               String?       @unique
   phone               String?       @unique
+  providerUserId      String?       @unique @map("provider_user_id")
   passwordHash        String?       @map("password_hash")
   status              AccountStatus @default(ACTIVE)
   emailVerifiedAt     DateTime?     @map("email_verified_at") @db.Timestamptz(6)
@@ -44,56 +118,29 @@ model User {
   createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt           DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  roles           UserRoleAssignment[]
-  authAccounts    AuthAccount[]
-  profile         UserProfile?
-  studentProfile  StudentProfile?
-  customerProfile CustomerProfile?
+  roles                    UserRoleAssignment[]
+  authAccounts             AuthAccount[]
+  profile                  UserProfile?
+  studentProfile           StudentProfile?
+  favoriteStudents         Favorite[]             @relation("CustomerFavorites")
+  conversationsAsCustomer  Conversation[]         @relation("CustomerConversations")
+  sentMessages             Message[]              @relation("MessageSender")
+  missionsAsCustomer       Mission[]              @relation("CustomerMissions")
+  wallets                  Wallet[]
+  payoutRecipients         PayoutRecipient[]
+  authoredReviews          Review[]               @relation("ReviewAuthor")
+  receivedReviews          Review[]               @relation("ReviewTarget")
+  reportsCreated           UserReport[]           @relation("ReportReporter")
+  reportsReceived          UserReport[]           @relation("ReportReported")
+  reportsHandled           UserReport[]           @relation("ReportHandler")
+  verificationsReviewed    StudentVerification[]  @relation("VerificationReviewer")
+  privacyRequests          PrivacyRequest[]       @relation("PrivacyRequestUser")
+  privacyRequestsProcessed PrivacyRequest[]       @relation("PrivacyRequestProcessor")
+  consents                 UserConsent[]
+  notifications            Notification[]
+  adminAuditLogs           AdminAuditLog[]
 
   @@map("users")
-}
-
-model UserProfile {
-  userId     String   @id @map("user_id") @db.Uuid
-  firstName  String   @map("first_name")
-  lastName   String?  @map("last_name")
-  photoUrl   String?  @map("photo_url")
-  address    String?
-  postalCode String?  @map("postal_code")
-  city       String?
-  country    String   @default("FR")
-  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_profiles")
-}
-
-model StudentProfile {
-  userId          String   @id @map("user_id") @db.Uuid
-  title           String
-  description     String?
-  hourlyRateCents Int      @map("hourly_rate_cents")
-  level           String?
-  status          String   @default("DRAFT")
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("student_profiles")
-}
-
-model CustomerProfile {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @unique @map("user_id") @db.Uuid
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("customer_profiles")
 }
 
 model UserRoleAssignment {
@@ -122,4 +169,531 @@ model AuthAccount {
   @@unique([provider, providerAccountId])
   @@index([userId])
   @@map("auth_accounts")
+}
+
+model UserProfile {
+  userId    String   @id @map("user_id") @db.Uuid
+  firstName String   @map("first_name")
+  lastName  String?  @map("last_name")
+  photoUrl  String?  @map("photo_url")
+  city      String?
+  latitude  Decimal? @db.Decimal(9, 6)
+  longitude Decimal? @db.Decimal(9, 6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Domain {
+  id        String   @id @default(uuid()) @db.Uuid
+  label     String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  specialties     Specialty[]
+  studentProfiles StudentProfile[]
+
+  @@map("domains")
+}
+
+model Specialty {
+  id        String   @id @default(uuid()) @db.Uuid
+  domainId  String   @map("domain_id") @db.Uuid
+  label     String
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  domain             Domain             @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  studentSpecialties StudentSpecialty[]
+  missionItems       MissionItem[]
+
+  @@unique([domainId, label])
+  @@index([domainId])
+  @@map("specialties")
+}
+
+model StudentProfile {
+  userId      String        @id @map("user_id") @db.Uuid
+  domainId    String        @map("domain_id") @db.Uuid
+  title       String?
+  description String?
+  status      ProfileStatus @default(DRAFT)
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  domain          Domain                 @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  taxProfile      StudentTaxProfile?
+  specialties     StudentSpecialty[]
+  hobbies         StudentHobby[]
+  educations      StudentEducation[]
+  portfolioItems  StudentPortfolioItem[]
+  availabilities  StudentAvailability[]
+  favoriteOfUsers Favorite[]
+  conversations   Conversation[]
+  missions        Mission[]
+  dac7ReportLines Dac7ReportLine[]
+  verifications   StudentVerification[]
+
+  @@index([domainId])
+  @@map("student_profiles")
+}
+
+model StudentTaxProfile {
+  studentId               String   @id @map("student_id") @db.Uuid
+  taxIdentificationNumber String?  @map("tax_identification_number")
+  taxResidenceCountry     String   @map("tax_residence_country") @db.Char(2)
+  createdAt               DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@map("student_tax_profiles")
+}
+
+model StudentSpecialty {
+  studentId      String      @map("student_id") @db.Uuid
+  specialtyId    String      @map("specialty_id") @db.Uuid
+  pricingType    PricingType @map("pricing_type")
+  priceCents     Int         @map("price_cents")
+  pricingDetails String?     @map("pricing_details")
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student   StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  specialty Specialty      @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@id([studentId, specialtyId])
+  @@index([specialtyId])
+  @@map("student_specialties")
+}
+
+model Hobby {
+  id        String   @id @default(uuid()) @db.Uuid
+  label     String   @unique
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  students StudentHobby[]
+
+  @@map("hobbies")
+}
+
+model StudentHobby {
+  studentId String   @map("student_id") @db.Uuid
+  hobbyId   String   @map("hobby_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  hobby   Hobby          @relation(fields: [hobbyId], references: [id], onDelete: Restrict)
+
+  @@id([studentId, hobbyId])
+  @@index([hobbyId])
+  @@map("student_hobbies")
+}
+
+model StudentEducation {
+  id        String    @id @default(uuid()) @db.Uuid
+  studentId String    @map("student_id") @db.Uuid
+  title     String
+  school    String?
+  level     String?
+  startDate DateTime? @map("start_date") @db.Date
+  endDate   DateTime? @map("end_date") @db.Date
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("student_educations")
+}
+
+model StudentPortfolioItem {
+  id          String             @id @default(uuid()) @db.Uuid
+  studentId   String             @map("student_id") @db.Uuid
+  title       String?
+  description String?
+  mediaUrl    String             @map("media_url")
+  mediaType   PortfolioMediaType @map("media_type")
+  isVisible   Boolean            @default(true) @map("is_visible")
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("student_portfolio_items")
+}
+
+model StudentAvailability {
+  id        String   @id @default(uuid()) @db.Uuid
+  studentId String   @map("student_id") @db.Uuid
+  startsAt  DateTime @map("starts_at") @db.Timestamptz(6)
+  endsAt    DateTime @map("ends_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@index([studentId])
+  @@index([studentId, startsAt])
+  @@map("student_availabilities")
+}
+
+model Favorite {
+  customerUserId String   @map("customer_user_id") @db.Uuid
+  studentId      String   @map("student_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  customer User           @relation("CustomerFavorites", fields: [customerUserId], references: [id], onDelete: Cascade)
+  student  StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@id([customerUserId, studentId])
+  @@index([studentId])
+  @@map("favorites")
+}
+
+model Conversation {
+  id             String   @id @default(uuid()) @db.Uuid
+  customerUserId String   @map("customer_user_id") @db.Uuid
+  studentId      String   @map("student_id") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  customer User           @relation("CustomerConversations", fields: [customerUserId], references: [id], onDelete: Restrict)
+  student  StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Restrict)
+  messages Message[]
+
+  @@unique([customerUserId, studentId])
+  @@index([customerUserId])
+  @@index([studentId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String    @id @default(uuid()) @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  senderUserId   String    @map("sender_user_id") @db.Uuid
+  content        String
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  deletedAt      DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("MessageSender", fields: [senderUserId], references: [id], onDelete: Restrict)
+
+  @@index([conversationId, createdAt])
+  @@index([senderUserId])
+  @@map("messages")
+}
+
+model Mission {
+  id             String        @id @default(uuid()) @db.Uuid
+  customerUserId String        @map("customer_user_id") @db.Uuid
+  studentId      String        @map("student_id") @db.Uuid
+  description    String
+  startsAt       DateTime?     @map("starts_at") @db.Timestamptz(6)
+  endsAt         DateTime?     @map("ends_at") @db.Timestamptz(6)
+  currency       String        @default("EUR") @db.Char(3)
+  status         MissionStatus @default(PROPOSED)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  customer User             @relation("CustomerMissions", fields: [customerUserId], references: [id], onDelete: Restrict)
+  student  StudentProfile   @relation(fields: [studentId], references: [userId], onDelete: Restrict)
+  items    MissionItem[]
+  payments MissionPayment[]
+  tips     MissionTip[]
+  reviews  Review[]
+
+  @@index([customerUserId])
+  @@index([studentId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([studentId, startsAt])
+  @@map("missions")
+}
+
+model MissionItem {
+  id             String      @id @default(uuid()) @db.Uuid
+  missionId      String      @map("mission_id") @db.Uuid
+  specialtyId    String      @map("specialty_id") @db.Uuid
+  specialtyLabel String      @map("specialty_label")
+  pricingType    PricingType @map("pricing_type")
+  quantity       Decimal     @default(1) @db.Decimal(8, 2)
+  unitPriceCents Int         @map("unit_price_cents")
+  createdAt      DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  mission   Mission   @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@index([missionId])
+  @@index([specialtyId])
+  @@map("mission_items")
+}
+
+model MissionPayment {
+  id                String        @id @default(uuid()) @db.Uuid
+  missionId         String        @map("mission_id") @db.Uuid
+  amountCents       Int           @map("amount_cents")
+  platformFeeRate   Decimal       @map("platform_fee_rate") @db.Decimal(5, 4)
+  platformFeeCents  Int           @map("platform_fee_cents")
+  currency          String        @default("EUR") @db.Char(3)
+  status            PaymentStatus @default(PENDING)
+  providerReference String?       @unique @map("provider_reference")
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Restrict)
+
+  @@index([missionId])
+  @@index([status])
+  @@map("mission_payments")
+}
+
+model MissionTip {
+  id                String        @id @default(uuid()) @db.Uuid
+  missionId         String        @map("mission_id") @db.Uuid
+  amountCents       Int           @map("amount_cents")
+  currency          String        @default("EUR") @db.Char(3)
+  status            PaymentStatus @default(PENDING)
+  providerReference String?       @unique @map("provider_reference")
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Restrict)
+
+  @@index([missionId])
+  @@index([status])
+  @@map("mission_tips")
+}
+
+model Wallet {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  providerWalletId String?  @unique @map("provider_wallet_id")
+  currency         String   @default("EUR") @db.Char(3)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  withdrawals Withdrawal[]
+
+  @@unique([userId, currency])
+  @@map("wallets")
+}
+
+model PayoutRecipient {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  providerRecipientId String   @unique @map("provider_recipient_id")
+  currency            String   @default("EUR") @db.Char(3)
+  isActive            Boolean  @default(true) @map("is_active")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  withdrawals Withdrawal[]
+
+  @@index([userId])
+  @@map("payout_recipients")
+}
+
+model Withdrawal {
+  id                String           @id @default(uuid()) @db.Uuid
+  walletId          String           @map("wallet_id") @db.Uuid
+  recipientId       String           @map("recipient_id") @db.Uuid
+  amountCents       Int              @map("amount_cents")
+  status            WithdrawalStatus @default(PENDING)
+  providerReference String?          @unique @map("provider_reference")
+  failureReason     String?          @map("failure_reason")
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  wallet    Wallet          @relation(fields: [walletId], references: [id], onDelete: Restrict)
+  recipient PayoutRecipient @relation(fields: [recipientId], references: [id], onDelete: Restrict)
+
+  @@index([walletId])
+  @@index([recipientId])
+  @@index([status])
+  @@map("withdrawals")
+}
+
+model Review {
+  id           String       @id @default(uuid()) @db.Uuid
+  missionId    String       @map("mission_id") @db.Uuid
+  authorUserId String       @map("author_user_id") @db.Uuid
+  targetUserId String       @map("target_user_id") @db.Uuid
+  rating       Int
+  comment      String?
+  status       ReviewStatus @default(PUBLISHED)
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Restrict)
+  author  User    @relation("ReviewAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+  target  User    @relation("ReviewTarget", fields: [targetUserId], references: [id], onDelete: Restrict)
+
+  @@unique([missionId, authorUserId])
+  @@index([targetUserId])
+  @@index([status])
+  @@map("reviews")
+}
+
+model UserReport {
+  id              String       @id @default(uuid()) @db.Uuid
+  reporterUserId  String       @map("reporter_user_id") @db.Uuid
+  reportedUserId  String       @map("reported_user_id") @db.Uuid
+  reason          String
+  description     String?
+  status          ReportStatus @default(PENDING)
+  handledByUserId String?      @map("handled_by_user_id") @db.Uuid
+  handledAt       DateTime?    @map("handled_at") @db.Timestamptz(6)
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  reporter  User  @relation("ReportReporter", fields: [reporterUserId], references: [id], onDelete: Restrict)
+  reported  User  @relation("ReportReported", fields: [reportedUserId], references: [id], onDelete: Restrict)
+  handledBy User? @relation("ReportHandler", fields: [handledByUserId], references: [id], onDelete: SetNull)
+
+  @@index([reporterUserId])
+  @@index([reportedUserId])
+  @@index([status])
+  @@index([handledByUserId])
+  @@map("user_reports")
+}
+
+model StudentVerification {
+  id                       String             @id @default(uuid()) @db.Uuid
+  studentId                String             @map("student_id") @db.Uuid
+  schoolDocumentStorageKey String             @map("school_document_storage_key")
+  status                   VerificationStatus @default(PENDING)
+  adminComment             String?            @map("admin_comment")
+  reviewedByUserId         String?            @map("reviewed_by_user_id") @db.Uuid
+  reviewedAt               DateTime?          @map("reviewed_at") @db.Timestamptz(6)
+  createdAt                DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student    StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  reviewedBy User?          @relation("VerificationReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([studentId])
+  @@index([status])
+  @@index([reviewedByUserId])
+  @@map("student_verifications")
+}
+
+model Dac7Report {
+  id          String           @id @default(uuid()) @db.Uuid
+  year        Int              @unique
+  status      Dac7ReportStatus @default(DRAFT)
+  generatedAt DateTime?        @map("generated_at") @db.Timestamptz(6)
+  createdAt   DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  lines Dac7ReportLine[]
+
+  @@map("dac7_reports")
+}
+
+model Dac7ReportLine {
+  id               String   @id @default(uuid()) @db.Uuid
+  reportId         String   @map("report_id") @db.Uuid
+  studentId        String   @map("student_id") @db.Uuid
+  thresholdReached Boolean  @default(false) @map("threshold_reached")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  report           Dac7Report             @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  student          StudentProfile         @relation(fields: [studentId], references: [userId], onDelete: Restrict)
+  quarterlyAmounts Dac7QuarterlyAmount[]
+
+  @@unique([reportId, studentId])
+  @@index([studentId])
+  @@map("dac7_report_lines")
+}
+
+model Dac7QuarterlyAmount {
+  id                 String   @id @default(uuid()) @db.Uuid
+  reportLineId       String   @map("report_line_id") @db.Uuid
+  quarter            Int
+  transactionCount   Int      @default(0) @map("transaction_count")
+  considerationCents Int      @default(0) @map("consideration_cents")
+  platformFeesCents  Int      @default(0) @map("platform_fees_cents")
+  taxesCents         Int      @default(0) @map("taxes_cents")
+  currency           String   @default("EUR") @db.Char(3)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  reportLine Dac7ReportLine @relation(fields: [reportLineId], references: [id], onDelete: Cascade)
+
+  @@unique([reportLineId, quarter])
+  @@map("dac7_quarterly_amounts")
+}
+
+model PrivacyRequest {
+  id                String               @id @default(uuid()) @db.Uuid
+  userId            String               @map("user_id") @db.Uuid
+  type              PrivacyRequestType
+  status            PrivacyRequestStatus @default(PENDING)
+  requestedAt       DateTime             @default(now()) @map("requested_at") @db.Timestamptz(6)
+  processedAt       DateTime?            @map("processed_at") @db.Timestamptz(6)
+  processedByUserId String?              @map("processed_by_user_id") @db.Uuid
+
+  user        User  @relation("PrivacyRequestUser", fields: [userId], references: [id], onDelete: Restrict)
+  processedBy User? @relation("PrivacyRequestProcessor", fields: [processedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@map("privacy_requests")
+}
+
+model UserConsent {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  consentType    String   @map("consent_type")
+  consentVersion String   @map("consent_version")
+  granted        Boolean
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([consentType])
+  @@index([userId, consentType, createdAt])
+  @@map("user_consents")
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  type      String
+  title     String
+  body      String?
+  readAt    DateTime? @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+model AdminAuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  adminUserId String   @map("admin_user_id") @db.Uuid
+  action      String
+  targetType  String   @map("target_type")
+  targetId    String?  @map("target_id") @db.Uuid
+  details     Json?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  admin User @relation(fields: [adminUserId], references: [id], onDelete: Restrict)
+
+  @@index([adminUserId])
+  @@index([action])
+  @@index([targetType])
+  @@index([targetId])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
 }

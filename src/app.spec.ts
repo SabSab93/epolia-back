@@ -15,8 +15,8 @@ interface ErrorBody {
 }
 
 describe('Express app', () => {
-  it('returns the health status from /api/v1/health', async () => {
-    const response = await request(app).get('/api/v1/health');
+  it('returns the health status from /api/health', async () => {
+    const response = await request(app).get('/api/health');
     const body = response.body as HealthBody;
 
     expect(response.status).toBe(200);
@@ -24,14 +24,26 @@ describe('Express app', () => {
   });
 
   it('returns a typed 404 error for unknown routes', async () => {
-    const response = await request(app).get('/api/v1/unknown');
+    const response = await request(app).get('/api/unknown');
     const body = response.body as ErrorBody;
 
     expect(response.status).toBe(404);
     expect(body).toEqual({
       status: 404,
       code: 'NOT_FOUND',
-      message: 'Route GET /api/v1/unknown not found',
+      message: 'Route GET /api/unknown not found',
+    });
+  });
+
+  it('keeps old customer profile routes unavailable', async () => {
+    const response = await request(app).get('/api/customer-profiles/me');
+    const body = response.body as ErrorBody;
+
+    expect(response.status).toBe(404);
+    expect(body).toEqual({
+      status: 404,
+      code: 'NOT_FOUND',
+      message: 'Route GET /api/customer-profiles/me not found',
     });
   });
 
@@ -55,7 +67,7 @@ describe('Express app', () => {
   });
 
   it('exposes Swagger UI', async () => {
-    const response = await request(app).get('/api/v1/docs/');
+    const response = await request(app).get('/api/docs/');
 
     expect(response.status).toBe(200);
     expect(response.text).toContain('Swagger UI');

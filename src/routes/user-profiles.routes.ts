@@ -18,12 +18,30 @@ function cleanText(value: unknown) {
   return value.trim() || null;
 }
 
-function cleanCountry(value: unknown) {
-  if (typeof value !== 'string' || value.trim() === '') {
+function cleanCoordinate(
+  value: unknown,
+  name: 'latitude' | 'longitude',
+  min: number,
+  max: number,
+) {
+  if (value === undefined) {
     return undefined;
   }
 
-  return value.trim().toUpperCase();
+  if (value === null) {
+    return null;
+  }
+
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < min ||
+    value > max
+  ) {
+    throw new AppError(400, 'VALIDATION_ERROR', `${name} is invalid`);
+  }
+
+  return value;
 }
 
 userProfilesRouter.post(
@@ -41,10 +59,9 @@ userProfilesRouter.post(
       firstName: body.firstName.trim(),
       lastName: cleanText(body.lastName),
       photoUrl: cleanText(body.photoUrl),
-      address: cleanText(body.address),
-      postalCode: cleanText(body.postalCode),
       city: cleanText(body.city),
-      country: cleanCountry(body.country) ?? 'FR',
+      latitude: cleanCoordinate(body.latitude, 'latitude', -90, 90),
+      longitude: cleanCoordinate(body.longitude, 'longitude', -180, 180),
     };
 
     try {
@@ -104,7 +121,6 @@ userProfilesRouter.get('/users/:userId/profile', async (request, response) => {
       lastName: true,
       photoUrl: true,
       city: true,
-      country: true,
     },
   });
 
@@ -146,10 +162,9 @@ userProfilesRouter.patch(
         firstName: firstName ?? undefined,
         lastName: cleanText(body.lastName),
         photoUrl: cleanText(body.photoUrl),
-        address: cleanText(body.address),
-        postalCode: cleanText(body.postalCode),
         city: cleanText(body.city),
-        country: cleanCountry(body.country),
+        latitude: cleanCoordinate(body.latitude, 'latitude', -90, 90),
+        longitude: cleanCoordinate(body.longitude, 'longitude', -180, 180),
       },
     });
 
