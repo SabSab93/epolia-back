@@ -146,6 +146,27 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/domains': {
+      get: {
+        summary: 'List catalog domains',
+        tags: ['Catalog'],
+        responses: {
+          200: { description: 'Catalog domains' },
+        },
+      },
+    },
+    '/api/domains/{domainId}/specialties': {
+      get: {
+        summary: 'List specialties for a catalog domain',
+        tags: ['Catalog'],
+        parameters: [{ $ref: '#/components/parameters/DomainId' }],
+        responses: {
+          200: { description: 'Domain specialties' },
+          400: { description: 'Validation error' },
+          404: { description: 'Domain not found' },
+        },
+      },
+    },
     '/api/users/{userId}/profile': {
       get: {
         summary: 'Get a public user profile by user id',
@@ -219,7 +240,242 @@ export const swaggerDocument = {
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'Student profile found' },
+          400: { description: 'Invalid userId' },
+          404: {
+            description:
+              'Profile absent, not visible, unverified or with ineligible specialties',
+          },
+        },
+      },
+    },
+    '/api/student-specialties/me': {
+      get: {
+        summary: 'List authenticated student specialties',
+        tags: ['StudentSpecialty'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: 'Student specialties' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
           404: { description: 'Student profile not found' },
+        },
+      },
+    },
+    '/api/study-fields': {
+      get: {
+        summary: 'List official study fields',
+        tags: ['Catalog'],
+        responses: {
+          200: {
+            description:
+              'Study fields ordered by label; no proof of qualification',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/StudyField' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/api/student-specialties/eligible': {
+      get: {
+        summary:
+          'List specialties allowed by declared educations and principal domain',
+        tags: ['StudentSpecialty'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description:
+              'Exact union of linked study field specialties, filtered by principal domain',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/EligibleSpecialty' },
+                },
+              },
+            },
+          },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+    },
+    '/api/student-educations/me': {
+      get: {
+        summary: 'List authenticated student educations',
+        tags: ['StudentEducation'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description:
+              'Educations, including historical rows with a null studyFieldId',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/StudentEducation' },
+                },
+              },
+            },
+          },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+    },
+    '/api/student-educations': {
+      post: {
+        summary: 'Declare an education for the authenticated student',
+        description:
+          'A null studyFieldId grants no eligibility. Changes return visible profiles to DRAFT.',
+        tags: ['StudentEducation'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/StudentEducationInput' },
+            },
+          },
+        },
+        responses: {
+          201: {
+            description: 'Education declared, not verified',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StudentEducation' },
+              },
+            },
+          },
+          400: { description: 'Invalid title, studyFieldId or dates' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Student profile or study field not found' },
+        },
+      },
+    },
+    '/api/student-educations/{educationId}': {
+      patch: {
+        summary:
+          'Update an owned education and remove ineligible profile specialties',
+        tags: ['StudentEducation'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/EducationId' }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/StudentEducationUpdate' },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description:
+              'Education updated atomically; mission snapshots unchanged',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StudentEducation' },
+              },
+            },
+          },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: {
+            description:
+              'Owned education, student profile or study field not found',
+          },
+        },
+      },
+      delete: {
+        summary:
+          'Delete an owned education and remove ineligible profile specialties',
+        tags: ['StudentEducation'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/EducationId' }],
+        responses: {
+          204: {
+            description:
+              'Education removed atomically; mission snapshots unchanged',
+          },
+          400: { description: 'Invalid educationId' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Owned education or student profile not found' },
+        },
+      },
+    },
+    '/api/student-specialties': {
+      post: {
+        summary: 'Add a specialty to the authenticated student profile',
+        description:
+          'Requires a compatible principal domain and an explicit study field link from an owned education. New offerings return visible profiles to DRAFT.',
+        tags: ['StudentSpecialty'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/StudentSpecialtyInput' },
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Student specialty created' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          403: {
+            description: 'Student role or education eligibility required',
+          },
+          404: { description: 'Student profile or specialty not found' },
+          409: { description: 'Student specialty already exists' },
+        },
+      },
+    },
+    '/api/student-specialties/{specialtyId}': {
+      patch: {
+        summary: 'Update authenticated student specialty pricing',
+        description:
+          'Education eligibility and principal domain compatibility are rechecked on every update.',
+        tags: ['StudentSpecialty'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/SpecialtyId' }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/StudentSpecialtyUpdate' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Student specialty updated' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          403: {
+            description: 'Student role or education eligibility required',
+          },
+          404: { description: 'Student specialty not found' },
+        },
+      },
+      delete: {
+        summary: 'Remove a specialty from the authenticated student profile',
+        tags: ['StudentSpecialty'],
+        security: [{ bearerAuth: [] }],
+        parameters: [{ $ref: '#/components/parameters/SpecialtyId' }],
+        responses: {
+          204: { description: 'Student specialty removed' },
+          400: { description: 'Validation error' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Forbidden' },
         },
       },
     },
@@ -315,8 +571,111 @@ export const swaggerDocument = {
         required: true,
         schema: { type: 'string', format: 'uuid' },
       },
+      DomainId: {
+        name: 'domainId',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', format: 'uuid' },
+      },
+      SpecialtyId: {
+        name: 'specialtyId',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', format: 'uuid' },
+      },
+      EducationId: {
+        name: 'educationId',
+        in: 'path',
+        required: true,
+        schema: { type: 'string', format: 'uuid' },
+      },
     },
     schemas: {
+      StudyField: {
+        type: 'object',
+        required: ['id', 'label'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          label: { type: 'string', example: 'Mathematiques et statistiques' },
+        },
+      },
+      EligibleSpecialty: {
+        type: 'object',
+        required: ['id', 'label', 'domainId', 'domain'],
+        properties: {
+          id: { type: 'string', format: 'uuid' },
+          label: { type: 'string', example: 'Site vitrine' },
+          domainId: { type: 'string', format: 'uuid' },
+          domain: { $ref: '#/components/schemas/StudyField' },
+        },
+      },
+      StudentEducationInput: {
+        allOf: [
+          { $ref: '#/components/schemas/StudentEducationUpdate' },
+          { type: 'object', required: ['title'] },
+        ],
+      },
+      StudentEducationUpdate: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+            minLength: 1,
+            example: 'Licence informatique',
+          },
+          school: {
+            type: 'string',
+            nullable: true,
+            example: 'Universite Paris Cite',
+          },
+          level: { type: 'string', nullable: true, example: 'BAC+3' },
+          startDate: {
+            type: 'string',
+            format: 'date',
+            nullable: true,
+            example: '2025-09-01',
+          },
+          endDate: {
+            type: 'string',
+            format: 'date',
+            nullable: true,
+            example: '2028-06-30',
+          },
+          studyFieldId: {
+            type: 'string',
+            format: 'uuid',
+            nullable: true,
+            description: 'Official study field; null grants no specialty',
+          },
+        },
+      },
+      StudentEducation: {
+        allOf: [
+          { $ref: '#/components/schemas/StudentEducationInput' },
+          {
+            type: 'object',
+            required: ['id', 'studentId', 'studyFieldId'],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              studentId: { type: 'string', format: 'uuid' },
+              studyField: {
+                allOf: [{ $ref: '#/components/schemas/StudyField' }],
+                nullable: true,
+              },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
+            },
+          },
+        ],
+      },
+      StudentSpecialtyUpdate: {
+        type: 'object',
+        properties: {
+          pricingType: { type: 'string', enum: ['HOURLY', 'FIXED'] },
+          priceCents: { type: 'integer', minimum: 1, maximum: 2147483647 },
+          pricingDetails: { type: 'string', nullable: true },
+        },
+      },
       UserProfileInput: {
         type: 'object',
         required: ['firstName'],
@@ -348,8 +707,37 @@ export const swaggerDocument = {
           },
           status: {
             type: 'string',
-            enum: ['DRAFT', 'VISIBLE', 'SUSPENDED'],
+            enum: ['DRAFT', 'SUSPENDED'],
+            description:
+              'Self-service publication is blocked until education verification is implemented (#55/#70)',
             example: 'DRAFT',
+          },
+        },
+      },
+      StudentSpecialtyInput: {
+        type: 'object',
+        required: ['specialtyId', 'pricingType', 'priceCents'],
+        properties: {
+          specialtyId: {
+            type: 'string',
+            format: 'uuid',
+            example: '472e5d8d-e7bf-4513-a812-7970ecb65e9c',
+          },
+          pricingType: {
+            type: 'string',
+            enum: ['HOURLY', 'FIXED'],
+            example: 'HOURLY',
+          },
+          priceCents: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 2147483647,
+            example: 2500,
+          },
+          pricingDetails: {
+            type: 'string',
+            nullable: true,
+            example: 'Cours de 60 minutes',
           },
         },
       },
