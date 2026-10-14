@@ -1,4 +1,10 @@
-import { AccountStatus, Prisma, ProfileStatus, UserRole } from '@prisma/client';
+import {
+  AccountStatus,
+  Prisma,
+  ProfileStatus,
+  UserRole,
+  VerificationStatus,
+} from '@prisma/client';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
@@ -18,6 +24,13 @@ jest.mock('@/prisma/client', () => {
       create: jest.fn(),
       update: jest.fn(),
     },
+    studentSpecialty: {
+      deleteMany: jest.fn(),
+      count: jest.fn(),
+    },
+    studentVerification: { findFirst: jest.fn() },
+    $transaction: jest.fn(),
+    $queryRaw: jest.fn(),
   };
 
   return {
@@ -57,6 +70,16 @@ type PrismaMock = {
     create: SingleArgMock;
     update: SingleArgMock;
   };
+  studentSpecialty: {
+    deleteMany: SingleArgMock;
+    count: SingleArgMock;
+  };
+  studentVerification: { findFirst: SingleArgMock };
+  $queryRaw: jest.Mock;
+  $transaction: jest.Mock<
+    Promise<unknown>,
+    [(tx: PrismaMock) => Promise<unknown>]
+  >;
 };
 
 const prismaMock = prisma as unknown as PrismaMock;
@@ -106,10 +129,20 @@ describe('Student profile routes', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     prismaMock.user.findUnique.mockResolvedValue(userMock);
+    prismaMock.studentVerification.findFirst.mockResolvedValue({
+      status: VerificationStatus.APPROVED,
+    });
+    prismaMock.studentSpecialty.count.mockResolvedValue(0);
+    prismaMock.$transaction.mockImplementation(async (callback) =>
+      callback(prismaMock),
+    );
   });
 
   it('creates the authenticated student profile', async () => {
-    prismaMock.studentProfile.create.mockResolvedValue(profileMock);
+    prismaMock.studentProfile.create.mockResolvedValue({
+      ...profileMock,
+      status: ProfileStatus.DRAFT,
+    });
 
     const response = await request(createTestApp())
       .post('/api/student-profiles')
@@ -118,7 +151,7 @@ describe('Student profile routes', () => {
         title: ' Developpeuse web ',
         description: 'Creation de sites vitrines.',
         domainId: profileMock.domainId,
-        status: ProfileStatus.VISIBLE,
+        status: ProfileStatus.DRAFT,
       });
 
     expect(response.status).toBe(201);
@@ -126,7 +159,7 @@ describe('Student profile routes', () => {
       userId: userMock.id,
       domainId: profileMock.domainId,
       title: 'Developpeuse web',
-      status: ProfileStatus.VISIBLE,
+      status: ProfileStatus.DRAFT,
     });
     expect(firstCallArg(prismaMock.studentProfile.create)).toMatchObject({
       data: {
@@ -134,7 +167,7 @@ describe('Student profile routes', () => {
         domainId: profileMock.domainId,
         title: 'Developpeuse web',
         description: 'Creation de sites vitrines.',
-        status: ProfileStatus.VISIBLE,
+        status: ProfileStatus.DRAFT,
       },
     });
   });
@@ -371,5 +404,98 @@ describe('Student profile routes', () => {
       code: 'DOMAIN_NOT_FOUND',
       message: 'Domain not found',
     });
+  });
+
+  it('removes incompatible specialties when changing domain', async () => {
+    const nextDomainId = '2d7a69bc-bcfe-47bb-b0bf-e23fcb1553e3';
+
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.studentProfile.update.mockResolvedValue({
+      ...profileMock,
+      domainId: nextDomainId,
+    });
+    prismaMock.studentSpecialty.deleteMany.mockResolvedValue({ count: 2 });
+
+    const response = await request(createTestApp())
+      .patch('/api/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        domainId: nextDomainId,
+      });
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.$transaction).toHaveBeenCalled();
+    expect(prismaMock.studentSpecialty.deleteMany).toHaveBeenCalledWith({
+      where: {
+        studentId: userMock.id,
+        specialty: {
+          NOT: {
+            domainId: nextDomainId,
+            studyFields: {
+              some: {
+                studyField: {
+                  educations: { some: { studentId: userMock.id } },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    expect(firstCallArg(prismaMock.studentProfile.update)).toMatchObject({
+      data: { status: ProfileStatus.DRAFT },
+    });
+  });
+
+  it.each(['post', 'patch'] as const)(
+    'blocks self-service publication through %s',
+    async (method) => {
+      const path =
+        method === 'post'
+          ? '/api/student-profiles'
+          : '/api/student-profiles/me';
+      const response = await request(createTestApp())
+        [method](path)
+        .set('Authorization', `Bearer ${createAccessToken()}`)
+        .send({
+          domainId: profileMock.domainId,
+          status: ProfileStatus.VISIBLE,
+        });
+      expect(response.status).toBe(403);
+      expect(response.body.code).toBe('PROFILE_PUBLICATION_NOT_AVAILABLE');
+      expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+      expect(prismaMock.studentProfile.update).not.toHaveBeenCalled();
+    },
+  );
+
+  it('hides draft profiles from public reads', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue({
+      ...profileMock,
+      status: ProfileStatus.DRAFT,
+    });
+    const response = await request(createTestApp()).get(
+      `/api/users/${userMock.id}/student-profile`,
+    );
+    expect(response.status).toBe(404);
+  });
+
+  it('hides a visible profile whose latest verification is not approved', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.studentVerification.findFirst.mockResolvedValue({
+      status: VerificationStatus.PENDING,
+    });
+    const response = await request(createTestApp()).get(
+      `/api/users/${userMock.id}/student-profile`,
+    );
+    expect(response.status).toBe(404);
+  });
+
+  it('hides visible profiles with ineligible specialties', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.studentSpecialty.count.mockResolvedValue(1);
+    const response = await request(createTestApp()).get(
+      `/api/users/${userMock.id}/student-profile`,
+    );
+    expect(response.status).toBe(404);
   });
 });
