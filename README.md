@@ -27,13 +27,30 @@ Le projet utilise les mêmes variables pour les environnements local, développe
 
 Variables principales :
 
-- `NODE_ENV` : `development`, `test` ou `production`.
+- `NODE_ENV` : uniquement `development`, `test` ou `production`. Toute autre valeur explicite bloque le démarrage. Sans cette variable, le lancement local utilise `development` ; l'image Docker utilise `production` par défaut.
 - `PORT` : port HTTP du backend, `3000` par défaut.
-- `DATABASE_URL` et `DIRECT_URL` : connexions PostgreSQL utilisées par Prisma.
+- `DATABASE_URL` et `DIRECT_URL` : connexions PostgreSQL utilisées par Prisma. Avec Supabase, `DATABASE_URL` peut utiliser une connexion poolée ; `DIRECT_URL` doit utiliser la connexion directe pour les migrations.
 - `CORS_ORIGIN` : origines web autorisées, séparées par des virgules.
-- `JWT_SECRET` : secret JWT, obligatoire et non générique en production.
+- `JWT_SECRET` : obligatoire en production, avec au moins 32 caractères hors espaces de début et de fin. Les valeurs de développement `dev-secret-change-me` et `change-me-in-local-env` sont refusées.
 
-En local, `CORS_ORIGIN` peut contenir les URLs du front web et du serveur de développement mobile, par exemple `http://localhost:3000,http://localhost:8081`. En production, `CORS_ORIGIN` doit être limité à des origines connues. Les applications mobiles natives ne sont pas bloquées par CORS de la même façon qu'un navigateur, mais leurs vues web éventuelles le sont.
+Exemple local :
+
+```dotenv
+NODE_ENV=development
+JWT_SECRET=change-me-in-local-env
+CORS_ORIGIN=http://localhost:3000,http://localhost:8081
+```
+
+En local, un `CORS_ORIGIN` absent ou égal à `*` autorise toutes les origines. En production, une liste non vide d'origines connues est obligatoire, et `*` est refusé, même dans une liste :
+
+```dotenv
+NODE_ENV=production
+CORS_ORIGIN=https://epolia.fr,https://admin.epolia.fr
+```
+
+Ajouter un `JWT_SECRET` généré avec une source cryptographique sécurisée, par exemple avec `node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"`, et le fournir hors du dépôt. La longueur minimale seule ne garantit pas la qualité du secret. En déploiement, conserver `NODE_ENV=production` et ne pas injecter le fichier `.env` local dans le conteneur.
+
+Les applications mobiles natives ne sont pas bloquées par CORS de la même façon qu'un navigateur, mais leurs vues web éventuelles le sont.
 
 Le fichier `.env` reste local et ne doit pas être commité.
 
@@ -72,7 +89,7 @@ npm run build
 
 ## CI GitHub Actions
 
-La CI se déclenche sur chaque push de branche et sur les Pull Requests ouvertes, mises à jour ou rouvertes.
+La CI se déclenche sur les pushes vers `main` et sur les Pull Requests vers `main`, ouvertes, mises à jour ou rouvertes. Cela évite de vérifier deux fois un même push sur une branche avec une PR ouverte.
 
 Elle exécute un seul job qui vérifie :
 
@@ -83,3 +100,5 @@ Elle exécute un seul job qui vérifie :
 5. `npm run build`
 
 La CI ne déploie pas l'application et ne crée aucune ressource externe.
+
+La protection de `main` doit exiger le check `Install, lint, test and build` avant fusion.
