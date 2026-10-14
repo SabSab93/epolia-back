@@ -230,6 +230,56 @@ describe('Auth routes', () => {
     });
   });
 
+  it('rejects login for anonymized accounts', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      email: null,
+      status: AccountStatus.DELETED,
+      passwordHash: null,
+    });
+
+    const response = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({
+        email: userMock.email,
+        password: 'password123',
+      });
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({
+      status: 401,
+      code: 'INVALID_CREDENTIALS',
+      message: 'Invalid email or password',
+    });
+  });
+
+  it('returns every role for a multi-role authenticated user', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      roles: [{ role: UserRole.CUSTOMER }, { role: UserRole.STUDENT }],
+    });
+
+    const accessToken = jwt.sign(
+      {
+        sub: userMock.id,
+        email: userMock.email,
+        roles: [UserRole.CUSTOMER, UserRole.STUDENT],
+      },
+      config.jwtSecret,
+    );
+
+    const response = await request(createTestApp())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      id: userMock.id,
+      email: userMock.email,
+      roles: [UserRole.CUSTOMER, UserRole.STUDENT],
+    });
+  });
+
   it('returns the authenticated user from the JWT', async () => {
     prismaMock.user.findUnique.mockResolvedValue(userMock);
 

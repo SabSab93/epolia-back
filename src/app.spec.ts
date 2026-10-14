@@ -35,6 +35,18 @@ describe('Express app', () => {
     });
   });
 
+  it('keeps old customer profile routes unavailable', async () => {
+    const response = await request(app).get('/api/customer-profiles/me');
+    const body = response.body as ErrorBody;
+
+    expect(response.status).toBe(404);
+    expect(body).toEqual({
+      status: 404,
+      code: 'NOT_FOUND',
+      message: 'Route GET /api/customer-profiles/me not found',
+    });
+  });
+
   it('formats application errors consistently', async () => {
     const testApp = express();
 

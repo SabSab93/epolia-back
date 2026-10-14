@@ -157,6 +157,24 @@ describe('User profile routes', () => {
     expect(prismaMock.userProfile.create).not.toHaveBeenCalled();
   });
 
+  it('rejects profile creation with an invalid latitude', async () => {
+    const response = await request(createTestApp())
+      .post('/api/user-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        firstName: 'Sabrina',
+        latitude: 200,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'latitude is invalid',
+    });
+    expect(prismaMock.userProfile.create).not.toHaveBeenCalled();
+  });
+
   it('returns the authenticated user full profile', async () => {
     prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
 
@@ -186,8 +204,6 @@ describe('User profile routes', () => {
       lastName: 'Hammadi',
       photoUrl: null,
       city: 'Paris',
-      latitude: 48.8566,
-      longitude: 2.3522,
     });
 
     const response = await request(createTestApp()).get(
@@ -199,15 +215,17 @@ describe('User profile routes', () => {
       userId: userMock.id,
       firstName: 'Sabrina',
       city: 'Paris',
-      latitude: 48.8566,
-      longitude: 2.3522,
     });
+    expect(response.body).not.toHaveProperty('latitude');
+    expect(response.body).not.toHaveProperty('longitude');
     const prismaCall = firstCallArg<{
       where: { userId: string };
       select: Record<string, boolean>;
     }>(prismaMock.userProfile.findUnique);
 
     expect(prismaCall.where.userId).toBe(userMock.id);
+    expect(prismaCall.select).not.toHaveProperty('latitude');
+    expect(prismaCall.select).not.toHaveProperty('longitude');
   });
 
   it('returns 404 when a profile does not exist', async () => {
@@ -275,6 +293,25 @@ describe('User profile routes', () => {
         latitude: null,
       },
     });
+  });
+
+  it('rejects profile update with an invalid longitude', async () => {
+    prismaMock.userProfile.findUnique.mockResolvedValue(profileMock);
+
+    const response = await request(createTestApp())
+      .patch('/api/user-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        longitude: '2.3522',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'longitude is invalid',
+    });
+    expect(prismaMock.userProfile.update).not.toHaveBeenCalled();
   });
 
   it('deletes the authenticated user profile', async () => {

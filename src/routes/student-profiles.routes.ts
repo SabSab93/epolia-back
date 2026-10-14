@@ -5,6 +5,8 @@ import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 
 export const studentProfilesRouter = Router();
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function cleanText(value: unknown) {
   if (value === null) {
@@ -33,6 +35,52 @@ function cleanProfileStatus(value: unknown) {
   return value as ProfileStatus;
 }
 
+function cleanDomainId(value: unknown, isRequired: true): string;
+function cleanDomainId(value: unknown, isRequired?: false): string | undefined;
+function cleanDomainId(value: unknown, isRequired = false) {
+  if (value === undefined && !isRequired) {
+    return undefined;
+  }
+
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      isRequired ? 'domainId is required' : 'domainId is invalid',
+    );
+  }
+
+  const domainId = value.trim();
+
+  if (!uuidRegex.test(domainId)) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'domainId is invalid');
+  }
+
+  return domainId;
+}
+
+function handleStudentProfilePrismaError(error: unknown): never {
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  ) {
+    throw new AppError(
+      409,
+      'STUDENT_PROFILE_ALREADY_EXISTS',
+      'Student profile already exists',
+    );
+  }
+
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2003'
+  ) {
+    throw new AppError(404, 'DOMAIN_NOT_FOUND', 'Domain not found');
+  }
+
+  throw error;
+}
+
 studentProfilesRouter.post(
   '/student-profiles',
   requireAuth,
@@ -46,10 +94,7 @@ studentProfilesRouter.post(
     const body = request.body || {};
     const title = cleanText(body.title);
     const status = cleanProfileStatus(body.status);
-
-    if (typeof body.domainId !== 'string' || body.domainId.trim() === '') {
-      throw new AppError(400, 'VALIDATION_ERROR', 'domainId is required');
-    }
+    const domainId = cleanDomainId(body.domainId, true);
 
     if (body.title !== undefined && !title) {
       throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
@@ -59,7 +104,7 @@ studentProfilesRouter.post(
       const profile = await prisma.studentProfile.create({
         data: {
           userId: authUser.id,
-          domainId: body.domainId.trim(),
+          domainId,
           title,
           description: cleanText(body.description),
           status: status ?? ProfileStatus.DRAFT,
@@ -68,18 +113,7 @@ studentProfilesRouter.post(
 
       response.status(201).json(profile);
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2002'
-      ) {
-        throw new AppError(
-          409,
-          'STUDENT_PROFILE_ALREADY_EXISTS',
-          'Student profile already exists',
-        );
-      }
-
-      throw error;
+      handleStudentProfilePrismaError(error);
     }
   },
 );
@@ -146,6 +180,7 @@ studentProfilesRouter.patch(
     const body = request.body || {};
     const title = cleanText(body.title);
     const status = cleanProfileStatus(body.status);
+    const domainId = cleanDomainId(body.domainId);
 
     const existingProfile = await prisma.studentProfile.findUnique({
       where: {
@@ -165,21 +200,22 @@ studentProfilesRouter.patch(
       throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
     }
 
-    const profile = await prisma.studentProfile.update({
-      where: {
-        userId: authUser.id,
-      },
-      data: {
-        domainId:
-          typeof body.domainId === 'string' && body.domainId.trim() !== ''
-            ? body.domainId.trim()
-            : undefined,
-        title: title ?? undefined,
-        description: cleanText(body.description),
-        status,
-      },
-    });
+    try {
+      const profile = await prisma.studentProfile.update({
+        where: {
+          userId: authUser.id,
+        },
+        data: {
+          domainId,
+          title: title ?? undefined,
+          description: cleanText(body.description),
+          status,
+        },
+      });
 
-    response.status(200).json(profile);
+      response.status(200).json(profile);
+    } catch (error) {
+      handleStudentProfilePrismaError(error);
+    }
   },
 );

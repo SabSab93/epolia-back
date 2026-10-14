@@ -139,6 +139,17 @@ function createAdminAccessToken() {
   );
 }
 
+function createCustomerAccessToken() {
+  return jwt.sign(
+    {
+      sub: userMock.id,
+      email: userMock.email,
+      roles: [UserRole.CUSTOMER],
+    },
+    config.jwtSecret,
+  );
+}
+
 function adminAuthorizationHeader() {
   return `Bearer ${createAdminAccessToken()}`;
 }
@@ -150,6 +161,35 @@ describe('Users routes', () => {
 
     prismaMock.$transaction.mockImplementation(transaction);
     prismaMock.user.findUnique.mockResolvedValueOnce(adminUserMock);
+  });
+
+  it('rejects users routes without a token', async () => {
+    const response = await request(createTestApp()).get(
+      `/api/users/${userMock.id}`,
+    );
+
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({
+      status: 401,
+      code: 'UNAUTHORIZED',
+      message: 'Authentication required',
+    });
+  });
+
+  it('rejects users routes for a non admin user', async () => {
+    prismaMock.user.findUnique.mockReset();
+    prismaMock.user.findUnique.mockResolvedValueOnce(userMock);
+
+    const response = await request(createTestApp())
+      .get(`/api/users/${userMock.id}`)
+      .set('Authorization', `Bearer ${createCustomerAccessToken()}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body).toEqual({
+      status: 403,
+      code: 'FORBIDDEN',
+      message: 'Forbidden',
+    });
   });
 
   it('returns a user by id', async () => {

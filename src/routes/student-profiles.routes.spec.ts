@@ -1,4 +1,4 @@
-import { AccountStatus, ProfileStatus, UserRole } from '@prisma/client';
+import { AccountStatus, Prisma, ProfileStatus, UserRole } from '@prisma/client';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
@@ -95,6 +95,13 @@ function firstCallArg<T>(mock: SingleArgMock): T {
   return call[0] as T;
 }
 
+function prismaKnownError(code: string) {
+  return new Prisma.PrismaClientKnownRequestError('Prisma error', {
+    code,
+    clientVersion: 'test',
+  });
+}
+
 describe('Student profile routes', () => {
   beforeEach(() => {
     jest.resetAllMocks();
@@ -161,6 +168,45 @@ describe('Student profile routes', () => {
       message: 'domainId is required',
     });
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+  });
+
+  it('rejects profile creation with an invalid domain id', async () => {
+    const response = await request(createTestApp())
+      .post('/api/student-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        title: 'Developpeuse web',
+        domainId: 'not-a-uuid',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'domainId is invalid',
+    });
+    expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when profile creation references an unknown domain', async () => {
+    prismaMock.studentProfile.create.mockRejectedValue(
+      prismaKnownError('P2003'),
+    );
+
+    const response = await request(createTestApp())
+      .post('/api/student-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        title: 'Developpeuse web',
+        domainId: profileMock.domainId,
+      });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      status: 404,
+      code: 'DOMAIN_NOT_FOUND',
+      message: 'Domain not found',
+    });
   });
 
   it('rejects profile creation for a non student user', async () => {
@@ -284,6 +330,46 @@ describe('Student profile routes', () => {
         domainId: undefined,
         status: undefined,
       },
+    });
+  });
+
+  it('rejects profile update with an invalid domain id', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+
+    const response = await request(createTestApp())
+      .patch('/api/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        domainId: '',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+      message: 'domainId is invalid',
+    });
+    expect(prismaMock.studentProfile.update).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when profile update references an unknown domain', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+    prismaMock.studentProfile.update.mockRejectedValue(
+      prismaKnownError('P2003'),
+    );
+
+    const response = await request(createTestApp())
+      .patch('/api/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        domainId: '2d7a69bc-bcfe-47bb-b0bf-e23fcb1553e3',
+      });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({
+      status: 404,
+      code: 'DOMAIN_NOT_FOUND',
+      message: 'Domain not found',
     });
   });
 });
