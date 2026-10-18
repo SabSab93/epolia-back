@@ -1,5 +1,11 @@
 import { randomUUID } from 'node:crypto';
-import { PricingType, ProfileStatus, UserRole } from '@prisma/client';
+import {
+  AccountStatus,
+  PricingType,
+  ProfileStatus,
+  UserRole,
+  VerificationStatus,
+} from '@prisma/client';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
@@ -122,11 +128,31 @@ databaseTests(
       await prisma.$disconnect();
     });
 
-    async function education(field?: string) {
+    function today() {
+      const now = new Date();
+      return new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+      );
+    }
+
+    function relativeDay(days: number) {
+      const date = today();
+      date.setUTCDate(date.getUTCDate() + days);
+      return date;
+    }
+
+    async function education(
+      field?: string,
+      dates: { startDate: Date | null; endDate: Date | null } = {
+        startDate: relativeDay(-30),
+        endDate: relativeDay(30),
+      },
+    ) {
       return prisma.studentEducation.create({
         data: {
           studentId,
           title: 'Declared education',
+          ...dates,
           studyFieldId: field ? fields.get(field) : null,
         },
       });
@@ -227,6 +253,161 @@ databaseTests(
       const rejected = await addSpecialty('Application web');
       expect(rejected.status).toBe(403);
       expect(rejected.body.code).toBe('SPECIALTY_NOT_ELIGIBLE');
+    });
+
+    it.each([
+      ['past', -30, -1],
+      ['future', 1, 30],
+      ['missing dates', null, null],
+      ['missing start', null, 30],
+      ['missing end', -30, null],
+    ] as const)(
+      'grants no rights for %s education',
+      async (_label, start, end) => {
+        await education('Test Developpement', {
+          startDate: start === null ? null : relativeDay(start),
+          endDate: end === null ? null : relativeDay(end),
+        });
+        const list = await request(app)
+          .get('/api/student-specialties/eligible')
+          .set('Authorization', `Bearer ${token}`);
+        expect(list.status).toBe(200);
+        expect(list.body).toEqual([]);
+        expect((await addSpecialty('Site vitrine')).status).toBe(403);
+      },
+    );
+
+    it('accepts the start and end civil dates inclusively', async () => {
+      await education('Test Developpement', {
+        startDate: today(),
+        endDate: today(),
+      });
+      const list = await request(app)
+        .get('/api/student-specialties/eligible')
+        .set('Authorization', `Bearer ${token}`);
+      expect(list.body.map((row: { label: string }) => row.label)).toEqual([
+        'Site vitrine',
+      ]);
+      expect((await addSpecialty('Site vitrine')).status).toBe(201);
+    });
+
+    async function visibleProfile() {
+      await prisma.studentVerification.create({
+        data: {
+          studentId,
+          status: VerificationStatus.APPROVED,
+          schoolDocumentStorageKey: 'test-only-proof',
+        },
+      });
+      await prisma.studentProfile.update({
+        where: { userId: studentId },
+        data: { status: ProfileStatus.VISIBLE },
+      });
+    }
+
+    it.each([
+      AccountStatus.ACTIVE,
+      AccountStatus.SUSPENDED,
+      AccountStatus.DELETED,
+    ])(
+      'checks account status in anonymous profile reads: %s',
+      async (status) => {
+        await education('Test Developpement');
+        expect((await addSpecialty('Site vitrine')).status).toBe(201);
+        await visibleProfile();
+        await prisma.user.update({
+          where: { id: studentId },
+          data: { status },
+        });
+        const response = await request(app).get(
+          `/api/users/${studentId}/student-profile`,
+        );
+        expect(response.status).toBe(
+          status === AccountStatus.ACTIVE ? 200 : 404,
+        );
+        if (status !== AccountStatus.ACTIVE)
+          expect(response.body.code).toBe('STUDENT_PROFILE_NOT_FOUND');
+      },
+    );
+
+    it('expires rights at the next UTC date without an education PATCH', async () => {
+      const end = today();
+      const row = await education('Test Developpement', {
+        startDate: relativeDay(-30),
+        endDate: end,
+      });
+      expect((await addSpecialty('Site vitrine')).status).toBe(201);
+      await visibleProfile();
+      expect(
+        (await request(app).get(`/api/users/${studentId}/student-profile`))
+          .status,
+      ).toBe(200);
+      jest.useFakeTimers({
+        doNotFake: [
+          'hrtime',
+          'performance',
+          'nextTick',
+          'queueMicrotask',
+          'setImmediate',
+          'clearImmediate',
+          'setTimeout',
+          'clearTimeout',
+          'setInterval',
+          'clearInterval',
+        ],
+      });
+      try {
+        jest.setSystemTime(new Date(end.getTime() + 86400000));
+        // Renew the session at the simulated date: test eligibility, not JWT expiry.
+        token = jwt.sign(
+          { sub: studentId, roles: [UserRole.STUDENT, UserRole.CUSTOMER] },
+          config.jwtSecret,
+        );
+        const list = await request(app)
+          .get('/api/student-specialties/eligible')
+          .set('Authorization', `Bearer ${token}`);
+        expect(list.status).toBe(200);
+        expect(list.body).toEqual([]);
+        const price = await request(app)
+          .patch(`/api/student-specialties/${specialties.get('Site vitrine')}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ priceCents: 3000 });
+        expect(price.status).toBe(403);
+        expect(
+          (await request(app).get(`/api/users/${studentId}/student-profile`))
+            .status,
+        ).toBe(404);
+        expect(
+          await prisma.studentEducation.findUnique({ where: { id: row.id } }),
+        ).toEqual(row);
+        expect(
+          await prisma.studentSpecialty.findFirst({ where: { studentId } }),
+        ).toMatchObject({ priceCents: 2500 });
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
+    it('removes offerings after changing current education to future dates', async () => {
+      const row = await education('Test Developpement');
+      expect((await addSpecialty('Site vitrine')).status).toBe(201);
+      await visibleProfile();
+      const response = await request(app)
+        .patch(`/api/student-educations/${row.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          startDate: relativeDay(1).toISOString().slice(0, 10),
+          endDate: relativeDay(30).toISOString().slice(0, 10),
+        });
+      expect(response.status).toBe(200);
+      expect(
+        await prisma.studentSpecialty.count({ where: { studentId } }),
+      ).toBe(0);
+      expect(
+        await prisma.studentProfile.findUnique({
+          where: { userId: studentId },
+        }),
+      ).toMatchObject({ status: ProfileStatus.DRAFT });
     });
 
     it('rejects physics for a developer even with a compatible principal domain', async () => {

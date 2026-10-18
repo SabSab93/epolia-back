@@ -1,4 +1,5 @@
 import {
+  AccountStatus,
   Prisma,
   ProfileStatus,
   UserRole,
@@ -174,7 +175,14 @@ studentProfilesRouter.get(
     const profile = await prisma.$transaction(async (tx) => {
       const profile = await lockStudentProfile(tx, request.params.userId);
 
-      if (profile.status !== ProfileStatus.VISIBLE) {
+      const owner = await tx.user.findUnique({
+        where: { id: profile.userId },
+        select: { status: true },
+      });
+      if (
+        profile.status !== ProfileStatus.VISIBLE ||
+        owner?.status !== AccountStatus.ACTIVE
+      ) {
         throw new AppError(
           404,
           'STUDENT_PROFILE_NOT_FOUND',

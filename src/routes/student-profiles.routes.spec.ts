@@ -434,7 +434,13 @@ describe('Student profile routes', () => {
             studyFields: {
               some: {
                 studyField: {
-                  educations: { some: { studentId: userMock.id } },
+                  educations: {
+                    some: {
+                      studentId: userMock.id,
+                      startDate: { lte: expect.any(Date) },
+                      endDate: { gte: expect.any(Date) },
+                    },
+                  },
                 },
               },
             },
@@ -465,6 +471,19 @@ describe('Student profile routes', () => {
       expect(response.body.code).toBe('PROFILE_PUBLICATION_NOT_AVAILABLE');
       expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
       expect(prismaMock.studentProfile.update).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([AccountStatus.SUSPENDED, AccountStatus.DELETED, null])(
+    'hides public profiles for inactive or missing owners: %s',
+    async (status) => {
+      prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+      prismaMock.user.findUnique.mockResolvedValue(status ? { status } : null);
+      const response = await request(createTestApp()).get(
+        `/api/users/${userMock.id}/student-profile`,
+      );
+      expect(response.status).toBe(404);
+      expect(response.body.code).toBe('STUDENT_PROFILE_NOT_FOUND');
     },
   );
 

@@ -39,3 +39,53 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  catalog-integration:
+    name: Catalog PostgreSQL integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: epolia_catalog_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d epolia_catalog_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia_catalog_test?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/epolia_catalog_test?schema=public
+      CATALOG_TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/epolia_catalog_test?schema=public
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: epolia_catalog_test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+      - name: Validate catalog
+        run: npm run catalog:check
+      - name: Apply initial migration and historical fixture
+        run: |
+          psql -v ON_ERROR_STOP=1 -f prisma/migrations/20261004120000_init_final_mld/migration.sql
+          psql -v ON_ERROR_STOP=1 -f src/catalog/legacy-fixture.sql
+          npx prisma migrate resolve --applied 20261004120000_init_final_mld
+      - name: Apply additive migrations
+        run: npx prisma migrate deploy
+      - name: Test PostgreSQL catalog and eligibility
+        run: npm test -- --runInBand catalog.integration.spec.ts

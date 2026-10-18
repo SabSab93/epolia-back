@@ -117,7 +117,8 @@ Exemple de declaration :
   "title": "Licence informatique",
   "school": "Universite",
   "level": "BAC+3",
-  "startDate": "2025-09-01",
+  "startDate": "2026-09-01",
+  "endDate": "2027-06-30",
   "studyFieldId": "9324c24d-a476-41db-a0e3-12479bd81ed7"
 }
 ```
@@ -147,6 +148,20 @@ ou `SPECIALTY_NOT_ELIGIBLE`, 404 reference/profil/formation possedee absente,
 409 doublon etudiant-specialite. Les ID de proprietaire fournis par le client
 ne sont pas utilises. Une formation d'autrui retourne 404.
 
+### Formation actuellement suivie
+
+Seule une formation actuellement suivie ouvre des droits. Le filtre commun
+exige `startDate <= aujourd'hui <= endDate`, sur la date civile UTC, bornes
+incluses. Convention technique prudente : les deux dates sont necessaires ;
+une declaration incomplete reste enregistrable et modifiable, sans ouvrir de
+specialite. Cette condition ne remplace pas la preuve d'inscription (#55/#70).
+
+La liste eligible, les POST/PATCH de tarif, le nettoyage et le GET public
+utilisent ce meme filtre. L'expiration est donc prise en compte a la lecture,
+sans attendre une modification de la formation. Elle masque le profil public
+si une offre est devenue ineligible, sans supprimer automatiquement son tarif
+ni modifier les snapshots des missions.
+
 ## Catalogue actif vide et onboarding
 
 Sur une base propre, les GET de catalogue retournent des listes vides et aucune
@@ -175,8 +190,8 @@ preuve du cursus. Les POST/PATCH de profil ne permettent plus status VISIBLE :
 403 PROFILE_PUBLICATION_NOT_AVAILABLE, en attendant le processus de publication.
 
 Le GET public d'un ancien profil exige VISIBLE, la derniere verification scolaire
-APPROVED et l'absence de specialite ineligible. Cette lecture est serialisee avec
-les mutations du profil. Le document scolaire existant n'est pas lie a chaque
+APPROVED, un compte proprietaire ACTIVE et l'absence de specialite ineligible.
+Cette lecture est serialisee avec les mutations du profil. Le document scolaire existant n'est pas lie a chaque
 formation et ne prouve donc pas son contenu. Les profils historiques VISIBLE
 doivent etre revus avant ouverture publique. #55/#70 devront faire verifier par
 un administrateur la formation et son rattachement precis, puis autoriser la
@@ -210,7 +225,8 @@ le V1 ; conserver les UUID lies aux missions. Les cas ambigus restent en attente
 `npm run catalog:check`, `npx prisma validate`, `npm run prisma:generate`,
 `npm run lint`, `npm test -- --runInBand`, `npm run build`.
 
-Les tests PostgreSQL sont optionnels dans la suite habituelle. Pour les lancer,
+La CI execute les tests PostgreSQL dans un job dedie avec une base jetable.
+Ils restent optionnels dans la suite locale habituelle. Pour les lancer,
 utiliser exclusivement une base de test dediee :
 
 1. Charger le socle MLD et `src/catalog/legacy-fixture.sql` sur une base jetable.
@@ -225,6 +241,23 @@ normalisation des labels, les droits precis, les formations multiples,
 les declarations sans rattachement, les acces d'autrui, le retrait d'offres,
 la conservation des missions et la concurrence reelle des transactions.
 Le catalogue synthetique des tests n'est jamais importe dans le seed actif.
+
+## Corrections de review verifiees le 18 octobre 2026
+
+- Filtre commun : formations actuellement suivies uniquement, dates completes,
+  bornes inclusives UTC ; debut/fin dans le futur ou le passe ne donnent aucun droit.
+- Lecture publique : reponse 404 pour un compte proprietaire SUSPENDED ou DELETED.
+- 10 suites, 162 tests reussis dont 34 tests PostgreSQL ; aucun test ignore.
+  Couverture ajoutee : dates absentes/partielles, passe/futur, bornes inclusives,
+  expiration sans PATCH, nettoyage apres changement de dates, etat du compte.
+- Migration initiale, fixture historique, migrate resolve puis migrate deploy :
+  succes sur une nouvelle base PostgreSQL jetable.
+- Lint, build et catalog:check : succes. Catalogue approuve toujours vide.
+- Job CI PostgreSQL ajoute ; son execution GitHub attend un futur push.
+- Le typage global incluant les specs signale encore deux erreurs preexistantes
+  d'inference CUSTOMER/STUDENT dans student-specialties.routes.spec.ts ; elles
+  sont hors de ces corrections. Le build applicatif passe.
+- Aucun commit, push, import ni migration sur une base DEV/PROD.
 
 ## Resultats verifies le 14 octobre 2026
 

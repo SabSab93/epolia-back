@@ -33,6 +33,22 @@ export async function lockStudentProfile(
   return getStudentProfile(tx, studentId);
 }
 
+// PostgreSQL DATE values are civil dates represented at midnight UTC.
+// Incomplete declarations remain editable drafts, but grant no eligibility.
+export function currentEducationWhere(
+  studentId: string,
+  at: Date = new Date(),
+): Prisma.StudentEducationWhereInput {
+  const today = new Date(
+    Date.UTC(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate()),
+  );
+  return {
+    studentId,
+    startDate: { lte: today },
+    endDate: { gte: today },
+  };
+}
+
 export function eligibleSpecialtyWhere(
   studentId: string,
   domainId?: string,
@@ -41,7 +57,7 @@ export function eligibleSpecialtyWhere(
     domainId,
     studyFields: {
       some: {
-        studyField: { educations: { some: { studentId } } },
+        studyField: { educations: { some: currentEducationWhere(studentId) } },
       },
     },
   };
@@ -54,7 +70,7 @@ export async function assertSpecialtyEligible(
 ) {
   const education = await tx.studentEducation.findFirst({
     where: {
-      studentId,
+      ...currentEducationWhere(studentId),
       studyField: { specialties: { some: { specialtyId } } },
     },
     select: { id: true },
@@ -64,7 +80,7 @@ export async function assertSpecialtyEligible(
     throw new AppError(
       403,
       'SPECIALTY_NOT_ELIGIBLE',
-      'Specialty is not allowed by any of your educations',
+      'Specialty is not allowed by any of your current educations',
     );
   }
 }

@@ -243,7 +243,7 @@ export const swaggerDocument = {
           400: { description: 'Invalid userId' },
           404: {
             description:
-              'Profile absent, not visible, unverified or with ineligible specialties',
+              'Profile absent, owner inactive, not visible, unverified or with ineligible specialties',
           },
         },
       },
@@ -284,7 +284,7 @@ export const swaggerDocument = {
     '/api/student-specialties/eligible': {
       get: {
         summary:
-          'List specialties allowed by declared educations and principal domain',
+          'List specialties allowed by current educations and principal domain',
         tags: ['StudentSpecialty'],
         security: [{ bearerAuth: [] }],
         responses: {
@@ -334,7 +334,7 @@ export const swaggerDocument = {
       post: {
         summary: 'Declare an education for the authenticated student',
         description:
-          'A null studyFieldId grants no eligibility. Changes return visible profiles to DRAFT.',
+          'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. Changes return visible profiles to DRAFT.',
         tags: ['StudentEducation'],
         security: [{ bearerAuth: [] }],
         requestBody: {
@@ -417,7 +417,7 @@ export const swaggerDocument = {
       post: {
         summary: 'Add a specialty to the authenticated student profile',
         description:
-          'Requires a compatible principal domain and an explicit study field link from an owned education. New offerings return visible profiles to DRAFT.',
+          'Requires a compatible principal domain and an explicit study field link from a current owned education (both dates required, inclusive UTC civil dates). New offerings return visible profiles to DRAFT.',
         tags: ['StudentSpecialty'],
         security: [{ bearerAuth: [] }],
         requestBody: {
