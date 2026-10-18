@@ -65,6 +65,16 @@ Les routes utilisent le préfixe `/api`. L'authentification locale, les profils 
 
 Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
 
+## Imports internes
+
+Utiliser des alias pour les imports locaux, y compris dans les tests :
+
+- `@/...` référence le dossier `src/`.
+- `@root/...` référence la racine du dépôt, notamment `@root/prisma/catalog`.
+
+Les alias sont configurés dans TypeScript et Jest. Les scripts TypeScript
+chargent `tsconfig-paths/register` ; le build utilise `tsc-alias`.
+
 ## Commandes
 
 | Commande                  | Usage                                                 |

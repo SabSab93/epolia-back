@@ -121,7 +121,7 @@ type PrismaMock = {
 
 const prismaMock = prisma as unknown as PrismaMock;
 
-function createAccessToken(roles = [UserRole.STUDENT]) {
+function createAccessToken(roles: UserRole[] = [UserRole.STUDENT]) {
   return jwt.sign(
     {
       sub: userMock.id,

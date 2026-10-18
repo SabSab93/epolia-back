@@ -5,7 +5,7 @@ const originalEnv = process.env;
 const validJwtSecret = '0123456789abcdef0123456789abcdef';
 
 function loadConfig() {
-  return (require('./env') as typeof import('./env')).config;
+  return (require('@/config/env') as typeof import('@/config/env')).config;
 }
 
 describe('Environment configuration', () => {
