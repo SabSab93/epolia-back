@@ -19,6 +19,22 @@ async function main() {
   const report = await importCatalog(prisma, approved, {
     dryRun: args.includes('--dry-run'),
   });
+  const studyFieldLabels = new Map(
+    approved.studyFields.map((field) => [field.id, field.label]),
+  );
+  const specialtyLabels = new Map(
+    approved.domains.flatMap((domain) =>
+      domain.specialties.map((specialty) => [specialty.id, specialty.label]),
+    ),
+  );
+  const createdLinks = report.links
+    .filter((link) => link.action === 'create')
+    .map(({ studyFieldId, specialtyId }) => ({
+      studyFieldId,
+      specialtyId,
+      studyFieldLabel: studyFieldLabels.get(studyFieldId),
+      specialtyLabel: specialtyLabels.get(specialtyId),
+    }));
   console.log(
     JSON.stringify(
       {
@@ -38,6 +54,7 @@ async function main() {
           unchanged: report.links.filter((link) => link.action === 'unchanged')
             .length,
         },
+        createdLinks,
         changes: report.changes.filter(
           (change) => change.action !== 'unchanged',
         ),

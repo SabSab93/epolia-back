@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { join } from 'node:path';
 import {
   AccountStatus,
@@ -1026,5 +1028,92 @@ databaseTests(
         replay.links.every((change) => change.action === 'unchanged'),
       ).toBe(true);
     });
+
+    it('reports new study-field specialty links in the CLI dry-run without writing them', async () => {
+      const input = readActiveCatalog(
+        join(__dirname, '../../prisma/catalog/approved.json'),
+      );
+      await importCatalog(prisma, input);
+      const field = input.studyFields.find(
+        (field) => field.allowedSpecialtyIds.length > 0,
+      )!;
+      const specialtyId = field.allowedSpecialtyIds[0];
+      const specialty = input.domains
+        .flatMap((domain) => domain.specialties)
+        .find((specialty) => specialty.id === specialtyId)!;
+      const key = { studyFieldId: field.id, specialtyId };
+      const run = promisify(execFile);
+      async function preview() {
+        const { stdout } = await run(
+          process.execPath,
+          [
+            '-r',
+            'ts-node/register',
+            '-r',
+            'tsconfig-paths/register',
+            'prisma/seed-catalog.ts',
+            '--dry-run',
+          ],
+          {
+            cwd: join(__dirname, '../..'),
+            env: {
+              ...process.env,
+              DATABASE_URL: process.env.CATALOG_TEST_DATABASE_URL,
+              DIRECT_URL: process.env.CATALOG_TEST_DATABASE_URL,
+            },
+          },
+        );
+        return JSON.parse(stdout);
+      }
+      await prisma.studyFieldSpecialty.delete({
+        where: { studyFieldId_specialtyId: key },
+      });
+      try {
+        const before = await catalogCounts();
+        const report = await preview();
+        expect(report.dryRun).toBe(true);
+        expect(report.entries).toEqual({
+          created: 0,
+          renamed: 0,
+          unchanged: input.domains.reduce(
+            (count, domain) => count + 1 + domain.specialties.length,
+            input.studyFields.length,
+          ),
+        });
+        expect(report.changes).toEqual([]);
+        expect(report.links.created).toBe(1);
+        expect(report.createdLinks).toEqual([
+          {
+            ...key,
+            studyFieldLabel: field.label,
+            specialtyLabel: specialty.label,
+          },
+        ]);
+        expect(report.conflicts).toEqual([]);
+        expect(await catalogCounts()).toEqual(before);
+        expect(
+          await prisma.studyFieldSpecialty.findUnique({
+            where: { studyFieldId_specialtyId: key },
+          }),
+        ).toBeNull();
+      } finally {
+        await prisma.studyFieldSpecialty.upsert({
+          where: { studyFieldId_specialtyId: key },
+          create: key,
+          update: {},
+        });
+      }
+      const before = await catalogCounts();
+      const replay = await preview();
+      expect(replay.createdLinks).toEqual([]);
+      expect(replay.links.created).toBe(0);
+      expect(replay.links.unchanged).toBe(
+        input.studyFields.reduce(
+          (count, field) => count + field.allowedSpecialtyIds.length,
+          0,
+        ),
+      );
+      expect(await catalogCounts()).toEqual(before);
+    }, 20000);
   },
 );

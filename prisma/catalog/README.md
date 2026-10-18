@@ -37,7 +37,9 @@ connexion à la base. Le catalogue actif peut évoluer indépendamment de l'arch
 
 L'import utilise la configuration Prisma existante. Le `--dry-run` lit la base
 sans écrire et présente les créations, renommages et conflits ; les entrées
-inchangées sont comptées. Un conflit produit un code de sortie non nul.
+inchangées sont comptées. `createdLinks` détaille uniquement les nouvelles
+correspondances, avec les UUID et les libellés des familles et des spécialités.
+Un conflit produit un code de sortie non nul.
 
 L'import réel recalcule le plan et l'applique dans une transaction Serializable.
 Une erreur annule toutes ses écritures. Un conflit concurrent peut nécessiter de
