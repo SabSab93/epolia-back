@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 export type Catalog = {
@@ -112,118 +113,256 @@ export function readCatalog(file: string) {
   return validateCatalog(JSON.parse(readFileSync(file, 'utf8')));
 }
 
-export function assertApprovedCatalog(candidate: Catalog, approved: Catalog) {
-  const candidateDomains = new Map(
-    candidate.domains.map((domain) => [normalizeLabel(domain.label), domain]),
-  );
-  const candidateFields = new Map(
-    candidate.studyFields.map((field) => [normalizeLabel(field.label), field]),
-  );
-  for (const domain of approved.domains) {
-    const reference = candidateDomains.get(normalizeLabel(domain.label));
+// The active format references immutable UUIDs, never display labels.
+export type ActiveCatalog = {
+  version: 3;
+  domains: {
+    id: string;
+    label: string;
+    specialties: { id: string; label: string }[];
+  }[];
+  studyFields: { id: string; label: string; allowedSpecialtyIds: string[] }[];
+};
+
+export function validateActiveCatalog(value: unknown): ActiveCatalog {
+  const payload = record(value);
+  if (payload.version !== 3)
+    throw new Error('Active catalog must use version 3');
+  const ids = new Set<string>();
+  function id(value: unknown) {
     if (
-      !reference ||
-      domain.specialties.some(
-        (specialty) =>
-          !reference.specialties.some(
-            (value) => normalizeLabel(value) === normalizeLabel(specialty),
-          ),
+      typeof value !== 'string' ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        value,
       )
     ) {
-      throw new Error(
-        `Approved catalog domain is absent from candidate: ${domain.label}`,
-      );
+      throw new Error('Catalog IDs must be UUIDs');
+    }
+    const result = value.toLowerCase();
+    if (ids.has(result)) throw new Error(`Duplicate catalog ID: ${result}`);
+    ids.add(result);
+    return result;
+  }
+  const domains = unique(
+    array(payload.domains).map((entry) => {
+      const domain = record(entry);
+      return {
+        id: id(domain.id),
+        label: label(domain.label),
+        specialties: unique(
+          array(domain.specialties).map((entry) => {
+            const specialty = record(entry);
+            return { id: id(specialty.id), label: label(specialty.label) };
+          }),
+          (entry) => normalizeLabel(entry.label),
+        ),
+      };
+    }),
+    (entry) => normalizeLabel(entry.label),
+  );
+  const specialtyIds = new Set(
+    domains.flatMap((domain) => domain.specialties.map((entry) => entry.id)),
+  );
+  const studyFields = unique(
+    array(payload.studyFields).map((entry) => {
+      const field = record(entry);
+      return {
+        id: id(field.id),
+        label: label(field.label),
+        allowedSpecialtyIds: unique(
+          array(field.allowedSpecialtyIds).map((value) => {
+            if (
+              typeof value !== 'string' ||
+              !specialtyIds.has(value.toLowerCase())
+            ) {
+              throw new Error(`Unknown specialty ID: ${String(value)}`);
+            }
+            return value.toLowerCase();
+          }),
+          (value) => value,
+        ),
+      };
+    }),
+    (entry) => normalizeLabel(entry.label),
+  );
+  return { version: 3, domains, studyFields };
+}
+
+export function readActiveCatalog(file: string) {
+  return validateActiveCatalog(JSON.parse(readFileSync(file, 'utf8')));
+}
+
+type CatalogChange = {
+  entity: 'domain' | 'specialty' | 'studyField';
+  action: 'create' | 'rename' | 'unchanged';
+  id: string;
+  label: string;
+  previousLabel?: string;
+  domainId?: string;
+};
+export type CatalogReport = {
+  dryRun: boolean;
+  changes: CatalogChange[];
+  links: {
+    studyFieldId: string;
+    specialtyId: string;
+    action: 'create' | 'unchanged';
+  }[];
+  conflicts: string[];
+};
+
+async function applyCatalogPlan(
+  tx: Prisma.TransactionClient,
+  report: CatalogReport,
+) {
+  for (const change of report.changes) {
+    if (change.action === 'unchanged') continue;
+    const data = { label: change.label };
+    if (change.entity === 'domain') {
+      if (change.action === 'create')
+        await tx.domain.create({ data: { id: change.id, ...data } });
+      else await tx.domain.update({ where: { id: change.id }, data });
+    } else if (change.entity === 'specialty') {
+      if (change.action === 'create')
+        await tx.specialty.create({
+          data: { id: change.id, domainId: change.domainId!, ...data },
+        });
+      else await tx.specialty.update({ where: { id: change.id }, data });
+    } else {
+      if (change.action === 'create')
+        await tx.studyField.create({ data: { id: change.id, ...data } });
+      else await tx.studyField.update({ where: { id: change.id }, data });
     }
   }
-  for (const field of approved.studyFields) {
-    const reference = candidateFields.get(normalizeLabel(field.label));
-    const allowed = new Set(
-      reference?.allowedSpecialties.map((pair) =>
-        specialtyKey(pair.domain, pair.specialty),
-      ),
-    );
-    if (
-      !reference ||
-      field.allowedSpecialties.some(
-        (pair) => !allowed.has(specialtyKey(pair.domain, pair.specialty)),
-      )
-    ) {
-      throw new Error(
-        `Approved study field association is absent from candidate: ${field.label}`,
-      );
-    }
+  for (const { action, studyFieldId, specialtyId } of report.links) {
+    if (action === 'create')
+      await tx.studyFieldSpecialty.create({
+        data: { studyFieldId, specialtyId },
+      });
   }
 }
 
-function existingLabels<T extends { id: string; label: string }>(rows: T[]) {
-  unique(rows, (row) => normalizeLabel(row.label));
-  return new Map(rows.map((row) => [normalizeLabel(row.label), row]));
-}
-
-export async function importCatalog(prisma: PrismaClient, catalog: Catalog) {
-  catalog = validateCatalog(catalog);
+export async function importCatalog(
+  prisma: PrismaClient,
+  input: Catalog | ActiveCatalog,
+  { dryRun = false }: { dryRun?: boolean } = {},
+): Promise<CatalogReport> {
+  // V2 remains supported for historical fixtures. The CLI accepts only V3.
+  const catalog =
+    input.version === 3 ? validateActiveCatalog(input) : validateCatalog(input);
   return prisma.$transaction(
     async (tx) => {
-      const domains = existingLabels(
-        await tx.domain.findMany({ select: { id: true, label: true } }),
+      const report: CatalogReport = {
+        dryRun,
+        changes: [],
+        links: [],
+        conflicts: [],
+      };
+      const domains = await tx.domain.findMany({
+        select: { id: true, label: true },
+      });
+      const specialties = await tx.specialty.findMany({
+        select: { id: true, label: true, domainId: true },
+      });
+      const fields = await tx.studyField.findMany({
+        select: { id: true, label: true },
+      });
+      const links = new Set(
+        (await tx.studyFieldSpecialty.findMany()).map(
+          (link) => `${link.studyFieldId}/${link.specialtyId}`,
+        ),
       );
-      const fields = existingLabels(
-        await tx.studyField.findMany({ select: { id: true, label: true } }),
-      );
-      const specialties = new Map<string, string>();
-      for (const entry of catalog.domains) {
-        const existing = domains.get(normalizeLabel(entry.label));
-        const domain = await tx.domain.upsert({
-          where: { label: existing?.label ?? entry.label },
-          update: {},
-          create: { label: entry.label },
-        });
-        const existingSpecialties = existingLabels(
-          await tx.specialty.findMany({
-            where: { domainId: domain.id },
-            select: { id: true, label: true },
-          }),
+
+      function planEntry(
+        entity: CatalogChange['entity'],
+        rows: { id: string; label: string; domainId?: string }[],
+        entry: { id?: string; label: string },
+        domainId?: string,
+      ) {
+        const matches = rows.filter(
+          (row) => normalizeLabel(row.label) === normalizeLabel(entry.label),
         );
-        for (const specialtyLabel of entry.specialties) {
-          const existing = existingSpecialties.get(
-            normalizeLabel(specialtyLabel),
+        if (matches.length > 1)
+          report.conflicts.push(`Ambiguous ${entity} label: ${entry.label}`);
+        const existing = entry.id
+          ? rows.find((row) => row.id === entry.id)
+          : matches[0];
+        const conflict = matches.find(
+          (row) => row.id !== (entry.id ?? existing?.id),
+        );
+        if (conflict)
+          report.conflicts.push(
+            `${entity} "${entry.label}": file ID ${entry.id} conflicts with existing ID ${conflict.id}; reconcile the file with the existing UUID before importing`,
           );
-          const specialty = await tx.specialty.upsert({
-            where: {
-              domainId_label: {
-                domainId: domain.id,
-                label: existing?.label ?? specialtyLabel,
-              },
-            },
-            update: {},
-            create: { domainId: domain.id, label: specialtyLabel },
-          });
-          specialties.set(
-            specialtyKey(entry.label, specialtyLabel),
-            specialty.id,
+        let action: CatalogChange['action'] = 'create';
+        if (existing) {
+          action =
+            entry.id && existing.label !== entry.label ? 'rename' : 'unchanged';
+        }
+        const change: CatalogChange = {
+          entity,
+          id: existing?.id ?? entry.id ?? randomUUID(),
+          label: entry.label,
+          domainId,
+          action,
+        };
+        if (action === 'rename' && existing)
+          change.previousLabel = existing.label;
+        report.changes.push(change);
+        return change.id;
+      }
+
+      const specialtyIds = new Map<string, string>();
+      for (const domain of catalog.domains) {
+        const domainId = planEntry('domain', domains, domain);
+        const domainSpecialties = specialties.filter(
+          (row) => row.domainId === domainId,
+        );
+        for (const item of domain.specialties) {
+          const entry = typeof item === 'string' ? { label: item } : item;
+          if ('id' in entry) {
+            const existing = specialties.find((row) => row.id === entry.id);
+            if (existing && existing.domainId !== domainId)
+              report.conflicts.push(
+                `Specialty ${entry.id} already belongs to domain ${existing.domainId}; domain changes require explicit handling`,
+              );
+          }
+          const specialtyId = planEntry(
+            'specialty',
+            domainSpecialties,
+            entry,
+            domainId,
+          );
+          specialtyIds.set(
+            specialtyKey(domain.label, entry.label),
+            specialtyId,
           );
         }
       }
-      for (const entry of catalog.studyFields) {
-        const existing = fields.get(normalizeLabel(entry.label));
-        const field = await tx.studyField.upsert({
-          where: { label: existing?.label ?? entry.label },
-          update: {},
-          create: { label: entry.label },
-        });
-        for (const pair of entry.allowedSpecialties) {
-          const specialtyId = specialties.get(
-            specialtyKey(pair.domain, pair.specialty),
-          )!;
-          await tx.studyFieldSpecialty.upsert({
-            where: {
-              studyFieldId_specialtyId: { studyFieldId: field.id, specialtyId },
-            },
-            update: {},
-            create: { studyFieldId: field.id, specialtyId },
+      for (const field of catalog.studyFields) {
+        const studyFieldId = planEntry('studyField', fields, field);
+        const allowedIds =
+          'allowedSpecialtyIds' in field
+            ? field.allowedSpecialtyIds
+            : field.allowedSpecialties.map(
+                (pair) =>
+                  specialtyIds.get(specialtyKey(pair.domain, pair.specialty))!,
+              );
+        for (const specialtyId of allowedIds) {
+          report.links.push({
+            studyFieldId,
+            specialtyId,
+            action: links.has(`${studyFieldId}/${specialtyId}`)
+              ? 'unchanged'
+              : 'create',
           });
         }
       }
+      // Build and validate the entire plan before the first write.
+      if (dryRun) return report;
+      if (report.conflicts.length) throw new Error(report.conflicts.join('\n'));
+      await applyCatalogPlan(tx, report);
+      return report;
     },
     {
       isolationLevel: Prisma.TransactionIsolationLevel.Serializable,

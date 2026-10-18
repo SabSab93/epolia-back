@@ -1,5 +1,2585 @@
 {
-  "version": 2,
-  "domains": [],
-  "studyFields": []
+  "version": 3,
+  "domains": [
+    {
+      "id": "f558704e-c0db-4bbb-9bdd-e0dae131f1bb",
+      "label": "Peinture et décoration intérieure",
+      "specialties": [
+        {
+          "id": "b3331825-edab-492c-89e1-5271f56d42ba",
+          "label": "Conseil en couleurs"
+        },
+        {
+          "id": "df31ad28-eb05-49f7-a319-1dcda6f5ab8d",
+          "label": "Conseil en décoration intérieure"
+        },
+        {
+          "id": "cd784795-fd95-4c3d-8609-2ceb69b133c3",
+          "label": "Création de planches d'ambiance"
+        }
+      ]
+    },
+    {
+      "id": "c97fa048-b6fe-4361-97a1-cbe6594ca5c9",
+      "label": "Jardinage et entretien extérieur",
+      "specialties": [
+        {
+          "id": "b9f0a9b8-6782-4e33-9e86-80d729354bf2",
+          "label": "Arrosage de plantes"
+        },
+        {
+          "id": "54748175-887a-41a5-b72d-4b1cb0986a02",
+          "label": "Plantation de fleurs"
+        },
+        {
+          "id": "b00fe353-cf4a-4f5c-b489-ab5d3bb35b62",
+          "label": "Plantation d'arbustes"
+        },
+        {
+          "id": "be929331-778c-4e1c-9d6b-6ec00bc07c4c",
+          "label": "Rempotage de plantes"
+        },
+        {
+          "id": "8d55a5a6-f53e-49e3-8926-0ab5a17c9259",
+          "label": "Entretien de plantes d'intérieur"
+        },
+        {
+          "id": "86fb18f6-275f-49a1-b027-b161696ea448",
+          "label": "Conseil en jardinage amateur"
+        },
+        {
+          "id": "f5571be8-6e87-4a0c-8c90-6c5f48a422e1",
+          "label": "Création de potager urbain"
+        }
+      ]
+    },
+    {
+      "id": "daa0e671-5f57-4b3f-bf4d-21c51d6552fa",
+      "label": "Soutien scolaire primaire et collège",
+      "specialties": [
+        {
+          "id": "f47ca10c-e090-4c15-883c-04fb8bd7ce4f",
+          "label": "Mathématiques primaire"
+        },
+        {
+          "id": "918696c4-a01c-4324-9927-a7bbd329e7a2",
+          "label": "Français primaire"
+        },
+        {
+          "id": "477f1daa-9446-490b-b9d0-78389d6f6824",
+          "label": "Anglais primaire"
+        },
+        {
+          "id": "412a6b48-78e7-4665-827b-afb49b955c45",
+          "label": "Mathématiques collège"
+        },
+        {
+          "id": "4939365b-d25a-4c1f-9699-e22d13f5940f",
+          "label": "Français collège"
+        },
+        {
+          "id": "d5e279e9-1573-4ee4-9bca-a5ebdf333f3c",
+          "label": "Histoire-géographie collège"
+        },
+        {
+          "id": "b2df5456-89f1-4b9b-836d-8d89d6a97fba",
+          "label": "Physique-chimie collège"
+        },
+        {
+          "id": "1f26a0b7-471e-4c94-9a71-01943a99ba2c",
+          "label": "SVT collège"
+        },
+        {
+          "id": "640c42a0-807a-4c5f-b6ea-1d3ca4fd8286",
+          "label": "Anglais collège"
+        },
+        {
+          "id": "42308461-8b92-4f24-ab7e-37ba43cfa4f0",
+          "label": "Espagnol collège"
+        },
+        {
+          "id": "cb6c631c-e0cc-4c5e-99d5-33a400bb9f05",
+          "label": "Allemand collège"
+        }
+      ]
+    },
+    {
+      "id": "0628ae71-869c-4b86-9982-e0d00cf0596b",
+      "label": "Soutien scolaire lycée et supérieur",
+      "specialties": [
+        {
+          "id": "94a32834-4289-4efe-ae15-e65348e4cab1",
+          "label": "Mathématiques lycée"
+        },
+        {
+          "id": "93afd284-de60-46dc-88df-033872366fcc",
+          "label": "Français lycée"
+        },
+        {
+          "id": "7fd27327-bdd3-46d0-9538-76cb1a238863",
+          "label": "Philosophie lycée"
+        },
+        {
+          "id": "47571e37-7fc9-4b09-b985-cf52357b91f2",
+          "label": "Histoire-géographie lycée"
+        },
+        {
+          "id": "bca52284-e496-4ae6-9c74-a17020e83075",
+          "label": "Physique-chimie lycée"
+        },
+        {
+          "id": "dd5c6e5e-ceb2-4b5d-819d-b3025aa064df",
+          "label": "SVT lycée"
+        },
+        {
+          "id": "0196b8e4-f493-4d5d-8aef-bd07f1824162",
+          "label": "Mathématiques supérieur"
+        },
+        {
+          "id": "c37e932e-7d98-45e7-8a6f-084398e01911",
+          "label": "Statistiques"
+        },
+        {
+          "id": "ee920a5e-c37d-4f7c-aeea-dfde85efd97b",
+          "label": "Économie"
+        }
+      ]
+    },
+    {
+      "id": "fee0a2e0-7122-4040-9623-87fb4d114725",
+      "label": "Langues et conversation",
+      "specialties": [
+        {
+          "id": "ba83e8fc-428e-4814-9e83-369da2934afb",
+          "label": "Français langue étrangère"
+        },
+        {
+          "id": "a265f029-c73d-4379-93cb-44480f5b2a0f",
+          "label": "Conversation en français"
+        },
+        {
+          "id": "94ea0b03-aa4a-4397-9cbb-d720bd8297d6",
+          "label": "Anglais débutant"
+        },
+        {
+          "id": "014e8117-7418-4a5f-baf9-215c47ccfc44",
+          "label": "Anglais conversation"
+        },
+        {
+          "id": "3edf15d8-32f1-4ea0-a010-23d617b38836",
+          "label": "Anglais professionnel"
+        },
+        {
+          "id": "ecf8b9c2-2b0b-4a6c-96a9-c60d0a2332c4",
+          "label": "Espagnol"
+        },
+        {
+          "id": "2d446b51-7e92-4c14-b022-d3f2f182bfff",
+          "label": "Allemand"
+        },
+        {
+          "id": "c8042199-3bc8-4094-ab3e-914d9601efaf",
+          "label": "Italien"
+        },
+        {
+          "id": "a130e658-d800-4cb0-b693-0b1b00effb7d",
+          "label": "Portugais"
+        },
+        {
+          "id": "618b56a4-f35d-43a5-b7a6-42e27fc6eb31",
+          "label": "Arabe littéraire"
+        },
+        {
+          "id": "bb867307-18fa-4f6d-9fc2-966848328a89",
+          "label": "Arabe dialectal"
+        },
+        {
+          "id": "08234104-8445-4b9c-8feb-71b7dc4e5c73",
+          "label": "Japonais"
+        },
+        {
+          "id": "f188f8be-9837-4242-a4fd-bdc66cbdd902",
+          "label": "Coréen"
+        },
+        {
+          "id": "974fb0e5-900f-4134-8f39-1af628416538",
+          "label": "Chinois mandarin"
+        },
+        {
+          "id": "361be0d5-9735-476d-b1e1-a3dcbefad152",
+          "label": "Russe"
+        },
+        {
+          "id": "3de44269-2eeb-443a-9edc-ae785db79497",
+          "label": "Turc"
+        },
+        {
+          "id": "5b47f2bd-eaf4-4a12-a129-ad8fea4d0bf0",
+          "label": "Néerlandais"
+        },
+        {
+          "id": "c2982f64-ed41-4fe0-812b-3ebc009a9e62",
+          "label": "Langue des signes française initiation"
+        },
+        {
+          "id": "dd3c63f3-e100-480c-ad4f-a3b535d81ff5",
+          "label": "Préparation TOEIC"
+        },
+        {
+          "id": "f8a77b0b-4a72-40b4-ba98-3bf5cf39e436",
+          "label": "Préparation TOEFL"
+        },
+        {
+          "id": "371546fc-fbcc-4792-8097-7123b0247a0c",
+          "label": "Préparation IELTS"
+        },
+        {
+          "id": "051a2959-1088-48bd-83f3-67c111f09021",
+          "label": "Préparation DELF"
+        },
+        {
+          "id": "70575ac2-3003-45d9-b471-376db8c9d799",
+          "label": "Préparation DALF"
+        },
+        {
+          "id": "2227a1a0-8e22-4cb6-94f1-40de8951b892",
+          "label": "Correction de prononciation"
+        },
+        {
+          "id": "a280e7f3-bc17-40c1-b3b4-2eb7e0bd6d3a",
+          "label": "Conversation bilingue"
+        }
+      ]
+    },
+    {
+      "id": "5b9442f1-67ba-4046-9b8f-9f6a6a03c0ce",
+      "label": "Musique et chant",
+      "specialties": [
+        {
+          "id": "2525b51b-6d64-43a3-b0b0-45f580347b05",
+          "label": "Piano"
+        },
+        {
+          "id": "4c1ff491-edf6-4a73-8c12-aa68cc9a9a60",
+          "label": "Guitare acoustique"
+        },
+        {
+          "id": "1dd1f9b4-f22f-4ccb-88a1-f65d73c53637",
+          "label": "Guitare électrique"
+        },
+        {
+          "id": "62e908c7-4e29-4903-a1e1-887684bea85f",
+          "label": "Basse"
+        },
+        {
+          "id": "3b8bc96b-b479-4413-a856-8b9dd677849e",
+          "label": "Batterie"
+        },
+        {
+          "id": "d110d76c-b960-444a-9323-1ba88af517c4",
+          "label": "Violon"
+        },
+        {
+          "id": "f41af02e-1ca8-4d97-abc1-9ade1e9e6e8e",
+          "label": "Violoncelle"
+        },
+        {
+          "id": "71371582-3d2b-4c09-96b8-9e6b20cb5945",
+          "label": "Flûte traversière"
+        },
+        {
+          "id": "98e42fe3-4dc7-4106-be6f-42746dca8532",
+          "label": "Flûte à bec"
+        },
+        {
+          "id": "e304a59b-0fc3-4efb-9b3e-c376b447ee8a",
+          "label": "Saxophone"
+        },
+        {
+          "id": "57e73797-2bd2-4c4e-b34f-6abf78142458",
+          "label": "Clarinette"
+        },
+        {
+          "id": "dc4f3cd0-47b5-4d01-9c3f-26cfac2ae8a5",
+          "label": "Trompette"
+        },
+        {
+          "id": "6d293e32-94ca-41b6-9065-9776705dc536",
+          "label": "Ukulélé"
+        },
+        {
+          "id": "5757ae25-feda-4339-8ed2-be12f23dd6b9",
+          "label": "Harpe"
+        },
+        {
+          "id": "c8c3ae0d-0fad-4f70-b2e1-389d93d87c9f",
+          "label": "Chant"
+        },
+        {
+          "id": "81cb6d82-07f5-4c9c-b692-8317576fd025",
+          "label": "Solfège"
+        },
+        {
+          "id": "0508c659-f64a-4b20-992c-13762979d7eb",
+          "label": "Théorie musicale"
+        },
+        {
+          "id": "d4c8e0db-8c1e-47ca-bebd-f2589736871c",
+          "label": "Éveil musical"
+        },
+        {
+          "id": "dd91fa01-4e47-4fa6-9396-374788f751e4",
+          "label": "Composition musicale"
+        },
+        {
+          "id": "276fe431-dd6c-48c4-8191-18bc6f4dbcf1",
+          "label": "MAO"
+        },
+        {
+          "id": "a8870dd5-c035-4670-8faa-1542e60b9e54",
+          "label": "Production musicale"
+        },
+        {
+          "id": "8ce9fc96-0908-48bb-a3a6-4d60781ea74f",
+          "label": "Mixage audio"
+        },
+        {
+          "id": "24a11898-37a5-4ef2-9638-2307d103481a",
+          "label": "Écriture de chansons"
+        },
+        {
+          "id": "8a21586a-de21-40a5-a89c-01592d5ccd5d",
+          "label": "Préparation audition musicale"
+        }
+      ]
+    },
+    {
+      "id": "57e33ece-63a3-41ea-8215-c2b80894f024",
+      "label": "Arts plastiques et loisirs créatifs",
+      "specialties": [
+        {
+          "id": "17e6174d-d35c-4c3c-b931-fb7ab1ad5cdd",
+          "label": "Dessin débutant"
+        },
+        {
+          "id": "b29af622-badd-4084-8803-24654b6b2ff4",
+          "label": "Dessin académique"
+        },
+        {
+          "id": "f141d698-3449-4055-a5c9-a87f023d6f31",
+          "label": "Illustration"
+        },
+        {
+          "id": "0439485c-2841-4846-adb9-dc14b06aa47c",
+          "label": "Aquarelle"
+        },
+        {
+          "id": "31b82e45-4b72-41df-a23d-fe901e354728",
+          "label": "Peinture acrylique"
+        },
+        {
+          "id": "16f30be1-2cc7-499c-95a3-be8f113f9df0",
+          "label": "Peinture à l'huile"
+        },
+        {
+          "id": "47055933-2870-424b-b924-3bf0b91b81ea",
+          "label": "Croquis"
+        },
+        {
+          "id": "8749c233-19ba-4ffa-94ff-16d5ce62ca7e",
+          "label": "Portrait dessiné"
+        },
+        {
+          "id": "ed8eced9-bd02-451f-8c0a-08e1357f8ff4",
+          "label": "Calligraphie"
+        },
+        {
+          "id": "cbbea91b-037c-412d-9024-333bc0eb96bc",
+          "label": "Lettering"
+        },
+        {
+          "id": "501c0834-e946-4484-8093-22a3ecb0c917",
+          "label": "Bande dessinée"
+        },
+        {
+          "id": "ed5bfaad-729f-4eb4-9df8-404d4d234810",
+          "label": "Manga"
+        },
+        {
+          "id": "cfca8e44-a9d7-4dec-86f4-462445bc2ba5",
+          "label": "Modelage d'argile"
+        },
+        {
+          "id": "37fb635a-e2e3-449d-ae80-e128cdddf8c9",
+          "label": "Poterie loisir"
+        },
+        {
+          "id": "017e74f5-1512-465d-ad7a-3af8867f9d2f",
+          "label": "Origami"
+        },
+        {
+          "id": "6249df4c-aeff-4f53-8686-1adf28c6c5c2",
+          "label": "Scrapbooking"
+        },
+        {
+          "id": "e9c0d4a4-b476-4ee4-abe9-11915fac290a",
+          "label": "Création de bijoux fantaisie"
+        },
+        {
+          "id": "d8f8497d-0514-45fb-a832-2cdce0001975",
+          "label": "Tricot"
+        },
+        {
+          "id": "99f2650d-3728-468e-8682-708da20947d7",
+          "label": "Crochet"
+        },
+        {
+          "id": "538916c4-69fb-484c-b16f-ecf468707c91",
+          "label": "Broderie"
+        },
+        {
+          "id": "b3f9b735-afcd-4594-a071-b7977628f357",
+          "label": "Couture débutant"
+        },
+        {
+          "id": "203df05c-1317-44ed-b288-cad0f6bb7660",
+          "label": "Patchwork"
+        },
+        {
+          "id": "d33dd1bc-70d9-4a26-a041-ce8ad6958090",
+          "label": "Upcycling textile"
+        },
+        {
+          "id": "bbf08262-5c0c-43c1-a4d4-74815900189d",
+          "label": "Fabrication de bougies décoratives"
+        },
+        {
+          "id": "1d18fa92-b9d6-4c64-8f08-878d5e3095cc",
+          "label": "Décoration florale"
+        },
+        {
+          "id": "4a56953c-587f-4614-ae2b-028c690f29c0",
+          "label": "Atelier créatif à domicile"
+        }
+      ]
+    },
+    {
+      "id": "ff5088f9-d7f3-4510-adc5-143a4e56056c",
+      "label": "Sport et activités physiques",
+      "specialties": [
+        {
+          "id": "bb72dc66-5c74-4bc8-9f17-2b6348b3eb82",
+          "label": "Course à pied accompagnée"
+        },
+        {
+          "id": "9507e065-425b-4bb3-922a-5dadd81a355a",
+          "label": "Initiation à la boxe sans combat"
+        },
+        {
+          "id": "14916428-a5ad-41fc-a3b8-6435c56cfc1e",
+          "label": "Cours de corde à sauter"
+        },
+        {
+          "id": "b031800c-735b-47d6-9779-c89dce1539f7",
+          "label": "Initiation au badminton"
+        },
+        {
+          "id": "e8bcd835-991c-418f-8df2-a361cf64ae4a",
+          "label": "Initiation au tennis"
+        },
+        {
+          "id": "b28e5bc8-c5f0-4de4-b4b4-7482d0c2bd2d",
+          "label": "Initiation au basketball"
+        },
+        {
+          "id": "54f2c7bc-59bb-40d5-9f07-bf5d95ec76f7",
+          "label": "Initiation au football"
+        },
+        {
+          "id": "099ea46d-552e-4b6a-b61f-a85044ac94fc",
+          "label": "Initiation au volleyball"
+        },
+        {
+          "id": "9cf3a3c1-4c86-4392-b464-b19c8daa9dd8",
+          "label": "Initiation au roller"
+        },
+        {
+          "id": "405c5700-fa52-4681-9347-2c5a1e53c276",
+          "label": "Initiation au skateboard"
+        }
+      ]
+    },
+    {
+      "id": "65aa6725-3216-47a7-b1c8-0dad9b38ca4f",
+      "label": "Informatique et assistance numérique",
+      "specialties": [
+        {
+          "id": "60aa272b-fbc8-44cb-b9dc-d63b2fab832b",
+          "label": "Installation d'ordinateur"
+        },
+        {
+          "id": "befdfbcf-9aeb-4578-9fcb-2ece2a236f9d",
+          "label": "Configuration d'ordinateur"
+        },
+        {
+          "id": "9a2ddeed-17c4-4477-9d7f-6f144ad2d4d7",
+          "label": "Configuration de smartphone"
+        },
+        {
+          "id": "fff36898-143b-4d30-8015-cdabc378cca4",
+          "label": "Configuration de tablette"
+        },
+        {
+          "id": "75bd1c91-0273-46e8-989a-76c78c441b91",
+          "label": "Installation de logiciels"
+        },
+        {
+          "id": "1ae3de72-bad3-4bf9-a6bb-f6119d27e3af",
+          "label": "Mise à jour de logiciels"
+        },
+        {
+          "id": "d78ccd7f-282f-4fc4-9021-60f3418d204a",
+          "label": "Organisation de fichiers"
+        },
+        {
+          "id": "7b813f24-5d64-4844-91d4-2ceb93934906",
+          "label": "Transfert de photos"
+        },
+        {
+          "id": "59242133-9677-4e7e-a424-8f474e1ea0eb",
+          "label": "Transfert de fichiers"
+        },
+        {
+          "id": "febd3c91-8eb9-4539-8517-4da1399142a8",
+          "label": "Initiation Windows"
+        },
+        {
+          "id": "2a3cc979-2c1e-4666-b6d9-e022b07c20d4",
+          "label": "Initiation macOS"
+        },
+        {
+          "id": "f647644e-d114-4240-b8da-9e798b768ec6",
+          "label": "Initiation Linux"
+        },
+        {
+          "id": "6d13ebae-56fd-45cc-8adc-d08c19386d71",
+          "label": "Initiation iPhone"
+        },
+        {
+          "id": "7f2ce405-e87d-43c0-967c-c0250bc7d525",
+          "label": "Initiation Android"
+        },
+        {
+          "id": "bbe6301a-8560-4f37-bda7-102221f2f97f",
+          "label": "Initiation à Internet"
+        },
+        {
+          "id": "54ce372f-6312-4a55-870d-30b30960c1a4",
+          "label": "Initiation à la messagerie électronique"
+        },
+        {
+          "id": "59a9439f-d448-4b2a-9ab7-1a2fc4dff5dd",
+          "label": "Initiation aux visioconférences"
+        },
+        {
+          "id": "cb25049a-257f-4328-b072-2e359f90bbbf",
+          "label": "Initiation aux démarches en ligne"
+        },
+        {
+          "id": "0b6db1df-a638-4a27-acf0-56676eb82263",
+          "label": "Configuration imprimante"
+        },
+        {
+          "id": "28a84df5-8bd9-445e-9d2c-09fe463b6695",
+          "label": "Configuration Wi-Fi domestique"
+        },
+        {
+          "id": "4fe3df72-097b-445b-bdba-971e88ba762e",
+          "label": "Configuration objets connectés simples"
+        },
+        {
+          "id": "9e658eb7-d729-4582-894e-5d46bfa9437c",
+          "label": "Aide à la sécurité des comptes"
+        },
+        {
+          "id": "efcc2f04-fdda-4304-b558-247d3bf4d9ab",
+          "label": "Sensibilisation aux arnaques numériques"
+        },
+        {
+          "id": "ffe68b0b-4f7a-41c3-8415-59e8cb660c60",
+          "label": "Aide à l'utilisation du cloud"
+        },
+        {
+          "id": "0d062a30-4a77-4c39-b837-72582ffca479",
+          "label": "Aide à la bureautique"
+        },
+        {
+          "id": "f84b7af7-5b05-4a59-be0e-cdf63618381a",
+          "label": "Installation de périphériques"
+        }
+      ]
+    },
+    {
+      "id": "212135bc-1485-4713-aed6-17565dd628a3",
+      "label": "Développement web et applications",
+      "specialties": [
+        {
+          "id": "105fa260-f957-427d-9ca4-ac4239e16daa",
+          "label": "Site vitrine"
+        },
+        {
+          "id": "b1da3ddb-f146-4c7f-9dd8-fbe88bd3acd4",
+          "label": "Site portfolio"
+        },
+        {
+          "id": "f2f52337-3e58-4d56-9db3-57c2773242ea",
+          "label": "Site événementiel"
+        },
+        {
+          "id": "238e858b-5f9f-4224-9ac3-b1550f96a1c5",
+          "label": "Site associatif"
+        },
+        {
+          "id": "338de0ea-5115-4248-982c-5e4bdbf1e872",
+          "label": "Site e-commerce"
+        },
+        {
+          "id": "88ab3112-2a94-4b5b-974a-ebf82270b01d",
+          "label": "Blog"
+        },
+        {
+          "id": "125d4234-7217-401e-b518-5ed3a91e2186",
+          "label": "Landing page"
+        },
+        {
+          "id": "44118fa0-361a-468d-b2f6-fe90b020a8e0",
+          "label": "Intégration HTML CSS"
+        },
+        {
+          "id": "0296d43b-21b8-401a-9740-e862f09976e2",
+          "label": "Intégration front-end"
+        },
+        {
+          "id": "b35dd268-0d4c-4d0c-ba10-97a49533b091",
+          "label": "Développement JavaScript"
+        },
+        {
+          "id": "d2ab03c6-f09f-4e5d-a471-f4c250aef2f9",
+          "label": "Développement TypeScript"
+        },
+        {
+          "id": "e902b631-a3b8-4cb6-acfc-84c4ce014e1f",
+          "label": "Développement React"
+        },
+        {
+          "id": "4c274efd-9451-4804-87c2-d7f43d823d1a",
+          "label": "Développement Vue.js"
+        },
+        {
+          "id": "4bd3a9ff-4f4e-4f43-a0e0-37999842bfcd",
+          "label": "Développement Nuxt"
+        },
+        {
+          "id": "01ee2ca6-d332-4f4e-a8b8-3304cb9190ca",
+          "label": "Développement Next.js"
+        },
+        {
+          "id": "3c2b4144-c3a2-4e46-98b8-124503a0fd4e",
+          "label": "Développement Node.js"
+        },
+        {
+          "id": "8a530685-94a0-4faf-8b59-01bfd72e11eb",
+          "label": "Développement API REST"
+        },
+        {
+          "id": "b2309d3a-ff34-4254-87be-a8710d86df03",
+          "label": "Développement backend"
+        },
+        {
+          "id": "418f92f8-e799-4c07-bfee-f7a317e17b47",
+          "label": "Développement full-stack"
+        },
+        {
+          "id": "07b2f0a3-cbba-4012-9960-9782f0b356cb",
+          "label": "Développement application web"
+        },
+        {
+          "id": "27ca85d1-4694-406c-a56e-262d00d94fa9",
+          "label": "Développement application mobile"
+        },
+        {
+          "id": "f3949a08-8a7e-48fb-91ca-993ca160775b",
+          "label": "Application hybride Capacitor"
+        },
+        {
+          "id": "045c1810-64e0-4325-ba11-ff9a6b5621a8",
+          "label": "Application React Native"
+        },
+        {
+          "id": "1f221a70-1ac6-4cd4-95b5-73f7ed1ebf3b",
+          "label": "Application Flutter"
+        },
+        {
+          "id": "a1b75616-b4a4-4395-9c83-af9b04181cef",
+          "label": "Intégration CMS"
+        },
+        {
+          "id": "985851e9-1080-466e-82d4-41202ba1a5ac",
+          "label": "WordPress"
+        },
+        {
+          "id": "d06499d9-a6e2-4963-8821-e4b1f48f4c58",
+          "label": "Shopify"
+        },
+        {
+          "id": "6394ba99-efa3-448e-898a-835889591be3",
+          "label": "Prestashop"
+        },
+        {
+          "id": "d5e23037-c4a0-4147-bacf-49012553499a",
+          "label": "Webflow"
+        },
+        {
+          "id": "7e6e937c-d70a-4d5f-91ea-dd2eeb07918c",
+          "label": "Wix"
+        },
+        {
+          "id": "cefd27cf-f61c-48c2-95ba-22b82cc2d835",
+          "label": "Correction de bugs"
+        },
+        {
+          "id": "143dc32b-01b9-44fb-85e6-0f585eabd02e",
+          "label": "Maintenance de site web"
+        },
+        {
+          "id": "b7013287-04b7-4bd9-9bbc-3435addf03d3",
+          "label": "Optimisation responsive"
+        },
+        {
+          "id": "9c8996ac-0979-4caa-aacd-d7344f502939",
+          "label": "Accessibilité web"
+        },
+        {
+          "id": "95cfb7a4-26c2-4c58-84db-3b392d0dfd06",
+          "label": "Optimisation de performance web"
+        },
+        {
+          "id": "105e9e84-2270-4950-a2bc-e72d8cbb318c",
+          "label": "Mise en place de formulaire"
+        },
+        {
+          "id": "7ca7ae16-5fd2-4cf5-bd66-3a869f568e1d",
+          "label": "Intégration de paiement via prestataire"
+        },
+        {
+          "id": "5068db89-2fe9-4fd3-bc91-38f54b454437",
+          "label": "Tests fonctionnels"
+        },
+        {
+          "id": "bf96de24-d54a-40a1-8534-003c2cb3ebf6",
+          "label": "Tests automatisés"
+        },
+        {
+          "id": "3c3d7f6a-6e46-485f-bf1e-d5d7d1e7004f",
+          "label": "Documentation technique"
+        },
+        {
+          "id": "b19fcad2-7600-4cf9-940f-54236fa4e499",
+          "label": "Audit technique non certifiant"
+        },
+        {
+          "id": "02dcdd5d-c4b9-4934-b8dc-8c5d89b4d294",
+          "label": "Déploiement d'application"
+        },
+        {
+          "id": "ddd84cc5-4895-4222-9c0d-8b8548097212",
+          "label": "Configuration nom de domaine"
+        },
+        {
+          "id": "838d16fb-86f4-46c9-82f9-24c66b4c48e3",
+          "label": "Configuration hébergement web"
+        }
+      ]
+    },
+    {
+      "id": "75e1e6c7-a7df-4ce9-91aa-49ae9f6feea3",
+      "label": "Données, automatisation et intelligence artificielle",
+      "specialties": [
+        {
+          "id": "0e43920e-36a6-4544-a428-7bada64f5d57",
+          "label": "Saisie de données"
+        },
+        {
+          "id": "fbd7d4ab-4572-4a4e-b8a8-d1fe3fd3e50c",
+          "label": "Structuration de fichiers CSV"
+        },
+        {
+          "id": "a3ad9584-cac4-4974-a72a-6641fa37d9f7",
+          "label": "Création de tableaux de bord"
+        },
+        {
+          "id": "225c8fe5-0661-4d94-abb4-41d95b6a01bf",
+          "label": "Analyse de données descriptive"
+        },
+        {
+          "id": "04992db0-5046-44fb-9679-fbb3ffd90594",
+          "label": "Visualisation de données"
+        },
+        {
+          "id": "21db8524-95e0-4cdf-a953-f1a87e2e3ebe",
+          "label": "Tableaux croisés dynamiques"
+        },
+        {
+          "id": "fb3d27f9-6fac-4b3b-8e8c-5d9c20a64215",
+          "label": "Formules Excel avancées"
+        },
+        {
+          "id": "d2836b2d-98d5-46fd-af01-c8c810446fe3",
+          "label": "Automatisation Excel"
+        },
+        {
+          "id": "91726ec2-98f6-4045-acde-7a14b6ca1a0d",
+          "label": "Scripts Python"
+        },
+        {
+          "id": "7f431358-a6b0-451c-8696-a611e1564541",
+          "label": "Scripts JavaScript"
+        },
+        {
+          "id": "a3070e39-2b66-4f66-862d-ffd0946232da",
+          "label": "Automatisation de tâches bureautiques"
+        },
+        {
+          "id": "800448b1-515e-4456-ab1d-69560bb396e2",
+          "label": "Automatisation no-code"
+        },
+        {
+          "id": "12c8cbd8-d4fc-49ef-87c7-f7abd79ad32b",
+          "label": "Intégration Zapier"
+        },
+        {
+          "id": "e380ce18-f1f1-42a5-a5ce-5f89ff3ebac4",
+          "label": "Intégration Make"
+        },
+        {
+          "id": "558d81e9-844e-4c26-a201-344f1e15e6ed",
+          "label": "Intégration n8n"
+        },
+        {
+          "id": "4a052252-ad5e-44aa-a8cc-2d7e58d74974",
+          "label": "Conception de base de données"
+        },
+        {
+          "id": "ce4e0deb-10be-4197-af5f-63823084029f",
+          "label": "Requêtes SQL"
+        },
+        {
+          "id": "a2940f34-ec29-45a4-b45e-38a72298ff99",
+          "label": "Création de rapports automatisés"
+        },
+        {
+          "id": "0f5f8753-e0f6-434c-b464-c49fa6d62d95",
+          "label": "Création de chatbot informatif"
+        },
+        {
+          "id": "5e325600-5f54-4531-bfd5-8259e2560862",
+          "label": "Intégration API IA"
+        },
+        {
+          "id": "94f4c79a-ee61-4ab7-be3f-275dfb296622",
+          "label": "Conception de prompts"
+        },
+        {
+          "id": "fe04a0ca-dd24-4f04-a73a-48f09076a36d",
+          "label": "Atelier initiation IA générative"
+        },
+        {
+          "id": "f9843d5b-cbc1-4ada-b526-28f5339d9998",
+          "label": "Classification de documents"
+        },
+        {
+          "id": "7303a52a-431a-4d19-81bf-d3d04d741844",
+          "label": "Extraction de données de documents"
+        },
+        {
+          "id": "713cba9f-2f22-450a-b4a3-8f97f5fa70aa",
+          "label": "Création de workflow IA"
+        },
+        {
+          "id": "b57c2da8-c17e-4ae0-875a-1b80713609e1",
+          "label": "Évaluation de résultats IA"
+        },
+        {
+          "id": "ad15709d-e056-4f18-9855-cb08a70e85d3",
+          "label": "Mise en place de FAQ intelligente"
+        },
+        {
+          "id": "707c16b2-4df0-446a-96e0-6129e3ab2b59",
+          "label": "Documentation de processus automatisés"
+        }
+      ]
+    },
+    {
+      "id": "d454ca72-ae32-486f-8adf-4e517b0e6962",
+      "label": "Graphisme et identité visuelle",
+      "specialties": [
+        {
+          "id": "630698ce-7d02-4341-88dc-c077d25bb1e9",
+          "label": "Création de logo"
+        },
+        {
+          "id": "4a1bc469-d165-400e-a1c9-aa38bea18bb1",
+          "label": "Refonte de logo"
+        },
+        {
+          "id": "1f1586db-0a85-4f99-94dd-e9fb350210d1",
+          "label": "Charte graphique"
+        },
+        {
+          "id": "6898499f-002e-4910-9f2a-357efc8c448a",
+          "label": "Identité visuelle"
+        },
+        {
+          "id": "2ad4cc73-71f1-4ceb-b0f9-902652c5a76d",
+          "label": "Carte de visite"
+        },
+        {
+          "id": "d803187c-f3ec-4433-8400-d7560ae59811",
+          "label": "Flyer"
+        },
+        {
+          "id": "765f967d-2353-4c37-923c-025bf8a80a24",
+          "label": "Affiche"
+        },
+        {
+          "id": "352be5b3-a610-434f-bf41-b8b74457ed13",
+          "label": "Brochure"
+        },
+        {
+          "id": "cdf212e2-e82f-4df3-92ef-1fab7766c9d9",
+          "label": "Dépliant"
+        },
+        {
+          "id": "fc2662ee-a7f5-4316-9c53-0ac4c370c44b",
+          "label": "Menu de restaurant"
+        },
+        {
+          "id": "6d76cae6-7e55-45e6-8d36-1b9f86e315f1",
+          "label": "Packaging graphique"
+        },
+        {
+          "id": "693b387b-464e-455a-932d-6c78531f0bbc",
+          "label": "Visuel réseaux sociaux"
+        },
+        {
+          "id": "f9413d5e-d585-40b7-9415-972674830a17",
+          "label": "Bannière web"
+        },
+        {
+          "id": "905b9e18-d214-4ebb-9281-7ef0d29dc021",
+          "label": "Miniature YouTube"
+        },
+        {
+          "id": "9c70151a-9316-4f6e-9115-fcb248cd2b81",
+          "label": "Présentation PowerPoint"
+        },
+        {
+          "id": "278f78ee-22ca-4921-a79e-649eab660502",
+          "label": "Présentation commerciale"
+        },
+        {
+          "id": "0e19929b-dd8f-4422-807f-ce32eaf2bf45",
+          "label": "Infographie"
+        },
+        {
+          "id": "a8904a0a-3cb4-488a-861e-d979ec401e92",
+          "label": "Illustration vectorielle"
+        },
+        {
+          "id": "8d5658d6-2507-4382-9bed-8b94064fc29a",
+          "label": "Retouche graphique"
+        },
+        {
+          "id": "ad9101d2-1513-471a-84b4-e4f85d677dae",
+          "label": "Mise en page de document"
+        },
+        {
+          "id": "7695e1ed-8810-4440-9ece-1ceb8ca2e968",
+          "label": "Création de pictogrammes"
+        },
+        {
+          "id": "62fe994f-edca-42f9-93f8-e171f952d63f",
+          "label": "Création de stickers"
+        },
+        {
+          "id": "a0a3dc6a-1a7e-4383-94ab-a10e3ea8e9f6",
+          "label": "Design de newsletter"
+        },
+        {
+          "id": "718b8d83-886e-4d01-b40e-1a043d60b925",
+          "label": "Création de templates Canva"
+        },
+        {
+          "id": "7f722c79-3be5-474f-bab2-bd4b7daba937",
+          "label": "Création de supports imprimables"
+        }
+      ]
+    },
+    {
+      "id": "718b0cdd-fd4f-48bc-9d42-50f3f4339dce",
+      "label": "UX, UI et design produit",
+      "specialties": [
+        {
+          "id": "25fb57bf-38dc-490f-afc1-88d31902b347",
+          "label": "Audit UX"
+        },
+        {
+          "id": "74838e6c-c921-4f8d-90dc-f322563d5ed9",
+          "label": "Recherche utilisateur"
+        },
+        {
+          "id": "0e4dfb80-5c2f-4eb6-85e0-5d90e3c34389",
+          "label": "Interview utilisateur"
+        },
+        {
+          "id": "b51e9d27-0fa9-45dd-b72e-d83025399503",
+          "label": "Personas"
+        },
+        {
+          "id": "47589828-ed64-4e91-a171-df783a76b0f6",
+          "label": "Parcours utilisateur"
+        },
+        {
+          "id": "45ae3838-e006-41de-98ff-8cd7766837b0",
+          "label": "User flow"
+        },
+        {
+          "id": "f0de7443-4c78-4da2-ae10-4190f7bbf21c",
+          "label": "Wireframe"
+        },
+        {
+          "id": "b889ce21-5ae6-4fc4-a13e-d735aad5b9cb",
+          "label": "Maquette Figma"
+        },
+        {
+          "id": "4e85b14e-1bfd-4f96-a706-df3fad121aae",
+          "label": "Prototype interactif"
+        },
+        {
+          "id": "2b6d2ef0-e1c1-45b8-a153-4ad3c9559382",
+          "label": "Design d'application mobile"
+        },
+        {
+          "id": "5e253d3c-0c55-4c93-bd04-4d035fba7e99",
+          "label": "Design de site web"
+        },
+        {
+          "id": "de6140af-8e6d-4531-a611-7905ba3e1e4f",
+          "label": "Design system"
+        },
+        {
+          "id": "a37ec255-8697-43f3-9b06-59a70f743440",
+          "label": "Bibliothèque de composants"
+        },
+        {
+          "id": "5cd60d9c-a9c8-4ffa-88c0-3721a637157d",
+          "label": "Test utilisateur"
+        },
+        {
+          "id": "0cc2ef45-61e5-47a2-828c-51a5daafc1c6",
+          "label": "Audit ergonomique"
+        },
+        {
+          "id": "e91f4f8e-6da2-4dba-a251-eba0cbf78abe",
+          "label": "Architecture de l'information"
+        },
+        {
+          "id": "95d43a9b-843a-48a3-a9c9-3b57a1dcc0f7",
+          "label": "Microcopy UX"
+        },
+        {
+          "id": "1961d416-8522-4de9-9653-9a7d53ea54c9",
+          "label": "Optimisation de formulaire"
+        },
+        {
+          "id": "f0258ebb-cefd-4ae7-a434-1078c79dd73d",
+          "label": "Design responsive"
+        },
+        {
+          "id": "69c1f6d9-6bf8-4d01-b884-d34a1455ff0f",
+          "label": "Design de tableau de bord"
+        },
+        {
+          "id": "fb7a5779-fefb-454c-8be5-40d274cbd390",
+          "label": "Conception d'onboarding"
+        },
+        {
+          "id": "e59f27e8-f2ac-4869-90fe-8854948a811e",
+          "label": "Accessibilité des interfaces"
+        },
+        {
+          "id": "d7d839e5-5dbc-4334-a3b6-d3fead5275e4",
+          "label": "Refonte d'interface"
+        },
+        {
+          "id": "09cb11ba-7cf5-4c55-8d7d-59356d57c097",
+          "label": "Handoff design développeur"
+        }
+      ]
+    },
+    {
+      "id": "9172c1ec-cb25-49ec-b2fe-b6c899b9cfdb",
+      "label": "Photo, vidéo et audiovisuel",
+      "specialties": [
+        {
+          "id": "14c6141e-64b6-410f-98b7-c91675fff278",
+          "label": "Portrait photo"
+        },
+        {
+          "id": "8c80366a-84cc-4e61-875c-56ad67a1de54",
+          "label": "Photo de famille"
+        },
+        {
+          "id": "969756d4-59f1-427b-8689-5bd5e5648fe2",
+          "label": "Photo de couple"
+        },
+        {
+          "id": "0d3f9ef7-e70d-4374-89a9-27369c61f335",
+          "label": "Photo de grossesse"
+        },
+        {
+          "id": "6b7e6d88-18fd-4fc0-a27b-f0ae15d75ca3",
+          "label": "Photo de produit"
+        },
+        {
+          "id": "eb76fac0-7d4d-49bd-849d-ddaf6e7e70e6",
+          "label": "Photo immobilière"
+        },
+        {
+          "id": "c9e12260-6168-4209-a165-b8171027cc0c",
+          "label": "Photo culinaire"
+        },
+        {
+          "id": "3833948b-ffb1-4a1d-abfe-5fd33648c9c5",
+          "label": "Photo événement privé"
+        },
+        {
+          "id": "6c5a7f2f-eaa4-4623-8fe1-540d7fb64024",
+          "label": "Photo pour réseaux sociaux"
+        },
+        {
+          "id": "b3d7fee6-b07f-4435-bd0f-7945e93b976c",
+          "label": "Retouche photo"
+        },
+        {
+          "id": "d0676da8-e4d4-4b1e-a11c-32ea270ad258",
+          "label": "Tri et sélection de photos"
+        },
+        {
+          "id": "2f73b584-3545-4d4d-800a-6de7d1d1062b",
+          "label": "Montage vidéo"
+        },
+        {
+          "id": "c0ced24c-0ac4-4cdf-a235-aefbed5d855e",
+          "label": "Montage de reels"
+        },
+        {
+          "id": "18b20ffd-08cf-4b52-a65e-32d5c3e0baaf",
+          "label": "Montage TikTok"
+        },
+        {
+          "id": "1788df73-c81b-4831-a0ff-d41650788cfa",
+          "label": "Montage YouTube"
+        },
+        {
+          "id": "2679500c-a141-4a9a-99c0-5a52e6362047",
+          "label": "Sous-titrage vidéo"
+        },
+        {
+          "id": "f3d46dac-3266-4c80-9c5d-50444db965f3",
+          "label": "Correction colorimétrique"
+        },
+        {
+          "id": "e07a0f73-348b-4e3f-8ffd-b4d6b6d9b0ba",
+          "label": "Étalonnage simple"
+        },
+        {
+          "id": "51e5d625-c0b0-4c08-b9b5-d12073578b57",
+          "label": "Motion design"
+        },
+        {
+          "id": "3ca77d32-dea5-4a82-9766-6421c1bb05c0",
+          "label": "Animation 2D"
+        },
+        {
+          "id": "6b3c08cc-5f65-4f90-8bcc-463875aba534",
+          "label": "Création de GIF"
+        },
+        {
+          "id": "3bb704da-dadd-4e6b-ad33-85f9b1085513",
+          "label": "Captation vidéo événementielle"
+        },
+        {
+          "id": "a927d595-7923-475c-8321-cfe6b8eec6d5",
+          "label": "Interview vidéo"
+        },
+        {
+          "id": "d89ccb0c-67a5-433d-87f9-5e5e5de940fc",
+          "label": "Montage de podcast vidéo"
+        },
+        {
+          "id": "11490739-c945-4215-8073-e960be827a58",
+          "label": "Montage de podcast audio"
+        },
+        {
+          "id": "10ae7f32-a2c3-4a24-9a86-e897d29ac160",
+          "label": "Enregistrement voix off"
+        },
+        {
+          "id": "3bad3522-7325-4a1a-892e-93c4efbffd82",
+          "label": "Création de diaporama souvenir"
+        }
+      ]
+    },
+    {
+      "id": "f1de8d78-82ef-457f-ba22-19623f39ebd0",
+      "label": "Marketing et communication",
+      "specialties": [
+        {
+          "id": "b538fe14-d0df-42c1-8627-e059f83aac6d",
+          "label": "Stratégie de communication"
+        },
+        {
+          "id": "3a434248-f7c9-464f-87f0-e42047bd793c",
+          "label": "Calendrier éditorial"
+        },
+        {
+          "id": "fe564602-8519-4f4d-a967-886c967885bb",
+          "label": "Gestion de réseaux sociaux"
+        },
+        {
+          "id": "db61094b-3598-40fd-8487-d6293301d6ee",
+          "label": "Community management"
+        },
+        {
+          "id": "b2d1fa7c-2e0e-4ce3-9064-7046e476afd5",
+          "label": "Rédaction de publications"
+        },
+        {
+          "id": "a85283a2-2288-4e0a-b9f4-c250f63aa7ab",
+          "label": "Planification de contenus"
+        },
+        {
+          "id": "7d0fa9ce-3974-4575-a812-485f848638ba",
+          "label": "Création de newsletters"
+        },
+        {
+          "id": "567fcc23-669a-45b6-b5cf-163f11506b4e",
+          "label": "Campagne emailing"
+        },
+        {
+          "id": "fa28cc71-a2ad-4aee-9552-c9e949a0ff9f",
+          "label": "Audit de présence en ligne"
+        },
+        {
+          "id": "cfb5f933-30b3-4207-bae5-696a0104653e",
+          "label": "Référencement naturel SEO"
+        },
+        {
+          "id": "8634c36c-d025-4925-934c-9aaa04deb083",
+          "label": "Recherche de mots-clés"
+        },
+        {
+          "id": "60f3a2e0-e625-4e9d-9aef-ae6e46c76167",
+          "label": "Optimisation de fiches produits"
+        },
+        {
+          "id": "35c1a816-d0a5-4944-ac43-c241e942acd4",
+          "label": "Rédaction de fiches produits"
+        },
+        {
+          "id": "5cde915d-19be-45de-85c3-621a1f76cdf3",
+          "label": "Optimisation Google Business Profile"
+        },
+        {
+          "id": "4106a86f-2928-4aaf-a778-db3f5360f35e",
+          "label": "Création de campagne publicitaire"
+        },
+        {
+          "id": "67e257d6-9c38-4bbe-8524-566b394e3ed9",
+          "label": "Analyse de statistiques web"
+        },
+        {
+          "id": "71557c47-3d12-457c-a044-429c71e8196b",
+          "label": "Veille concurrentielle"
+        },
+        {
+          "id": "62628383-ef93-4232-977e-4ab1ea9b8184",
+          "label": "Étude de marché documentaire"
+        },
+        {
+          "id": "d585722a-3d72-4835-83ff-7190379a8dfe",
+          "label": "Benchmark concurrentiel"
+        },
+        {
+          "id": "358e3c27-2760-4cca-92c4-0a9e8337565d",
+          "label": "Enquête de satisfaction"
+        },
+        {
+          "id": "76eca66a-53ac-4498-b7f9-7296584b5962",
+          "label": "Création de sondage"
+        },
+        {
+          "id": "a8cc4d3a-1351-4a38-9f97-862352b9df98",
+          "label": "Communication événementielle"
+        },
+        {
+          "id": "4e39d336-e890-447d-97a8-328470e9386e",
+          "label": "Communication associative"
+        },
+        {
+          "id": "67b053ae-55d9-467c-9a00-fd83842bfcef",
+          "label": "Conseil en personal branding"
+        },
+        {
+          "id": "749238c9-8447-48cd-824c-a352dde181c3",
+          "label": "Stratégie de contenu"
+        },
+        {
+          "id": "b9d5cdab-6c9b-42cc-896e-2f455be393a6",
+          "label": "Modération de communauté"
+        }
+      ]
+    },
+    {
+      "id": "51e45702-b03f-4847-a252-c48a269e82c0",
+      "label": "Rédaction, traduction et langues écrites",
+      "specialties": [
+        {
+          "id": "3ce74c2e-537a-42d1-beb3-3a14664b7fee",
+          "label": "Correction orthographique"
+        },
+        {
+          "id": "08025c2c-9b40-4c3f-97e9-438013d0553c",
+          "label": "Correction grammaticale"
+        },
+        {
+          "id": "c8fb567c-4680-4e8c-a42e-10902e4c4dba",
+          "label": "Relecture de texte"
+        },
+        {
+          "id": "6a5d86d4-a05f-4fc1-a27f-4e8fe675ec7c",
+          "label": "Réécriture de texte"
+        },
+        {
+          "id": "6f37130f-3076-4e49-a21f-f9277781c866",
+          "label": "Rédaction web"
+        },
+        {
+          "id": "01fc8a05-f8c3-42e2-ba2a-c37eb7da701c",
+          "label": "Rédaction d'article de blog"
+        },
+        {
+          "id": "92d532c5-5f4e-4fc8-b2bf-f96b2499cae8",
+          "label": "Rédaction de newsletter"
+        },
+        {
+          "id": "ff16bbf0-1a5a-4a85-81a3-fb1bb6ffaedd",
+          "label": "Rédaction de biographie"
+        },
+        {
+          "id": "c8612f1c-8bd1-4f05-a947-46682ccdcb8d",
+          "label": "Rédaction de fiche produit"
+        },
+        {
+          "id": "02afe806-4118-4c77-9848-40f166379c43",
+          "label": "Rédaction de discours"
+        },
+        {
+          "id": "8e8fc79d-5c36-4806-a392-0d9c4f5e6c50",
+          "label": "Rédaction de lettre personnelle"
+        },
+        {
+          "id": "d87e9365-700c-4329-8219-67c7cbb97f6d",
+          "label": "Rédaction de CV"
+        },
+        {
+          "id": "c578a460-bd61-4455-92ac-2794b3c99f8d",
+          "label": "Rédaction de lettre de motivation"
+        },
+        {
+          "id": "de295a96-b58d-4c04-b9f9-53dc94968d20",
+          "label": "Optimisation de profil LinkedIn"
+        },
+        {
+          "id": "6041e650-f36f-4b21-8348-5b0bc18f8a3f",
+          "label": "Transcription audio"
+        },
+        {
+          "id": "9f204cfa-acad-42c2-a4ee-5fc02f16ffe2",
+          "label": "Sous-titrage textuel"
+        },
+        {
+          "id": "5bce5599-4c70-4b78-a7f4-85a5914cb602",
+          "label": "Traduction anglais français"
+        },
+        {
+          "id": "a50dadff-90a7-4455-94ad-39f1f025f71e",
+          "label": "Traduction espagnol français"
+        },
+        {
+          "id": "99be5906-a8bc-4615-90c3-a6b243431337",
+          "label": "Traduction allemand français"
+        },
+        {
+          "id": "1d766d99-82d5-4c7e-9309-5d8254fa66a0",
+          "label": "Traduction italien français"
+        },
+        {
+          "id": "49ead9eb-72b2-4815-88dc-608ad091f36d",
+          "label": "Traduction arabe français"
+        },
+        {
+          "id": "80630dbc-0e22-49f8-b926-170ac5e9247c",
+          "label": "Traduction japonais français"
+        },
+        {
+          "id": "42ae6801-4199-4e12-89bb-18aaa87b0bf9",
+          "label": "Traduction portugais français"
+        },
+        {
+          "id": "6276108c-de4f-4795-9cec-c9f1bf256184",
+          "label": "Localisation de site web"
+        },
+        {
+          "id": "635687e7-5845-49c3-ba9e-3c465374b122",
+          "label": "Adaptation de contenus marketing"
+        },
+        {
+          "id": "2a054dd8-c040-4c8b-80ab-ee3536824c4e",
+          "label": "Mise en forme de rapport"
+        },
+        {
+          "id": "7e4ba05b-ac2f-43dd-b0ac-7b64ecd47dcf",
+          "label": "Création de présentation orale"
+        },
+        {
+          "id": "07a947ea-8ed4-40ad-9841-c61d09a3cbda",
+          "label": "Préparation d'entretien professionnel"
+        }
+      ]
+    },
+    {
+      "id": "a49f8e81-076c-4ffc-b3d6-4185d8f68881",
+      "label": "Assistance administrative et bureautique",
+      "specialties": [
+        {
+          "id": "e74456ec-1243-47d5-83da-15f4a2c9cddc",
+          "label": "Classement de documents"
+        },
+        {
+          "id": "db1363a9-3613-401d-892d-a2e6965e3ec4",
+          "label": "Numérisation de documents"
+        },
+        {
+          "id": "2d8c1a98-bb6a-4a86-b393-a6516443715f",
+          "label": "Organisation de dossiers numériques"
+        },
+        {
+          "id": "f719b67e-0d30-4424-b049-eb36e33b5bae",
+          "label": "Saisie de documents"
+        },
+        {
+          "id": "397093d3-395a-49eb-b1bb-da2e086087c9",
+          "label": "Mise en page Word"
+        },
+        {
+          "id": "86ecbffb-e08f-4c5e-b28a-7ce3fe80a94c",
+          "label": "Mise en page Google Docs"
+        },
+        {
+          "id": "685b7c56-97d2-4932-a0f6-bc8bf1360019",
+          "label": "Tableau Excel simple"
+        },
+        {
+          "id": "e972d7de-0f32-4d38-b525-967d4564f606",
+          "label": "Tableau Google Sheets"
+        },
+        {
+          "id": "0702b1d4-de33-4de7-980d-1fa3cef4f71b",
+          "label": "Création de modèles de documents"
+        },
+        {
+          "id": "f738998a-6d24-40b1-b8ec-8965426be47d",
+          "label": "Préparation de courriers courants"
+        },
+        {
+          "id": "28c931b9-a260-4869-a3fb-6dce61cf0543",
+          "label": "Aide aux formulaires administratifs"
+        },
+        {
+          "id": "2d304a7c-fdfe-4eaf-88ea-b38fce2446ea",
+          "label": "Suivi de factures personnelles"
+        },
+        {
+          "id": "a8e31d02-a8c2-471a-8ce9-e31581d2989a",
+          "label": "Organisation d'agenda"
+        },
+        {
+          "id": "c13a39e7-eddc-4c06-b921-ba2eb7f7637b",
+          "label": "Prise de rendez-vous"
+        },
+        {
+          "id": "8be87ec9-3030-46ab-abd4-114bd5c82ec4",
+          "label": "Organisation de boîte mail"
+        },
+        {
+          "id": "b1543379-0c59-4803-9631-cbf754ab0557",
+          "label": "Gestion de planning"
+        },
+        {
+          "id": "6485b3ea-2584-46c8-a0ac-bed994ef9af6",
+          "label": "Création de base de contacts"
+        },
+        {
+          "id": "a31bc4fd-8720-4298-a3b2-73b182c3dc9e",
+          "label": "Préparation de dossier administratif"
+        },
+        {
+          "id": "a6b0aae7-0e23-44db-9898-c3945ebc5045",
+          "label": "Assistance virtuelle"
+        },
+        {
+          "id": "cbfc102a-3af4-4450-9d61-b81713013fcd",
+          "label": "Compte rendu de réunion"
+        },
+        {
+          "id": "019b648e-f860-4ca8-988b-fe50ae324953",
+          "label": "Prise de notes"
+        },
+        {
+          "id": "a5bccd08-c058-42b1-a51c-aab1fb0e6dfb",
+          "label": "Préparation de support de réunion"
+        },
+        {
+          "id": "5da77586-ee3c-4688-86d1-51fd866db817",
+          "label": "Archivage numérique"
+        },
+        {
+          "id": "4cfade07-59eb-4261-a98f-5946e9d7cb9b",
+          "label": "Aide à la recherche d'informations administratives"
+        }
+      ]
+    },
+    {
+      "id": "e2b629e5-f0a8-472c-a239-6f5abddea4d6",
+      "label": "Gestion et accompagnement de microentreprise",
+      "specialties": [
+        {
+          "id": "d00caebd-44f1-4810-ab67-d0ac6403f252",
+          "label": "Création de tableau de suivi d'activité"
+        },
+        {
+          "id": "ee529bc4-02a3-4af3-9c3b-a573ba938fa0",
+          "label": "Suivi administratif de devis"
+        },
+        {
+          "id": "d4a06a36-256d-4897-adec-f35fdd6d3942",
+          "label": "Préparation de factures"
+        },
+        {
+          "id": "2f9bc8d2-aee1-48a7-9321-f918c2eeeb94",
+          "label": "Classement de justificatifs"
+        },
+        {
+          "id": "6b2b1ad2-f447-4080-900b-6d648a30c612",
+          "label": "Tableau de trésorerie prévisionnelle"
+        },
+        {
+          "id": "13e7fdd2-f06f-4575-912a-0b102f37b97b",
+          "label": "Tableau de suivi de dépenses"
+        },
+        {
+          "id": "3d0ec258-efc5-41da-b15a-c0ec9e2f2083",
+          "label": "Organisation administrative de microentreprise"
+        },
+        {
+          "id": "ba273a57-38bc-4c3c-bd4b-7cc888fb7e7a",
+          "label": "Création de modèles de devis"
+        },
+        {
+          "id": "dc1b40a3-c895-40de-b768-e795fd0a0337",
+          "label": "Création de modèles de factures"
+        },
+        {
+          "id": "79caa8d3-a5c1-4f55-9a5a-6da647d84640",
+          "label": "Aide à l'utilisation d'un logiciel de facturation"
+        },
+        {
+          "id": "5c5abcb2-1c54-4344-aea2-f7e558737c5a",
+          "label": "Organisation d'un catalogue de produits"
+        },
+        {
+          "id": "a19d5750-0191-49fd-9945-7ad7a0f8fa3c",
+          "label": "Suivi de commandes"
+        },
+        {
+          "id": "a1610648-cc88-4aa1-8634-462b6fc68659",
+          "label": "Gestion de fichiers clients"
+        },
+        {
+          "id": "e59b1bd7-377a-49aa-af11-f3115b193ee5",
+          "label": "Organisation de processus"
+        },
+        {
+          "id": "950eb437-076c-41bc-a311-d6e8902c0287",
+          "label": "Préparation de présentation de projet"
+        },
+        {
+          "id": "1db06b1d-ebb9-4328-970f-b6df384f2683",
+          "label": "Création de business model canvas"
+        },
+        {
+          "id": "4a473573-3da8-4aac-ab1f-11242c4a6fc2",
+          "label": "Étude de concurrence"
+        },
+        {
+          "id": "4acf5e0c-4883-4eef-b549-7c119bb2de0e",
+          "label": "Aide à la définition d'offre"
+        },
+        {
+          "id": "4e1f2c78-6752-4402-894b-ed9d8eaa75e3",
+          "label": "Aide au calcul de coûts indicatifs"
+        },
+        {
+          "id": "210150c0-3c2c-47dc-9cbf-f26710a9a09b",
+          "label": "Création de tableaux de bord commerciaux"
+        }
+      ]
+    },
+    {
+      "id": "1035918c-3b26-417d-8927-e53736834d8e",
+      "label": "Événementiel et animation",
+      "specialties": [
+        {
+          "id": "491d0acb-3e29-48f8-9751-27f2c7895bcb",
+          "label": "Création de photobooth"
+        },
+        {
+          "id": "38d3374e-7fe2-4cd3-9377-da2ddfa03d91",
+          "label": "Animation de jeux de société"
+        },
+        {
+          "id": "433eab04-d7e7-4a59-ab95-69dc876c5b94",
+          "label": "Animation de quiz"
+        },
+        {
+          "id": "ea4ee989-04da-4f84-99ee-1af777999974",
+          "label": "Animation karaoké"
+        },
+        {
+          "id": "9b985b6a-6c96-4134-bdf9-b4f8640aaa9e",
+          "label": "Animation atelier créatif"
+        },
+        {
+          "id": "81fb1496-76e7-4468-8f16-7c835f9d19b0",
+          "label": "Création de cartons d'invitation"
+        },
+        {
+          "id": "870c51dc-0889-449e-8ad3-70443796988e",
+          "label": "Animation de soirée jeux"
+        },
+        {
+          "id": "e7c24aa8-1911-409c-9eba-64a5c9d5288e",
+          "label": "Photographie événementielle"
+        },
+        {
+          "id": "03565730-7dbd-4198-915d-aea45dd1d753",
+          "label": "Montage de vidéo souvenir"
+        }
+      ]
+    },
+    {
+      "id": "e6328894-4f66-4364-abbb-26f6593218ca",
+      "label": "Mode, couture et personnalisation",
+      "specialties": [
+        {
+          "id": "4328d75f-b188-476d-bf2a-eb876f102c71",
+          "label": "Remplacement de bouton"
+        },
+        {
+          "id": "828d8d7a-0fcc-4cba-b1b5-dc6eb8cc2501",
+          "label": "Ajustement de vêtement"
+        },
+        {
+          "id": "c188b45a-aa99-4a14-bf3b-02f2f9d5e887",
+          "label": "Création de vêtement sur mesure"
+        },
+        {
+          "id": "2ae1db99-0fc3-4c67-aa45-dd91b604a036",
+          "label": "Customisation de vêtement"
+        },
+        {
+          "id": "451c5c05-db5d-4465-a6ca-b920e5e7c664",
+          "label": "Broderie personnalisée"
+        },
+        {
+          "id": "7d0fe289-9e0c-44e2-93a1-1b958d80bf5e",
+          "label": "Flocage textile"
+        },
+        {
+          "id": "704ae263-e9da-44d7-b0d6-eb41d58718a0",
+          "label": "Création de tote bag"
+        },
+        {
+          "id": "4b69687b-0615-4f42-9ee6-fa106b2ca8d3",
+          "label": "Création d'accessoires textiles"
+        },
+        {
+          "id": "4d63340e-0d80-4634-9381-61a6f79ca8dd",
+          "label": "Confection de rideaux"
+        },
+        {
+          "id": "8ae3bb6d-9cce-462d-9ac9-f89dfa947917",
+          "label": "Création de costume"
+        },
+        {
+          "id": "1317741b-9687-4fd6-a11a-dd98549a53a7",
+          "label": "Conseil vestimentaire"
+        },
+        {
+          "id": "1f5955b2-a261-47c0-ba94-4de3aba6abfd",
+          "label": "Création de tenues"
+        },
+        {
+          "id": "c3c3309c-d946-4f90-b7b1-301196963426",
+          "label": "Photographie de vêtements"
+        },
+        {
+          "id": "85c72b73-1f24-4403-98f2-ae2268e52bc1",
+          "label": "Mise en vente de vêtements d'occasion"
+        }
+      ]
+    },
+    {
+      "id": "805439ff-560e-4681-b304-9d3c6bd88333",
+      "label": "Cuisine et ateliers culinaires",
+      "specialties": [
+        {
+          "id": "3a290110-b46e-4d15-85ab-4aa89ce04638",
+          "label": "Cours de cuisine débutant"
+        },
+        {
+          "id": "aa0c9e51-2e4d-4aca-bdd1-61480da86229",
+          "label": "Cours de pâtisserie"
+        },
+        {
+          "id": "47575511-b759-4297-bab6-9f3757648951",
+          "label": "Cours de boulangerie maison"
+        },
+        {
+          "id": "35e5180e-4371-469f-8ce4-b825d9fa0398",
+          "label": "Cours de cuisine végétarienne"
+        },
+        {
+          "id": "5e583f7e-53e3-4245-8468-f393e2492573",
+          "label": "Cours de cuisine végétalienne"
+        },
+        {
+          "id": "17752bb2-f8c2-4361-93e1-3d347dfc51fc",
+          "label": "Cours de cuisine du monde"
+        },
+        {
+          "id": "beba94db-0025-44dc-82c2-73876cad389e",
+          "label": "Cours de cuisine française"
+        },
+        {
+          "id": "58fea3b1-7013-4e7b-9c00-a37a095bc152",
+          "label": "Cours de cuisine italienne"
+        },
+        {
+          "id": "9123bbda-2b72-4d23-a159-ba98f99667e2",
+          "label": "Cours de cuisine japonaise"
+        },
+        {
+          "id": "9cfaa995-5b75-45d2-acb0-13a74eb95b2a",
+          "label": "Cours de cuisine maghrébine"
+        },
+        {
+          "id": "f99a60b7-a31b-4f17-88b7-213ab2e133b5",
+          "label": "Cours de cuisine indienne"
+        },
+        {
+          "id": "152c9b97-1f3c-40a5-97df-73baedf0dc04",
+          "label": "Préparation de repas à domicile"
+        },
+        {
+          "id": "5ca342dc-2bef-49e3-914f-0333c7a03776",
+          "label": "Batch cooking à domicile"
+        },
+        {
+          "id": "e5d900f9-b77a-4ab5-8d19-98916c0b416e",
+          "label": "Aide à la préparation de buffet privé"
+        },
+        {
+          "id": "d4f1c7aa-fdce-444e-aac2-7b01ec863654",
+          "label": "Décoration de gâteaux"
+        },
+        {
+          "id": "6a3826b1-821f-408d-b672-b30ff02ee276",
+          "label": "Atelier biscuits"
+        },
+        {
+          "id": "312ae345-9dbe-4e99-9a1d-0d91e71fcb5b",
+          "label": "Initiation à la conservation alimentaire"
+        },
+        {
+          "id": "1add389c-cd5c-4a27-bc5c-aeb428e0b8be",
+          "label": "Organisation de recettes familiales"
+        }
+      ]
+    },
+    {
+      "id": "d5331ca2-6eee-4d78-a319-4456c5138f2f",
+      "label": "Architecture légère, 3D et fabrication numérique",
+      "specialties": [
+        {
+          "id": "fb62aae3-efd2-4b2f-9310-15e2448ff1bd",
+          "label": "Modélisation 3D d'objet"
+        },
+        {
+          "id": "00eee4f3-9ca4-4084-b780-c9bcfa759f8f",
+          "label": "Modélisation 3D de pièce"
+        },
+        {
+          "id": "46b9d1f3-90e0-40f9-b294-3c6d9e7b8d96",
+          "label": "Impression 3D à la demande"
+        },
+        {
+          "id": "66c60b49-1114-478e-83ab-289e512c58a3",
+          "label": "Préparation de fichier STL"
+        },
+        {
+          "id": "9fcfb312-bbbe-4a15-aa15-14896607d6b8",
+          "label": "Retouche de modèle 3D"
+        },
+        {
+          "id": "bda94370-7688-4385-8775-da71ffeebe0b",
+          "label": "Création de prototype non critique"
+        },
+        {
+          "id": "053330e2-04ad-4b46-a154-abbc1768337f",
+          "label": "Conception de boîtier électronique non certifié"
+        },
+        {
+          "id": "beee8bee-5633-4c4d-bd33-2b9cf33d790d",
+          "label": "Découpe laser décorative"
+        },
+        {
+          "id": "6cf14aaa-b408-4e89-a51c-4aaa47a8fd81",
+          "label": "Gravure personnalisée"
+        },
+        {
+          "id": "0e7813ad-0a89-49c2-a887-63d6fe3453c4",
+          "label": "Conception de maquette miniature"
+        },
+        {
+          "id": "bc5a014b-9a55-423f-bbb0-42a17dad2b8c",
+          "label": "Visualisation 3D intérieure"
+        },
+        {
+          "id": "2b778bef-1319-4933-9f12-13785060ff04",
+          "label": "Rendu 3D produit"
+        },
+        {
+          "id": "cd3bba03-757f-42dc-af1c-727f66d96d26",
+          "label": "Création de notice de montage"
+        },
+        {
+          "id": "cb3ba72a-d4c5-4ee9-bb91-dab4791c6936",
+          "label": "Création de fichier SVG pour découpe"
+        },
+        {
+          "id": "4e4a8cf1-2ddf-4355-88ac-81de70fa64cb",
+          "label": "Réparation esthétique d'objet imprimé en 3D"
+        },
+        {
+          "id": "d755d200-cff7-42f8-807f-7f8cef8e2e96",
+          "label": "Création de figurine 3D"
+        },
+        {
+          "id": "450254a5-34c5-4134-95b0-75eafb0d2943",
+          "label": "Initiation à la modélisation 3D"
+        }
+      ]
+    },
+    {
+      "id": "ed1ab7ba-d3fc-4d6c-ab51-0409bd9eea61",
+      "label": "Artisanat créatif et objets personnalisés",
+      "specialties": [
+        {
+          "id": "bb3223a8-0072-44c7-9c7b-342313c189ba",
+          "label": "Création de cartes personnalisées"
+        },
+        {
+          "id": "77fa889c-bea9-4727-89a1-1e02057b2f32",
+          "label": "Création de faire-part"
+        },
+        {
+          "id": "e67d9a43-0775-4581-b19f-91bcf4037d76",
+          "label": "Création d'affiches personnalisées"
+        },
+        {
+          "id": "d7cc63aa-5d93-42c5-af2d-39c3f1bda3f9",
+          "label": "Création de bijoux fantaisie"
+        },
+        {
+          "id": "be3e7ea9-fcb7-43ec-abfb-c668df54a824",
+          "label": "Création de décorations en macramé"
+        },
+        {
+          "id": "1321830d-d113-4d32-bbb5-f384318d7d10",
+          "label": "Création de bougies décoratives"
+        },
+        {
+          "id": "e69347c0-1982-4bde-8cc1-5513f8324284",
+          "label": "Création de fleurs en papier"
+        },
+        {
+          "id": "9b25e8ed-8388-47f3-82bc-2db093777246",
+          "label": "Création d'objets en résine décorative"
+        },
+        {
+          "id": "2d699558-c618-4b98-829b-4ea42064154e",
+          "label": "Personnalisation de mugs"
+        },
+        {
+          "id": "abee6415-92dc-4551-885f-a6329b9a8272",
+          "label": "Personnalisation de tote bags"
+        },
+        {
+          "id": "e244bbdb-e9be-426b-bf27-8ae934e4c60e",
+          "label": "Personnalisation de carnets"
+        },
+        {
+          "id": "29d399be-54fc-4468-a50c-40f9baebcda2",
+          "label": "Création de cadeaux personnalisés"
+        },
+        {
+          "id": "fb5d25ab-b3bb-41fc-826f-748ad6890c93",
+          "label": "Création de décorations saisonnières"
+        },
+        {
+          "id": "197f6b4f-0141-4dcf-a34b-e57aea5a8796",
+          "label": "Création de centres de table"
+        },
+        {
+          "id": "5ebe485d-f057-46c5-8581-1b6c722b989e",
+          "label": "Création de décorations de mariage"
+        },
+        {
+          "id": "8528ad9a-03ee-486c-b314-9e7984a835c1",
+          "label": "Restauration esthétique de petit objet"
+        },
+        {
+          "id": "c6e2b501-371c-4ae3-bf9f-f171dfe30bef",
+          "label": "Peinture sur objet"
+        },
+        {
+          "id": "ad84e8d4-a9bd-4a1c-a77a-fe4ffe51c7fa",
+          "label": "Customisation de meubles"
+        }
+      ]
+    },
+    {
+      "id": "02f7f584-46a1-4bff-b905-b040a21ae4ca",
+      "label": "Accompagnement numérique et formation adulte",
+      "specialties": [
+        {
+          "id": "bdab5c90-65e9-4a15-8091-7438f6450125",
+          "label": "Cours Excel"
+        },
+        {
+          "id": "19d56d92-6537-42b9-b100-bcd653cef527",
+          "label": "Cours organisation numérique"
+        },
+        {
+          "id": "366ac138-80fe-44d8-9453-52e9a45be69e",
+          "label": "Cours bureautique pour seniors"
+        }
+      ]
+    }
+  ],
+  "studyFields": [
+    {
+      "id": "15d560bb-f6c6-46fc-9936-c23ed432c3d5",
+      "label": "Informatique — développement logiciel",
+      "allowedSpecialtyIds": [
+        "60aa272b-fbc8-44cb-b9dc-d63b2fab832b",
+        "befdfbcf-9aeb-4578-9fcb-2ece2a236f9d",
+        "9a2ddeed-17c4-4477-9d7f-6f144ad2d4d7",
+        "fff36898-143b-4d30-8015-cdabc378cca4",
+        "75bd1c91-0273-46e8-989a-76c78c441b91",
+        "1ae3de72-bad3-4bf9-a6bb-f6119d27e3af",
+        "d78ccd7f-282f-4fc4-9021-60f3418d204a",
+        "7b813f24-5d64-4844-91d4-2ceb93934906",
+        "59242133-9677-4e7e-a424-8f474e1ea0eb",
+        "febd3c91-8eb9-4539-8517-4da1399142a8",
+        "2a3cc979-2c1e-4666-b6d9-e022b07c20d4",
+        "f647644e-d114-4240-b8da-9e798b768ec6",
+        "6d13ebae-56fd-45cc-8adc-d08c19386d71",
+        "7f2ce405-e87d-43c0-967c-c0250bc7d525",
+        "bbe6301a-8560-4f37-bda7-102221f2f97f",
+        "54ce372f-6312-4a55-870d-30b30960c1a4",
+        "59a9439f-d448-4b2a-9ab7-1a2fc4dff5dd",
+        "cb25049a-257f-4328-b072-2e359f90bbbf",
+        "0b6db1df-a638-4a27-acf0-56676eb82263",
+        "28a84df5-8bd9-445e-9d2c-09fe463b6695",
+        "4fe3df72-097b-445b-bdba-971e88ba762e",
+        "9e658eb7-d729-4582-894e-5d46bfa9437c",
+        "efcc2f04-fdda-4304-b558-247d3bf4d9ab",
+        "ffe68b0b-4f7a-41c3-8415-59e8cb660c60",
+        "0d062a30-4a77-4c39-b837-72582ffca479",
+        "f84b7af7-5b05-4a59-be0e-cdf63618381a",
+        "105fa260-f957-427d-9ca4-ac4239e16daa",
+        "b1da3ddb-f146-4c7f-9dd8-fbe88bd3acd4",
+        "f2f52337-3e58-4d56-9db3-57c2773242ea",
+        "238e858b-5f9f-4224-9ac3-b1550f96a1c5",
+        "338de0ea-5115-4248-982c-5e4bdbf1e872",
+        "88ab3112-2a94-4b5b-974a-ebf82270b01d",
+        "125d4234-7217-401e-b518-5ed3a91e2186",
+        "44118fa0-361a-468d-b2f6-fe90b020a8e0",
+        "0296d43b-21b8-401a-9740-e862f09976e2",
+        "b35dd268-0d4c-4d0c-ba10-97a49533b091",
+        "d2ab03c6-f09f-4e5d-a471-f4c250aef2f9",
+        "e902b631-a3b8-4cb6-acfc-84c4ce014e1f",
+        "4c274efd-9451-4804-87c2-d7f43d823d1a",
+        "4bd3a9ff-4f4e-4f43-a0e0-37999842bfcd",
+        "01ee2ca6-d332-4f4e-a8b8-3304cb9190ca",
+        "3c2b4144-c3a2-4e46-98b8-124503a0fd4e",
+        "8a530685-94a0-4faf-8b59-01bfd72e11eb",
+        "b2309d3a-ff34-4254-87be-a8710d86df03",
+        "418f92f8-e799-4c07-bfee-f7a317e17b47",
+        "07b2f0a3-cbba-4012-9960-9782f0b356cb",
+        "27ca85d1-4694-406c-a56e-262d00d94fa9",
+        "f3949a08-8a7e-48fb-91ca-993ca160775b",
+        "045c1810-64e0-4325-ba11-ff9a6b5621a8",
+        "1f221a70-1ac6-4cd4-95b5-73f7ed1ebf3b",
+        "a1b75616-b4a4-4395-9c83-af9b04181cef",
+        "985851e9-1080-466e-82d4-41202ba1a5ac",
+        "d06499d9-a6e2-4963-8821-e4b1f48f4c58",
+        "6394ba99-efa3-448e-898a-835889591be3",
+        "d5e23037-c4a0-4147-bacf-49012553499a",
+        "7e6e937c-d70a-4d5f-91ea-dd2eeb07918c",
+        "cefd27cf-f61c-48c2-95ba-22b82cc2d835",
+        "143dc32b-01b9-44fb-85e6-0f585eabd02e",
+        "b7013287-04b7-4bd9-9bbc-3435addf03d3",
+        "9c8996ac-0979-4caa-aacd-d7344f502939",
+        "95cfb7a4-26c2-4c58-84db-3b392d0dfd06",
+        "105e9e84-2270-4950-a2bc-e72d8cbb318c",
+        "7ca7ae16-5fd2-4cf5-bd66-3a869f568e1d",
+        "5068db89-2fe9-4fd3-bc91-38f54b454437",
+        "bf96de24-d54a-40a1-8534-003c2cb3ebf6",
+        "3c3d7f6a-6e46-485f-bf1e-d5d7d1e7004f",
+        "b19fcad2-7600-4cf9-940f-54236fa4e499",
+        "02dcdd5d-c4b9-4934-b8dc-8c5d89b4d294",
+        "ddd84cc5-4895-4222-9c0d-8b8548097212",
+        "838d16fb-86f4-46c9-82f9-24c66b4c48e3",
+        "fbd7d4ab-4572-4a4e-b8a8-d1fe3fd3e50c",
+        "91726ec2-98f6-4045-acde-7a14b6ca1a0d",
+        "7f431358-a6b0-451c-8696-a611e1564541",
+        "a3070e39-2b66-4f66-862d-ffd0946232da",
+        "4a052252-ad5e-44aa-a8cc-2d7e58d74974",
+        "ce4e0deb-10be-4197-af5f-63823084029f",
+        "a2940f34-ec29-45a4-b45e-38a72298ff99",
+        "707c16b2-4df0-446a-96e0-6129e3ab2b59"
+      ]
+    },
+    {
+      "id": "6428a041-aceb-414c-932e-b578f067bfdb",
+      "label": "Informatique — réseaux et systèmes",
+      "allowedSpecialtyIds": [
+        "60aa272b-fbc8-44cb-b9dc-d63b2fab832b",
+        "befdfbcf-9aeb-4578-9fcb-2ece2a236f9d",
+        "9a2ddeed-17c4-4477-9d7f-6f144ad2d4d7",
+        "fff36898-143b-4d30-8015-cdabc378cca4",
+        "75bd1c91-0273-46e8-989a-76c78c441b91",
+        "1ae3de72-bad3-4bf9-a6bb-f6119d27e3af",
+        "d78ccd7f-282f-4fc4-9021-60f3418d204a",
+        "7b813f24-5d64-4844-91d4-2ceb93934906",
+        "59242133-9677-4e7e-a424-8f474e1ea0eb",
+        "febd3c91-8eb9-4539-8517-4da1399142a8",
+        "2a3cc979-2c1e-4666-b6d9-e022b07c20d4",
+        "f647644e-d114-4240-b8da-9e798b768ec6",
+        "6d13ebae-56fd-45cc-8adc-d08c19386d71",
+        "7f2ce405-e87d-43c0-967c-c0250bc7d525",
+        "bbe6301a-8560-4f37-bda7-102221f2f97f",
+        "54ce372f-6312-4a55-870d-30b30960c1a4",
+        "59a9439f-d448-4b2a-9ab7-1a2fc4dff5dd",
+        "cb25049a-257f-4328-b072-2e359f90bbbf",
+        "0b6db1df-a638-4a27-acf0-56676eb82263",
+        "28a84df5-8bd9-445e-9d2c-09fe463b6695",
+        "4fe3df72-097b-445b-bdba-971e88ba762e",
+        "9e658eb7-d729-4582-894e-5d46bfa9437c",
+        "efcc2f04-fdda-4304-b558-247d3bf4d9ab",
+        "ffe68b0b-4f7a-41c3-8415-59e8cb660c60",
+        "0d062a30-4a77-4c39-b837-72582ffca479",
+        "f84b7af7-5b05-4a59-be0e-cdf63618381a",
+        "bdab5c90-65e9-4a15-8091-7438f6450125",
+        "19d56d92-6537-42b9-b100-bcd653cef527",
+        "366ac138-80fe-44d8-9453-52e9a45be69e"
+      ]
+    },
+    {
+      "id": "0a8561b3-6fb2-4392-a937-f16569ee9dd4",
+      "label": "Informatique — data et intelligence artificielle",
+      "allowedSpecialtyIds": [
+        "8a530685-94a0-4faf-8b59-01bfd72e11eb",
+        "b2309d3a-ff34-4254-87be-a8710d86df03",
+        "bf96de24-d54a-40a1-8534-003c2cb3ebf6",
+        "3c3d7f6a-6e46-485f-bf1e-d5d7d1e7004f",
+        "0e43920e-36a6-4544-a428-7bada64f5d57",
+        "fbd7d4ab-4572-4a4e-b8a8-d1fe3fd3e50c",
+        "a3ad9584-cac4-4974-a72a-6641fa37d9f7",
+        "225c8fe5-0661-4d94-abb4-41d95b6a01bf",
+        "04992db0-5046-44fb-9679-fbb3ffd90594",
+        "21db8524-95e0-4cdf-a953-f1a87e2e3ebe",
+        "fb3d27f9-6fac-4b3b-8e8c-5d9c20a64215",
+        "d2836b2d-98d5-46fd-af01-c8c810446fe3",
+        "91726ec2-98f6-4045-acde-7a14b6ca1a0d",
+        "7f431358-a6b0-451c-8696-a611e1564541",
+        "a3070e39-2b66-4f66-862d-ffd0946232da",
+        "800448b1-515e-4456-ab1d-69560bb396e2",
+        "12c8cbd8-d4fc-49ef-87c7-f7abd79ad32b",
+        "e380ce18-f1f1-42a5-a5ce-5f89ff3ebac4",
+        "558d81e9-844e-4c26-a201-344f1e15e6ed",
+        "4a052252-ad5e-44aa-a8cc-2d7e58d74974",
+        "ce4e0deb-10be-4197-af5f-63823084029f",
+        "a2940f34-ec29-45a4-b45e-38a72298ff99",
+        "0f5f8753-e0f6-434c-b464-c49fa6d62d95",
+        "5e325600-5f54-4531-bfd5-8259e2560862",
+        "94f4c79a-ee61-4ab7-be3f-275dfb296622",
+        "fe04a0ca-dd24-4f04-a73a-48f09076a36d",
+        "f9843d5b-cbc1-4ada-b526-28f5339d9998",
+        "7303a52a-431a-4d19-81bf-d3d04d741844",
+        "713cba9f-2f22-450a-b4a3-8f97f5fa70aa",
+        "b57c2da8-c17e-4ae0-875a-1b80713609e1",
+        "ad15709d-e056-4f18-9855-cb08a70e85d3",
+        "707c16b2-4df0-446a-96e0-6129e3ab2b59"
+      ]
+    },
+    {
+      "id": "05c74ff2-594d-47f4-b7b6-6239579e1a2e",
+      "label": "Design graphique et communication visuelle",
+      "allowedSpecialtyIds": [
+        "17e6174d-d35c-4c3c-b931-fb7ab1ad5cdd",
+        "b29af622-badd-4084-8803-24654b6b2ff4",
+        "f141d698-3449-4055-a5c9-a87f023d6f31",
+        "47055933-2870-424b-b924-3bf0b91b81ea",
+        "8749c233-19ba-4ffa-94ff-16d5ce62ca7e",
+        "ed8eced9-bd02-451f-8c0a-08e1357f8ff4",
+        "cbbea91b-037c-412d-9024-333bc0eb96bc",
+        "501c0834-e946-4484-8093-22a3ecb0c917",
+        "ed5bfaad-729f-4eb4-9df8-404d4d234810",
+        "630698ce-7d02-4341-88dc-c077d25bb1e9",
+        "4a1bc469-d165-400e-a1c9-aa38bea18bb1",
+        "1f1586db-0a85-4f99-94dd-e9fb350210d1",
+        "6898499f-002e-4910-9f2a-357efc8c448a",
+        "2ad4cc73-71f1-4ceb-b0f9-902652c5a76d",
+        "d803187c-f3ec-4433-8400-d7560ae59811",
+        "765f967d-2353-4c37-923c-025bf8a80a24",
+        "352be5b3-a610-434f-bf41-b8b74457ed13",
+        "cdf212e2-e82f-4df3-92ef-1fab7766c9d9",
+        "fc2662ee-a7f5-4316-9c53-0ac4c370c44b",
+        "6d76cae6-7e55-45e6-8d36-1b9f86e315f1",
+        "693b387b-464e-455a-932d-6c78531f0bbc",
+        "f9413d5e-d585-40b7-9415-972674830a17",
+        "905b9e18-d214-4ebb-9281-7ef0d29dc021",
+        "9c70151a-9316-4f6e-9115-fcb248cd2b81",
+        "278f78ee-22ca-4921-a79e-649eab660502",
+        "0e19929b-dd8f-4422-807f-ce32eaf2bf45",
+        "a8904a0a-3cb4-488a-861e-d979ec401e92",
+        "8d5658d6-2507-4382-9bed-8b94064fc29a",
+        "ad9101d2-1513-471a-84b4-e4f85d677dae",
+        "7695e1ed-8810-4440-9ece-1ceb8ca2e968",
+        "62fe994f-edca-42f9-93f8-e171f952d63f",
+        "a0a3dc6a-1a7e-4383-94ab-a10e3ea8e9f6",
+        "718b8d83-886e-4d01-b40e-1a043d60b925",
+        "7f722c79-3be5-474f-bab2-bd4b7daba937",
+        "b3d7fee6-b07f-4435-bd0f-7945e93b976c",
+        "6b3c08cc-5f65-4f90-8bcc-463875aba534",
+        "81fb1496-76e7-4468-8f16-7c835f9d19b0",
+        "bb3223a8-0072-44c7-9c7b-342313c189ba",
+        "77fa889c-bea9-4727-89a1-1e02057b2f32",
+        "e67d9a43-0775-4581-b19f-91bcf4037d76"
+      ]
+    },
+    {
+      "id": "3b381a11-5e26-4ddd-9d67-8946c0661f8f",
+      "label": "Design UX/UI et produit numérique",
+      "allowedSpecialtyIds": [
+        "25fb57bf-38dc-490f-afc1-88d31902b347",
+        "74838e6c-c921-4f8d-90dc-f322563d5ed9",
+        "0e4dfb80-5c2f-4eb6-85e0-5d90e3c34389",
+        "b51e9d27-0fa9-45dd-b72e-d83025399503",
+        "47589828-ed64-4e91-a171-df783a76b0f6",
+        "45ae3838-e006-41de-98ff-8cd7766837b0",
+        "f0de7443-4c78-4da2-ae10-4190f7bbf21c",
+        "b889ce21-5ae6-4fc4-a13e-d735aad5b9cb",
+        "4e85b14e-1bfd-4f96-a706-df3fad121aae",
+        "2b6d2ef0-e1c1-45b8-a153-4ad3c9559382",
+        "5e253d3c-0c55-4c93-bd04-4d035fba7e99",
+        "de6140af-8e6d-4531-a611-7905ba3e1e4f",
+        "a37ec255-8697-43f3-9b06-59a70f743440",
+        "5cd60d9c-a9c8-4ffa-88c0-3721a637157d",
+        "0cc2ef45-61e5-47a2-828c-51a5daafc1c6",
+        "e91f4f8e-6da2-4dba-a251-eba0cbf78abe",
+        "95d43a9b-843a-48a3-a9c9-3b57a1dcc0f7",
+        "1961d416-8522-4de9-9653-9a7d53ea54c9",
+        "f0258ebb-cefd-4ae7-a434-1078c79dd73d",
+        "69c1f6d9-6bf8-4d01-b884-d34a1455ff0f",
+        "fb7a5779-fefb-454c-8be5-40d274cbd390",
+        "e59f27e8-f2ac-4869-90fe-8854948a811e",
+        "d7d839e5-5dbc-4334-a3b6-d3fead5275e4",
+        "09cb11ba-7cf5-4c55-8d7d-59356d57c097"
+      ]
+    },
+    {
+      "id": "2f170af9-0579-4b1e-8bd3-f45fecccfc0c",
+      "label": "Marketing et communication",
+      "allowedSpecialtyIds": [
+        "693b387b-464e-455a-932d-6c78531f0bbc",
+        "f9413d5e-d585-40b7-9415-972674830a17",
+        "a0a3dc6a-1a7e-4383-94ab-a10e3ea8e9f6",
+        "718b8d83-886e-4d01-b40e-1a043d60b925",
+        "b538fe14-d0df-42c1-8627-e059f83aac6d",
+        "3a434248-f7c9-464f-87f0-e42047bd793c",
+        "fe564602-8519-4f4d-a967-886c967885bb",
+        "db61094b-3598-40fd-8487-d6293301d6ee",
+        "b2d1fa7c-2e0e-4ce3-9064-7046e476afd5",
+        "a85283a2-2288-4e0a-b9f4-c250f63aa7ab",
+        "7d0fa9ce-3974-4575-a812-485f848638ba",
+        "567fcc23-669a-45b6-b5cf-163f11506b4e",
+        "fa28cc71-a2ad-4aee-9552-c9e949a0ff9f",
+        "cfb5f933-30b3-4207-bae5-696a0104653e",
+        "8634c36c-d025-4925-934c-9aaa04deb083",
+        "60f3a2e0-e625-4e9d-9aef-ae6e46c76167",
+        "35c1a816-d0a5-4944-ac43-c241e942acd4",
+        "5cde915d-19be-45de-85c3-621a1f76cdf3",
+        "4106a86f-2928-4aaf-a778-db3f5360f35e",
+        "67e257d6-9c38-4bbe-8524-566b394e3ed9",
+        "71557c47-3d12-457c-a044-429c71e8196b",
+        "62628383-ef93-4232-977e-4ab1ea9b8184",
+        "d585722a-3d72-4835-83ff-7190379a8dfe",
+        "358e3c27-2760-4cca-92c4-0a9e8337565d",
+        "76eca66a-53ac-4498-b7f9-7296584b5962",
+        "a8cc4d3a-1351-4a38-9f97-862352b9df98",
+        "4e39d336-e890-447d-97a8-328470e9386e",
+        "67b053ae-55d9-467c-9a00-fd83842bfcef",
+        "749238c9-8447-48cd-824c-a352dde181c3",
+        "b9d5cdab-6c9b-42cc-896e-2f455be393a6",
+        "6f37130f-3076-4e49-a21f-f9277781c866",
+        "01fc8a05-f8c3-42e2-ba2a-c37eb7da701c",
+        "92d532c5-5f4e-4fc8-b2bf-f96b2499cae8",
+        "c8612f1c-8bd1-4f05-a947-46682ccdcb8d",
+        "635687e7-5845-49c3-ba9e-3c465374b122"
+      ]
+    },
+    {
+      "id": "d5c0406b-2e08-4ebb-8b34-4524615fa7a9",
+      "label": "Audiovisuel, cinéma et photographie",
+      "allowedSpecialtyIds": [
+        "14c6141e-64b6-410f-98b7-c91675fff278",
+        "8c80366a-84cc-4e61-875c-56ad67a1de54",
+        "969756d4-59f1-427b-8689-5bd5e5648fe2",
+        "0d3f9ef7-e70d-4374-89a9-27369c61f335",
+        "6b7e6d88-18fd-4fc0-a27b-f0ae15d75ca3",
+        "eb76fac0-7d4d-49bd-849d-ddaf6e7e70e6",
+        "c9e12260-6168-4209-a165-b8171027cc0c",
+        "3833948b-ffb1-4a1d-abfe-5fd33648c9c5",
+        "6c5a7f2f-eaa4-4623-8fe1-540d7fb64024",
+        "b3d7fee6-b07f-4435-bd0f-7945e93b976c",
+        "d0676da8-e4d4-4b1e-a11c-32ea270ad258",
+        "2f73b584-3545-4d4d-800a-6de7d1d1062b",
+        "c0ced24c-0ac4-4cdf-a235-aefbed5d855e",
+        "18b20ffd-08cf-4b52-a65e-32d5c3e0baaf",
+        "1788df73-c81b-4831-a0ff-d41650788cfa",
+        "2679500c-a141-4a9a-99c0-5a52e6362047",
+        "f3d46dac-3266-4c80-9c5d-50444db965f3",
+        "e07a0f73-348b-4e3f-8ffd-b4d6b6d9b0ba",
+        "51e5d625-c0b0-4c08-b9b5-d12073578b57",
+        "3ca77d32-dea5-4a82-9766-6421c1bb05c0",
+        "6b3c08cc-5f65-4f90-8bcc-463875aba534",
+        "3bb704da-dadd-4e6b-ad33-85f9b1085513",
+        "a927d595-7923-475c-8321-cfe6b8eec6d5",
+        "d89ccb0c-67a5-433d-87f9-5e5e5de940fc",
+        "11490739-c945-4215-8073-e960be827a58",
+        "10ae7f32-a2c3-4a24-9a86-e897d29ac160",
+        "3bad3522-7325-4a1a-892e-93c4efbffd82",
+        "491d0acb-3e29-48f8-9751-27f2c7895bcb",
+        "e7c24aa8-1911-409c-9eba-64a5c9d5288e",
+        "03565730-7dbd-4198-915d-aea45dd1d753"
+      ]
+    },
+    {
+      "id": "85dd711c-c769-4997-b4a5-93d853987450",
+      "label": "Mathématiques et statistiques",
+      "allowedSpecialtyIds": [
+        "f47ca10c-e090-4c15-883c-04fb8bd7ce4f",
+        "412a6b48-78e7-4665-827b-afb49b955c45",
+        "94a32834-4289-4efe-ae15-e65348e4cab1",
+        "c37e932e-7d98-45e7-8a6f-084398e01911"
+      ]
+    },
+    {
+      "id": "1ae62932-3d4a-4a16-adf7-806365bd8f1c",
+      "label": "Physique et chimie",
+      "allowedSpecialtyIds": [
+        "b2df5456-89f1-4b9b-836d-8d89d6a97fba",
+        "bca52284-e496-4ae6-9c74-a17020e83075"
+      ]
+    },
+    {
+      "id": "48983198-3418-479b-ba99-55395d97cd5d",
+      "label": "Lettres et littérature française",
+      "allowedSpecialtyIds": [
+        "918696c4-a01c-4324-9927-a7bbd329e7a2",
+        "4939365b-d25a-4c1f-9699-e22d13f5940f",
+        "93afd284-de60-46dc-88df-033872366fcc",
+        "3ce74c2e-537a-42d1-beb3-3a14664b7fee",
+        "08025c2c-9b40-4c3f-97e9-438013d0553c",
+        "c8fb567c-4680-4e8c-a42e-10902e4c4dba",
+        "6f37130f-3076-4e49-a21f-f9277781c866",
+        "01fc8a05-f8c3-42e2-ba2a-c37eb7da701c",
+        "92d532c5-5f4e-4fc8-b2bf-f96b2499cae8",
+        "ff16bbf0-1a5a-4a85-81a3-fb1bb6ffaedd",
+        "02afe806-4118-4c77-9848-40f166379c43",
+        "8e8fc79d-5c36-4806-a392-0d9c4f5e6c50"
+      ]
+    },
+    {
+      "id": "8fedade8-0da2-4fc0-ae9d-37faa842dfca",
+      "label": "Langues étrangères et traduction",
+      "allowedSpecialtyIds": ["9f204cfa-acad-42c2-a4ee-5fc02f16ffe2"]
+    },
+    {
+      "id": "53ee38cf-2a54-4f5e-a2d7-7d7e3b92aadd",
+      "label": "Histoire et géographie",
+      "allowedSpecialtyIds": [
+        "d5e279e9-1573-4ee4-9bca-a5ebdf333f3c",
+        "47571e37-7fc9-4b09-b985-cf52357b91f2"
+      ]
+    },
+    {
+      "id": "44511998-a7d5-4c06-9a5a-09f9b8e366ff",
+      "label": "Sciences de la vie et biologie",
+      "allowedSpecialtyIds": [
+        "1f26a0b7-471e-4c94-9a71-01943a99ba2c",
+        "dd5c6e5e-ceb2-4b5d-819d-b3025aa064df"
+      ]
+    },
+    {
+      "id": "5fdb476d-df41-4eac-8aa4-5bd2e65ba21f",
+      "label": "Économie et gestion",
+      "allowedSpecialtyIds": [
+        "ee920a5e-c37d-4f7c-aeea-dfde85efd97b",
+        "62628383-ef93-4232-977e-4ab1ea9b8184",
+        "685b7c56-97d2-4932-a0f6-bc8bf1360019",
+        "b1543379-0c59-4803-9631-cbf754ab0557",
+        "a31bc4fd-8720-4298-a3b2-73b182c3dc9e",
+        "ee529bc4-02a3-4af3-9c3b-a573ba938fa0",
+        "3d0ec258-efc5-41da-b15a-c0ec9e2f2083",
+        "a1610648-cc88-4aa1-8634-462b6fc68659",
+        "1db06b1d-ebb9-4328-970f-b6df384f2683"
+      ]
+    },
+    {
+      "id": "af7d0eb1-53a2-4d94-9ee0-ed3da53cdde5",
+      "label": "Commerce et entrepreneuriat",
+      "allowedSpecialtyIds": [
+        "b538fe14-d0df-42c1-8627-e059f83aac6d",
+        "3a434248-f7c9-464f-87f0-e42047bd793c",
+        "fe564602-8519-4f4d-a967-886c967885bb",
+        "db61094b-3598-40fd-8487-d6293301d6ee",
+        "b2d1fa7c-2e0e-4ce3-9064-7046e476afd5",
+        "a85283a2-2288-4e0a-b9f4-c250f63aa7ab",
+        "7d0fa9ce-3974-4575-a812-485f848638ba",
+        "567fcc23-669a-45b6-b5cf-163f11506b4e",
+        "fa28cc71-a2ad-4aee-9552-c9e949a0ff9f",
+        "cfb5f933-30b3-4207-bae5-696a0104653e",
+        "8634c36c-d025-4925-934c-9aaa04deb083",
+        "60f3a2e0-e625-4e9d-9aef-ae6e46c76167",
+        "35c1a816-d0a5-4944-ac43-c241e942acd4",
+        "5cde915d-19be-45de-85c3-621a1f76cdf3",
+        "4106a86f-2928-4aaf-a778-db3f5360f35e",
+        "67e257d6-9c38-4bbe-8524-566b394e3ed9",
+        "71557c47-3d12-457c-a044-429c71e8196b",
+        "62628383-ef93-4232-977e-4ab1ea9b8184",
+        "d585722a-3d72-4835-83ff-7190379a8dfe",
+        "358e3c27-2760-4cca-92c4-0a9e8337565d",
+        "76eca66a-53ac-4498-b7f9-7296584b5962",
+        "a8cc4d3a-1351-4a38-9f97-862352b9df98",
+        "4e39d336-e890-447d-97a8-328470e9386e",
+        "67b053ae-55d9-467c-9a00-fd83842bfcef",
+        "749238c9-8447-48cd-824c-a352dde181c3",
+        "b9d5cdab-6c9b-42cc-896e-2f455be393a6",
+        "f719b67e-0d30-4424-b049-eb36e33b5bae",
+        "397093d3-395a-49eb-b1bb-da2e086087c9",
+        "86ecbffb-e08f-4c5e-b28a-7ce3fe80a94c",
+        "685b7c56-97d2-4932-a0f6-bc8bf1360019",
+        "e972d7de-0f32-4d38-b525-967d4564f606",
+        "0702b1d4-de33-4de7-980d-1fa3cef4f71b",
+        "b1543379-0c59-4803-9631-cbf754ab0557",
+        "6485b3ea-2584-46c8-a0ac-bed994ef9af6",
+        "cbfc102a-3af4-4450-9d61-b81713013fcd",
+        "a5bccd08-c058-42b1-a51c-aab1fb0e6dfb",
+        "d00caebd-44f1-4810-ab67-d0ac6403f252",
+        "ee529bc4-02a3-4af3-9c3b-a573ba938fa0",
+        "d4a06a36-256d-4897-adec-f35fdd6d3942",
+        "2f9bc8d2-aee1-48a7-9321-f918c2eeeb94",
+        "6b2b1ad2-f447-4080-900b-6d648a30c612",
+        "13e7fdd2-f06f-4575-912a-0b102f37b97b",
+        "3d0ec258-efc5-41da-b15a-c0ec9e2f2083",
+        "ba273a57-38bc-4c3c-bd4b-7cc888fb7e7a",
+        "dc1b40a3-c895-40de-b768-e795fd0a0337",
+        "79caa8d3-a5c1-4f55-9a5a-6da647d84640",
+        "5c5abcb2-1c54-4344-aea2-f7e558737c5a",
+        "a19d5750-0191-49fd-9945-7ad7a0f8fa3c",
+        "a1610648-cc88-4aa1-8634-462b6fc68659",
+        "e59b1bd7-377a-49aa-af11-f3115b193ee5",
+        "950eb437-076c-41bc-a311-d6e8902c0287",
+        "1db06b1d-ebb9-4328-970f-b6df384f2683",
+        "4a473573-3da8-4aac-ab1f-11242c4a6fc2",
+        "4acf5e0c-4883-4eef-b549-7c119bb2de0e",
+        "4e1f2c78-6752-4402-894b-ed9d8eaa75e3",
+        "210150c0-3c2c-47dc-9cbf-f26710a9a09b"
+      ]
+    },
+    {
+      "id": "1b3e8a45-af65-413c-84fb-fc91ddb5edac",
+      "label": "Arts plastiques et illustration",
+      "allowedSpecialtyIds": [
+        "17e6174d-d35c-4c3c-b931-fb7ab1ad5cdd",
+        "b29af622-badd-4084-8803-24654b6b2ff4",
+        "f141d698-3449-4055-a5c9-a87f023d6f31",
+        "0439485c-2841-4846-adb9-dc14b06aa47c",
+        "31b82e45-4b72-41df-a23d-fe901e354728",
+        "16f30be1-2cc7-499c-95a3-be8f113f9df0",
+        "47055933-2870-424b-b924-3bf0b91b81ea",
+        "8749c233-19ba-4ffa-94ff-16d5ce62ca7e",
+        "ed8eced9-bd02-451f-8c0a-08e1357f8ff4",
+        "cbbea91b-037c-412d-9024-333bc0eb96bc",
+        "501c0834-e946-4484-8093-22a3ecb0c917",
+        "ed5bfaad-729f-4eb4-9df8-404d4d234810",
+        "cfca8e44-a9d7-4dec-86f4-462445bc2ba5",
+        "37fb635a-e2e3-449d-ae80-e128cdddf8c9",
+        "017e74f5-1512-465d-ad7a-3af8867f9d2f",
+        "a8904a0a-3cb4-488a-861e-d979ec401e92",
+        "7695e1ed-8810-4440-9ece-1ceb8ca2e968",
+        "62fe994f-edca-42f9-93f8-e171f952d63f",
+        "7f722c79-3be5-474f-bab2-bd4b7daba937",
+        "bb3223a8-0072-44c7-9c7b-342313c189ba",
+        "77fa889c-bea9-4727-89a1-1e02057b2f32",
+        "e67d9a43-0775-4581-b19f-91bcf4037d76",
+        "c6e2b501-371c-4ae3-bf9f-f171dfe30bef"
+      ]
+    },
+    {
+      "id": "e0e975ed-3abf-4350-b1c0-8c02a200cc74",
+      "label": "Musique et musicologie",
+      "allowedSpecialtyIds": [
+        "81cb6d82-07f5-4c9c-b692-8317576fd025",
+        "0508c659-f64a-4b20-992c-13762979d7eb"
+      ]
+    },
+    {
+      "id": "31e8b8f4-5e46-4bf2-8892-5ee2854a0402",
+      "label": "Métiers de la mode et du textile",
+      "allowedSpecialtyIds": [
+        "d8f8497d-0514-45fb-a832-2cdce0001975",
+        "99f2650d-3728-468e-8682-708da20947d7",
+        "538916c4-69fb-484c-b16f-ecf468707c91",
+        "b3f9b735-afcd-4594-a071-b7977628f357",
+        "203df05c-1317-44ed-b288-cad0f6bb7660",
+        "d33dd1bc-70d9-4a26-a041-ce8ad6958090",
+        "4328d75f-b188-476d-bf2a-eb876f102c71",
+        "828d8d7a-0fcc-4cba-b1b5-dc6eb8cc2501",
+        "c188b45a-aa99-4a14-bf3b-02f2f9d5e887",
+        "2ae1db99-0fc3-4c67-aa45-dd91b604a036",
+        "451c5c05-db5d-4465-a6ca-b920e5e7c664",
+        "7d0fe289-9e0c-44e2-93a1-1b958d80bf5e",
+        "704ae263-e9da-44d7-b0d6-eb41d58718a0",
+        "4b69687b-0615-4f42-9ee6-fa106b2ca8d3",
+        "4d63340e-0d80-4634-9381-61a6f79ca8dd",
+        "8ae3bb6d-9cce-462d-9ac9-f89dfa947917",
+        "1317741b-9687-4fd6-a11a-dd98549a53a7",
+        "1f5955b2-a261-47c0-ba94-4de3aba6abfd",
+        "be3e7ea9-fcb7-43ec-abfb-c668df54a824",
+        "abee6415-92dc-4551-885f-a6329b9a8272"
+      ]
+    },
+    {
+      "id": "9cdc8ffd-10aa-40de-b3ab-28581ca0ff2d",
+      "label": "Architecture et design d’espace",
+      "allowedSpecialtyIds": [
+        "b3331825-edab-492c-89e1-5271f56d42ba",
+        "df31ad28-eb05-49f7-a319-1dcda6f5ab8d",
+        "cd784795-fd95-4c3d-8609-2ceb69b133c3",
+        "b29af622-badd-4084-8803-24654b6b2ff4",
+        "47055933-2870-424b-b924-3bf0b91b81ea"
+      ]
+    },
+    {
+      "id": "855f814b-ce82-4889-b9cc-80e27809e9b0",
+      "label": "Paysage et horticulture",
+      "allowedSpecialtyIds": [
+        "b9f0a9b8-6782-4e33-9e86-80d729354bf2",
+        "54748175-887a-41a5-b72d-4b1cb0986a02",
+        "b00fe353-cf4a-4f5c-b489-ab5d3bb35b62",
+        "be929331-778c-4e1c-9d6b-6ec00bc07c4c",
+        "8d55a5a6-f53e-49e3-8926-0ab5a17c9259",
+        "86fb18f6-275f-49a1-b027-b161696ea448",
+        "f5571be8-6e87-4a0c-8c90-6c5f48a422e1",
+        "1d18fa92-b9d6-4c64-8f08-878d5e3095cc"
+      ]
+    },
+    {
+      "id": "a938d65b-5663-4f81-a293-83cd5f56f65b",
+      "label": "Électronique et systèmes embarqués",
+      "allowedSpecialtyIds": [
+        "befdfbcf-9aeb-4578-9fcb-2ece2a236f9d",
+        "75bd1c91-0273-46e8-989a-76c78c441b91",
+        "4fe3df72-097b-445b-bdba-971e88ba762e",
+        "f84b7af7-5b05-4a59-be0e-cdf63618381a",
+        "91726ec2-98f6-4045-acde-7a14b6ca1a0d",
+        "fb62aae3-efd2-4b2f-9310-15e2448ff1bd",
+        "00eee4f3-9ca4-4084-b780-c9bcfa759f8f",
+        "46b9d1f3-90e0-40f9-b294-3c6d9e7b8d96",
+        "66c60b49-1114-478e-83ab-289e512c58a3",
+        "9fcfb312-bbbe-4a15-aa15-14896607d6b8",
+        "bda94370-7688-4385-8775-da71ffeebe0b",
+        "053330e2-04ad-4b46-a154-abbc1768337f",
+        "cd3bba03-757f-42dc-af1c-727f66d96d26"
+      ]
+    },
+    {
+      "id": "992f1514-9886-40f0-9105-73c4d31f401f",
+      "label": "Sciences et techniques des activités physiques et sportives (STAPS)",
+      "allowedSpecialtyIds": []
+    },
+    {
+      "id": "8458cc97-357b-4fa2-a306-9518a27c93ae",
+      "label": "Hôtellerie-restauration et arts culinaires",
+      "allowedSpecialtyIds": [
+        "3a290110-b46e-4d15-85ab-4aa89ce04638",
+        "aa0c9e51-2e4d-4aca-bdd1-61480da86229",
+        "47575511-b759-4297-bab6-9f3757648951",
+        "35e5180e-4371-469f-8ce4-b825d9fa0398",
+        "5e583f7e-53e3-4245-8468-f393e2492573",
+        "beba94db-0025-44dc-82c2-73876cad389e",
+        "6a3826b1-821f-408d-b672-b30ff02ee276",
+        "1add389c-cd5c-4a27-bc5c-aeb428e0b8be"
+      ]
+    }
+  ]
 }

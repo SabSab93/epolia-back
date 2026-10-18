@@ -1,4 +1,4 @@
-import { assertApprovedCatalog, validateCatalog } from '../../prisma/catalog';
+import { validateCatalog, validateActiveCatalog } from '@root/prisma/catalog';
 
 const payload = {
   version: 2,
@@ -115,30 +115,108 @@ describe('Catalog validation', () => {
       }),
     ).toThrow(/Duplicate/);
   });
+});
 
-  it('accepts an empty approved catalog without inventing approvals', () => {
-    const approved = validateCatalog({
-      version: 2,
-      domains: [],
-      studyFields: [],
-    });
-    expect(() =>
-      assertApprovedCatalog(validateCatalog(payload), approved),
-    ).not.toThrow();
+const activePayload = {
+  version: 3,
+  domains: [
+    {
+      id: '20000000-0000-4000-8000-000000000001',
+      label: 'Web',
+      specialties: [
+        { id: '20000000-0000-4000-8000-000000000002', label: 'Site vitrine' },
+      ],
+    },
+  ],
+  studyFields: [
+    {
+      id: '20000000-0000-4000-8000-000000000003',
+      label: 'Informatique',
+      allowedSpecialtyIds: ['20000000-0000-4000-8000-000000000002'],
+    },
+  ],
+};
+
+describe('Active catalog with stable UUIDs', () => {
+  it('accepts an empty active catalog', () => {
+    expect(
+      validateActiveCatalog({ version: 3, domains: [], studyFields: [] }),
+    ).toEqual({ version: 3, domains: [], studyFields: [] });
   });
 
-  it('rejects approved associations outside the candidate', () => {
-    const altered = validateCatalog({
-      ...payload,
+  it('accepts new catalog content without depending on the archived V2 labels', () => {
+    const expanded = structuredClone(activePayload);
+    expanded.domains[0].specialties.push({
+      id: '20000000-0000-4000-8000-000000000004',
+      label: 'Nouvelle prestation',
+    });
+    expanded.studyFields[0].allowedSpecialtyIds.push(
+      '20000000-0000-4000-8000-000000000004',
+    );
+    expect(
+      validateActiveCatalog(expanded).studyFields[0].allowedSpecialtyIds,
+    ).toHaveLength(2);
+  });
+
+  it('keeps references valid after renaming domain, specialty and study field', () => {
+    const renamed = structuredClone(activePayload);
+    renamed.domains[0].label = ' Développement web ';
+    renamed.domains[0].specialties[0].label = 'Création de site';
+    renamed.studyFields[0].label = 'Licence informatique';
+    expect(
+      validateActiveCatalog(renamed).studyFields[0].allowedSpecialtyIds,
+    ).toEqual(activePayload.studyFields[0].allowedSpecialtyIds);
+  });
+
+  it.each([
+    { ...activePayload, version: 2 },
+    { ...activePayload, domains: [{ ...activePayload.domains[0], id: 'web' }] },
+    {
+      ...activePayload,
+      studyFields: [
+        { ...activePayload.studyFields[0], allowedSpecialtyIds: ['unknown'] },
+      ],
+    },
+    {
+      ...activePayload,
+      studyFields: [
+        { ...activePayload.studyFields[0], allowedSpecialtyIds: [null] },
+      ],
+    },
+    {
+      ...activePayload,
       studyFields: [
         {
-          label: 'Informatique',
-          allowedSpecialties: [{ domain: 'Web', specialty: 'Application web' }],
+          ...activePayload.studyFields[0],
+          allowedSpecialtyIds: [
+            ...activePayload.studyFields[0].allowedSpecialtyIds,
+            ...activePayload.studyFields[0].allowedSpecialtyIds,
+          ],
         },
       ],
-    });
-    expect(() =>
-      assertApprovedCatalog(validateCatalog(payload), altered),
-    ).toThrow(/absent/);
+    },
+    {
+      ...activePayload,
+      studyFields: [
+        { ...activePayload.studyFields[0], id: activePayload.domains[0].id },
+      ],
+    },
+    {
+      ...activePayload,
+      domains: [
+        {
+          ...activePayload.domains[0],
+          specialties: [
+            ...activePayload.domains[0].specialties,
+            {
+              id: '20000000-0000-4000-8000-000000000004',
+              label: ' SITE  VITRINE ',
+            },
+          ],
+        },
+      ],
+    },
+  ])('rejects invalid IDs, references or duplicate identities: %p', (value) => {
+    expect(() => validateActiveCatalog(value)).toThrow();
   });
 });
