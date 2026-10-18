@@ -1,4 +1,7 @@
 import { randomUUID } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { join } from 'node:path';
 import {
   AccountStatus,
   PricingType,
@@ -20,7 +23,12 @@ import {
   lockStudentProfile,
   removeIneligibleSpecialties,
 } from '@/services/student-specialties';
-import { importCatalog, validateCatalog } from '../../prisma/catalog';
+import {
+  importCatalog,
+  validateCatalog,
+  validateActiveCatalog,
+  readActiveCatalog,
+} from '@root/prisma/catalog';
 
 jest.mock('@/prisma/client', () => {
   const { PrismaClient } =
@@ -101,7 +109,13 @@ databaseTests(
       await importCatalog(prisma, catalog);
       for (const row of await prisma.domain.findMany())
         domains.set(row.label, row.id);
-      for (const row of await prisma.specialty.findMany())
+      for (const row of await prisma.specialty.findMany({
+        where: {
+          domainId: {
+            in: catalog.domains.map((domain) => domains.get(domain.label)!),
+          },
+        },
+      }))
         specialties.set(row.label, row.id);
       for (const row of await prisma.studyField.findMany())
         fields.set(row.label, row.id);
@@ -753,5 +767,353 @@ databaseTests(
         await prisma.studentSpecialty.count({ where: { studentId } }),
       ).toBe(0);
     });
+
+    function activeCatalog() {
+      const specialtyId = randomUUID();
+      return validateActiveCatalog({
+        version: 3,
+        domains: [
+          {
+            id: randomUUID(),
+            label: `V3 domain ${randomUUID()}`,
+            specialties: [{ id: specialtyId, label: 'Initial specialty' }],
+          },
+        ],
+        studyFields: [
+          {
+            id: randomUUID(),
+            label: `V3 study field ${randomUUID()}`,
+            allowedSpecialtyIds: [specialtyId],
+          },
+        ],
+      });
+    }
+
+    async function catalogCounts() {
+      return Promise.all([
+        prisma.domain.count(),
+        prisma.specialty.count(),
+        prisma.studyField.count(),
+        prisma.studyFieldSpecialty.count(),
+        prisma.studentSpecialty.count(),
+        prisma.missionItem.count(),
+      ]);
+    }
+
+    it('previews an import without creating any rows, then imports and replays it', async () => {
+      const input = activeCatalog();
+      const before = await catalogCounts();
+      const preview = await importCatalog(prisma, input, { dryRun: true });
+      expect(preview.conflicts).toEqual([]);
+      expect(preview.changes.map((change) => change.action)).toEqual([
+        'create',
+        'create',
+        'create',
+      ]);
+      expect(preview.links[0].action).toBe('create');
+      expect(await catalogCounts()).toEqual(before);
+      await importCatalog(prisma, input);
+      const imported = await catalogCounts();
+      const replay = await importCatalog(prisma, input);
+      expect(
+        replay.changes.every((change) => change.action === 'unchanged'),
+      ).toBe(true);
+      expect(
+        replay.links.every((change) => change.action === 'unchanged'),
+      ).toBe(true);
+      expect(await catalogCounts()).toEqual(imported);
+    });
+
+    it('renames entries without losing profile, education, offer, eligibility or mission references', async () => {
+      const input = activeCatalog();
+      await importCatalog(prisma, input);
+      const domain = input.domains[0];
+      const specialty = domain.specialties[0];
+      const field = input.studyFields[0];
+      await prisma.studentProfile.update({
+        where: { userId: studentId },
+        data: { domainId: domain.id },
+      });
+      const education = await prisma.studentEducation.create({
+        data: {
+          studentId,
+          title: 'Current education',
+          studyFieldId: field.id,
+          startDate: relativeDay(-30),
+          endDate: relativeDay(30),
+        },
+      });
+      const offer = await request(app)
+        .post('/api/student-specialties')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          specialtyId: specialty.id,
+          pricingType: 'HOURLY',
+          priceCents: 2500,
+        });
+      expect(offer.status).toBe(201);
+      const customer = await prisma.user.create({ data: {} });
+      const mission = await prisma.mission.create({
+        data: {
+          customerUserId: customer.id,
+          studentId,
+          description: 'Contract before rename',
+          items: {
+            create: {
+              specialtyId: specialty.id,
+              specialtyLabel: specialty.label,
+              pricingType: 'HOURLY',
+              unitPriceCents: 2500,
+            },
+          },
+        },
+        include: { items: true },
+      });
+      const counts = await catalogCounts();
+      const renamed = structuredClone(input);
+      renamed.domains[0].label += ' renamed';
+      renamed.domains[0].specialties[0].label = 'Renamed specialty';
+      renamed.studyFields[0].label += ' renamed';
+      const preview = await importCatalog(prisma, renamed, { dryRun: true });
+      expect(
+        preview.changes.every((change) => change.action === 'rename'),
+      ).toBe(true);
+      expect(
+        await prisma.specialty.findUnique({ where: { id: specialty.id } }),
+      ).toMatchObject({ label: specialty.label });
+      await importCatalog(prisma, renamed);
+      expect(await catalogCounts()).toEqual(counts);
+      expect(
+        await prisma.studentProfile.findUnique({
+          where: { userId: studentId },
+        }),
+      ).toMatchObject({ domainId: domain.id });
+      expect(
+        await prisma.studentEducation.findUnique({
+          where: { id: education.id },
+        }),
+      ).toEqual(education);
+      expect(
+        await prisma.studentSpecialty.findFirst({ where: { studentId } }),
+      ).toMatchObject({ specialtyId: specialty.id, priceCents: 2500 });
+      expect(
+        await prisma.mission.findUnique({
+          where: { id: mission.id },
+          include: { items: true },
+        }),
+      ).toEqual(mission);
+      const eligible = await request(app)
+        .get('/api/student-specialties/eligible')
+        .set('Authorization', `Bearer ${token}`);
+      expect(eligible.status).toBe(200);
+      expect(eligible.body).toEqual([
+        expect.objectContaining({
+          id: specialty.id,
+          label: 'Renamed specialty',
+        }),
+      ]);
+    });
+
+    it('reports conflicting identities without changing existing UUIDs or writing partial data', async () => {
+      const input = activeCatalog();
+      await importCatalog(prisma, input);
+      const conflicting = structuredClone(input);
+      conflicting.domains[0].id = randomUUID();
+      const before = await catalogCounts();
+      const preview = await importCatalog(prisma, conflicting, {
+        dryRun: true,
+      });
+      expect(preview.conflicts.join(' ')).toContain(input.domains[0].id);
+      await expect(importCatalog(prisma, conflicting)).rejects.toThrow(
+        /conflicts/,
+      );
+      expect(await catalogCounts()).toEqual(before);
+      expect(
+        await prisma.domain.findUnique({ where: { id: input.domains[0].id } }),
+      ).not.toBeNull();
+    });
+
+    it('does not implicitly move an existing specialty to another domain', async () => {
+      const input = activeCatalog();
+      await importCatalog(prisma, input);
+      const moved = structuredClone(input);
+      moved.domains[0].id = randomUUID();
+      moved.domains[0].label += ' other';
+      await expect(importCatalog(prisma, moved)).rejects.toThrow(
+        /domain changes/,
+      );
+      expect(
+        await prisma.domain.findUnique({ where: { id: moved.domains[0].id } }),
+      ).toBeNull();
+    });
+
+    it('preserves omitted entries and links rather than treating a file change as revocation', async () => {
+      const input = activeCatalog();
+      await importCatalog(prisma, input);
+      const before = await catalogCounts();
+      const removed = structuredClone(input);
+      removed.studyFields[0].allowedSpecialtyIds = [];
+      await importCatalog(prisma, removed);
+      await importCatalog(prisma, { version: 3, domains: [], studyFields: [] });
+      expect(await catalogCounts()).toEqual(before);
+    });
+
+    it('rolls back earlier writes if creating a correspondence fails', async () => {
+      const input = activeCatalog();
+      const failing = prisma.$extends({
+        query: {
+          studyFieldSpecialty: {
+            create() {
+              throw new Error('Simulated correspondence failure');
+            },
+          },
+        },
+      });
+      const before = await catalogCounts();
+      await expect(
+        importCatalog(failing as unknown as typeof prisma, input),
+      ).rejects.toThrow('Simulated correspondence failure');
+      expect(await catalogCounts()).toEqual(before);
+    });
+
+    it('imports the corrected full catalog and exposes only same-domain approved math specialties', async () => {
+      const input = readActiveCatalog(
+        join(__dirname, '../../prisma/catalog/approved.json'),
+      );
+      const preview = await importCatalog(prisma, input, { dryRun: true });
+      expect(preview.conflicts).toEqual([]);
+      const count = input.domains.reduce(
+        (sum, domain) => sum + domain.specialties.length + 1,
+        input.studyFields.length,
+      );
+      expect(preview.changes).toHaveLength(count);
+      expect(preview.links).toHaveLength(
+        input.studyFields.reduce(
+          (sum, field) => sum + field.allowedSpecialtyIds.length,
+          0,
+        ),
+      );
+      await importCatalog(prisma, input);
+      const field = input.studyFields.find(
+        (field) => field.label === 'Mathématiques et statistiques',
+      )!;
+      const domain = input.domains.find(
+        (domain) => domain.label === 'Soutien scolaire lycée et supérieur',
+      )!;
+      await prisma.studentProfile.update({
+        where: { userId: studentId },
+        data: { domainId: domain.id },
+      });
+      await prisma.studentEducation.create({
+        data: {
+          studentId,
+          title: 'Mathématiques',
+          studyFieldId: field.id,
+          startDate: relativeDay(-30),
+          endDate: relativeDay(30),
+        },
+      });
+      const list = await request(app)
+        .get('/api/student-specialties/eligible')
+        .set('Authorization', `Bearer ${token}`);
+      expect(list.status).toBe(200);
+      expect(
+        list.body.map((row: { label: string }) => row.label).sort(),
+      ).toEqual(['Mathématiques lycée', 'Statistiques']);
+      const replay = await importCatalog(prisma, input);
+      expect(
+        replay.changes.every((change) => change.action === 'unchanged'),
+      ).toBe(true);
+      expect(
+        replay.links.every((change) => change.action === 'unchanged'),
+      ).toBe(true);
+    });
+
+    it('reports new study-field specialty links in the CLI dry-run without writing them', async () => {
+      const input = readActiveCatalog(
+        join(__dirname, '../../prisma/catalog/approved.json'),
+      );
+      await importCatalog(prisma, input);
+      const field = input.studyFields.find(
+        (field) => field.allowedSpecialtyIds.length > 0,
+      )!;
+      const specialtyId = field.allowedSpecialtyIds[0];
+      const specialty = input.domains
+        .flatMap((domain) => domain.specialties)
+        .find((specialty) => specialty.id === specialtyId)!;
+      const key = { studyFieldId: field.id, specialtyId };
+      const run = promisify(execFile);
+      async function preview() {
+        const { stdout } = await run(
+          process.execPath,
+          [
+            '-r',
+            'ts-node/register',
+            '-r',
+            'tsconfig-paths/register',
+            'prisma/seed-catalog.ts',
+            '--dry-run',
+          ],
+          {
+            cwd: join(__dirname, '../..'),
+            env: {
+              ...process.env,
+              DATABASE_URL: process.env.CATALOG_TEST_DATABASE_URL,
+              DIRECT_URL: process.env.CATALOG_TEST_DATABASE_URL,
+            },
+          },
+        );
+        return JSON.parse(stdout);
+      }
+      await prisma.studyFieldSpecialty.delete({
+        where: { studyFieldId_specialtyId: key },
+      });
+      try {
+        const before = await catalogCounts();
+        const report = await preview();
+        expect(report.dryRun).toBe(true);
+        expect(report.entries).toEqual({
+          created: 0,
+          renamed: 0,
+          unchanged: input.domains.reduce(
+            (count, domain) => count + 1 + domain.specialties.length,
+            input.studyFields.length,
+          ),
+        });
+        expect(report.changes).toEqual([]);
+        expect(report.links.created).toBe(1);
+        expect(report.createdLinks).toEqual([
+          {
+            ...key,
+            studyFieldLabel: field.label,
+            specialtyLabel: specialty.label,
+          },
+        ]);
+        expect(report.conflicts).toEqual([]);
+        expect(await catalogCounts()).toEqual(before);
+        expect(
+          await prisma.studyFieldSpecialty.findUnique({
+            where: { studyFieldId_specialtyId: key },
+          }),
+        ).toBeNull();
+      } finally {
+        await prisma.studyFieldSpecialty.upsert({
+          where: { studyFieldId_specialtyId: key },
+          create: key,
+          update: {},
+        });
+      }
+      const before = await catalogCounts();
+      const replay = await preview();
+      expect(replay.createdLinks).toEqual([]);
+      expect(replay.links.created).toBe(0);
+      expect(replay.links.unchanged).toBe(
+        input.studyFields.reduce(
+          (count, field) => count + field.allowedSpecialtyIds.length,
+          0,
+        ),
+      );
+      expect(await catalogCounts()).toEqual(before);
+    }, 20000);
   },
 );

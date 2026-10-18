@@ -1,11 +1,10 @@
 import { join } from 'node:path';
-import { assertApprovedCatalog, readCatalog } from './catalog';
+import { readActiveCatalog, readCatalog } from '@root/prisma/catalog';
 
 const candidate = readCatalog(
   join(__dirname, 'catalog', 'archive', 'catalog-v2.json'),
 );
-const approved = readCatalog(join(__dirname, 'catalog', 'approved.json'));
-assertApprovedCatalog(candidate, approved);
+const approved = readActiveCatalog(join(__dirname, 'catalog', 'approved.json'));
 
 console.log({
   candidateDomains: candidate.domains.length,
@@ -19,7 +18,7 @@ console.log({
     0,
   ),
   approvedAssociations: approved.studyFields.reduce(
-    (count, field) => count + field.allowedSpecialties.length,
+    (count, field) => count + field.allowedSpecialtyIds.length,
     0,
   ),
 });
