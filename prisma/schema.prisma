@@ -204,9 +204,10 @@ model Specialty {
   label     String
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  domain             Domain             @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  domain             Domain                @relation(fields: [domainId], references: [id], onDelete: Restrict)
   studentSpecialties StudentSpecialty[]
   missionItems       MissionItem[]
+  studyFields        StudyFieldSpecialty[]
 
   @@unique([domainId, label])
   @@index([domainId])
@@ -292,20 +293,45 @@ model StudentHobby {
   @@map("student_hobbies")
 }
 
-model StudentEducation {
-  id        String    @id @default(uuid()) @db.Uuid
-  studentId String    @map("student_id") @db.Uuid
-  title     String
-  school    String?
-  level     String?
-  startDate DateTime? @map("start_date") @db.Date
-  endDate   DateTime? @map("end_date") @db.Date
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+model StudyField {
+  id    String @id @default(uuid()) @db.Uuid
+  label String @unique
 
-  student StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  specialties StudyFieldSpecialty[]
+  educations  StudentEducation[]
+
+  @@map("study_fields")
+}
+
+model StudyFieldSpecialty {
+  studyFieldId String @map("study_field_id") @db.Uuid
+  specialtyId  String @map("specialty_id") @db.Uuid
+
+  studyField StudyField @relation(fields: [studyFieldId], references: [id], onDelete: Restrict)
+  specialty  Specialty  @relation(fields: [specialtyId], references: [id], onDelete: Restrict)
+
+  @@id([studyFieldId, specialtyId])
+  @@index([specialtyId])
+  @@map("study_field_specialties")
+}
+
+model StudentEducation {
+  id           String    @id @default(uuid()) @db.Uuid
+  studentId    String    @map("student_id") @db.Uuid
+  studyFieldId String?   @map("study_field_id") @db.Uuid
+  title        String
+  school       String?
+  level        String?
+  startDate    DateTime? @map("start_date") @db.Date
+  endDate      DateTime? @map("end_date") @db.Date
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  student    StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  studyField StudyField?    @relation(fields: [studyFieldId], references: [id], onDelete: Restrict)
 
   @@index([studentId])
+  @@index([studyFieldId])
   @@map("student_educations")
 }
 

@@ -1,0 +1,5572 @@
+{
+  "version": 2,
+  "domains": [
+    {
+      "label": "Peinture et décoration intérieure",
+      "specialties": [
+        "Conseil en couleurs",
+        "Conseil en décoration intérieure",
+        "Création de planches d'ambiance"
+      ]
+    },
+    {
+      "label": "Jardinage et entretien extérieur",
+      "specialties": [
+        "Arrosage de plantes",
+        "Plantation de fleurs",
+        "Plantation d'arbustes",
+        "Rempotage de plantes",
+        "Entretien de plantes d'intérieur",
+        "Conseil en jardinage amateur",
+        "Création de potager urbain"
+      ]
+    },
+    {
+      "label": "Soutien scolaire primaire et collège",
+      "specialties": [
+        "Mathématiques primaire",
+        "Français primaire",
+        "Anglais primaire",
+        "Mathématiques collège",
+        "Français collège",
+        "Histoire-géographie collège",
+        "Physique-chimie collège",
+        "SVT collège",
+        "Anglais collège",
+        "Espagnol collège",
+        "Allemand collège"
+      ]
+    },
+    {
+      "label": "Soutien scolaire lycée et supérieur",
+      "specialties": [
+        "Mathématiques lycée",
+        "Français lycée",
+        "Philosophie lycée",
+        "Histoire-géographie lycée",
+        "Physique-chimie lycée",
+        "SVT lycée",
+        "Mathématiques supérieur",
+        "Statistiques",
+        "Économie"
+      ]
+    },
+    {
+      "label": "Langues et conversation",
+      "specialties": [
+        "Français langue étrangère",
+        "Conversation en français",
+        "Anglais débutant",
+        "Anglais conversation",
+        "Anglais professionnel",
+        "Espagnol",
+        "Allemand",
+        "Italien",
+        "Portugais",
+        "Arabe littéraire",
+        "Arabe dialectal",
+        "Japonais",
+        "Coréen",
+        "Chinois mandarin",
+        "Russe",
+        "Turc",
+        "Néerlandais",
+        "Langue des signes française initiation",
+        "Préparation TOEIC",
+        "Préparation TOEFL",
+        "Préparation IELTS",
+        "Préparation DELF",
+        "Préparation DALF",
+        "Correction de prononciation",
+        "Conversation bilingue"
+      ]
+    },
+    {
+      "label": "Musique et chant",
+      "specialties": [
+        "Piano",
+        "Guitare acoustique",
+        "Guitare électrique",
+        "Basse",
+        "Batterie",
+        "Violon",
+        "Violoncelle",
+        "Flûte traversière",
+        "Flûte à bec",
+        "Saxophone",
+        "Clarinette",
+        "Trompette",
+        "Ukulélé",
+        "Harpe",
+        "Chant",
+        "Solfège",
+        "Théorie musicale",
+        "Éveil musical",
+        "Composition musicale",
+        "MAO",
+        "Production musicale",
+        "Mixage audio",
+        "Écriture de chansons",
+        "Préparation audition musicale"
+      ]
+    },
+    {
+      "label": "Arts plastiques et loisirs créatifs",
+      "specialties": [
+        "Dessin débutant",
+        "Dessin académique",
+        "Illustration",
+        "Aquarelle",
+        "Peinture acrylique",
+        "Peinture à l'huile",
+        "Croquis",
+        "Portrait dessiné",
+        "Calligraphie",
+        "Lettering",
+        "Bande dessinée",
+        "Manga",
+        "Modelage d'argile",
+        "Poterie loisir",
+        "Origami",
+        "Scrapbooking",
+        "Création de bijoux fantaisie",
+        "Tricot",
+        "Crochet",
+        "Broderie",
+        "Couture débutant",
+        "Patchwork",
+        "Upcycling textile",
+        "Fabrication de bougies décoratives",
+        "Décoration florale",
+        "Atelier créatif à domicile"
+      ]
+    },
+    {
+      "label": "Sport et activités physiques",
+      "specialties": [
+        "Course à pied accompagnée",
+        "Initiation à la boxe sans combat",
+        "Cours de corde à sauter",
+        "Initiation au badminton",
+        "Initiation au tennis",
+        "Initiation au basketball",
+        "Initiation au football",
+        "Initiation au volleyball",
+        "Initiation au roller",
+        "Initiation au skateboard"
+      ]
+    },
+    {
+      "label": "Informatique et assistance numérique",
+      "specialties": [
+        "Installation d'ordinateur",
+        "Configuration d'ordinateur",
+        "Configuration de smartphone",
+        "Configuration de tablette",
+        "Installation de logiciels",
+        "Mise à jour de logiciels",
+        "Organisation de fichiers",
+        "Transfert de photos",
+        "Transfert de fichiers",
+        "Initiation Windows",
+        "Initiation macOS",
+        "Initiation Linux",
+        "Initiation iPhone",
+        "Initiation Android",
+        "Initiation à Internet",
+        "Initiation à la messagerie électronique",
+        "Initiation aux visioconférences",
+        "Initiation aux démarches en ligne",
+        "Configuration imprimante",
+        "Configuration Wi-Fi domestique",
+        "Configuration objets connectés simples",
+        "Aide à la sécurité des comptes",
+        "Sensibilisation aux arnaques numériques",
+        "Aide à l'utilisation du cloud",
+        "Aide à la bureautique",
+        "Installation de périphériques"
+      ]
+    },
+    {
+      "label": "Développement web et applications",
+      "specialties": [
+        "Site vitrine",
+        "Site portfolio",
+        "Site événementiel",
+        "Site associatif",
+        "Site e-commerce",
+        "Blog",
+        "Landing page",
+        "Intégration HTML CSS",
+        "Intégration front-end",
+        "Développement JavaScript",
+        "Développement TypeScript",
+        "Développement React",
+        "Développement Vue.js",
+        "Développement Nuxt",
+        "Développement Next.js",
+        "Développement Node.js",
+        "Développement API REST",
+        "Développement backend",
+        "Développement full-stack",
+        "Développement application web",
+        "Développement application mobile",
+        "Application hybride Capacitor",
+        "Application React Native",
+        "Application Flutter",
+        "Intégration CMS",
+        "WordPress",
+        "Shopify",
+        "Prestashop",
+        "Webflow",
+        "Wix",
+        "Correction de bugs",
+        "Maintenance de site web",
+        "Optimisation responsive",
+        "Accessibilité web",
+        "Optimisation de performance web",
+        "Mise en place de formulaire",
+        "Intégration de paiement via prestataire",
+        "Tests fonctionnels",
+        "Tests automatisés",
+        "Documentation technique",
+        "Audit technique non certifiant",
+        "Déploiement d'application",
+        "Configuration nom de domaine",
+        "Configuration hébergement web"
+      ]
+    },
+    {
+      "label": "Données, automatisation et intelligence artificielle",
+      "specialties": [
+        "Saisie de données",
+        "Structuration de fichiers CSV",
+        "Création de tableaux de bord",
+        "Analyse de données descriptive",
+        "Visualisation de données",
+        "Tableaux croisés dynamiques",
+        "Formules Excel avancées",
+        "Automatisation Excel",
+        "Scripts Python",
+        "Scripts JavaScript",
+        "Automatisation de tâches bureautiques",
+        "Automatisation no-code",
+        "Intégration Zapier",
+        "Intégration Make",
+        "Intégration n8n",
+        "Conception de base de données",
+        "Requêtes SQL",
+        "Création de rapports automatisés",
+        "Création de chatbot informatif",
+        "Intégration API IA",
+        "Conception de prompts",
+        "Atelier initiation IA générative",
+        "Classification de documents",
+        "Extraction de données de documents",
+        "Création de workflow IA",
+        "Évaluation de résultats IA",
+        "Mise en place de FAQ intelligente",
+        "Documentation de processus automatisés"
+      ]
+    },
+    {
+      "label": "Graphisme et identité visuelle",
+      "specialties": [
+        "Création de logo",
+        "Refonte de logo",
+        "Charte graphique",
+        "Identité visuelle",
+        "Carte de visite",
+        "Flyer",
+        "Affiche",
+        "Brochure",
+        "Dépliant",
+        "Menu de restaurant",
+        "Packaging graphique",
+        "Visuel réseaux sociaux",
+        "Bannière web",
+        "Miniature YouTube",
+        "Présentation PowerPoint",
+        "Présentation commerciale",
+        "Infographie",
+        "Illustration vectorielle",
+        "Retouche graphique",
+        "Mise en page de document",
+        "Création de pictogrammes",
+        "Création de stickers",
+        "Design de newsletter",
+        "Création de templates Canva",
+        "Création de supports imprimables"
+      ]
+    },
+    {
+      "label": "UX, UI et design produit",
+      "specialties": [
+        "Audit UX",
+        "Recherche utilisateur",
+        "Interview utilisateur",
+        "Personas",
+        "Parcours utilisateur",
+        "User flow",
+        "Wireframe",
+        "Maquette Figma",
+        "Prototype interactif",
+        "Design d'application mobile",
+        "Design de site web",
+        "Design system",
+        "Bibliothèque de composants",
+        "Test utilisateur",
+        "Audit ergonomique",
+        "Architecture de l'information",
+        "Microcopy UX",
+        "Optimisation de formulaire",
+        "Design responsive",
+        "Design de tableau de bord",
+        "Conception d'onboarding",
+        "Accessibilité des interfaces",
+        "Refonte d'interface",
+        "Handoff design développeur"
+      ]
+    },
+    {
+      "label": "Photo, vidéo et audiovisuel",
+      "specialties": [
+        "Portrait photo",
+        "Photo de famille",
+        "Photo de couple",
+        "Photo de grossesse",
+        "Photo de produit",
+        "Photo immobilière",
+        "Photo culinaire",
+        "Photo événement privé",
+        "Photo pour réseaux sociaux",
+        "Retouche photo",
+        "Tri et sélection de photos",
+        "Montage vidéo",
+        "Montage de reels",
+        "Montage TikTok",
+        "Montage YouTube",
+        "Sous-titrage vidéo",
+        "Correction colorimétrique",
+        "Étalonnage simple",
+        "Motion design",
+        "Animation 2D",
+        "Création de GIF",
+        "Captation vidéo événementielle",
+        "Interview vidéo",
+        "Montage de podcast vidéo",
+        "Montage de podcast audio",
+        "Enregistrement voix off",
+        "Création de diaporama souvenir"
+      ]
+    },
+    {
+      "label": "Marketing et communication",
+      "specialties": [
+        "Stratégie de communication",
+        "Calendrier éditorial",
+        "Gestion de réseaux sociaux",
+        "Community management",
+        "Rédaction de publications",
+        "Planification de contenus",
+        "Création de newsletters",
+        "Campagne emailing",
+        "Audit de présence en ligne",
+        "Référencement naturel SEO",
+        "Recherche de mots-clés",
+        "Optimisation de fiches produits",
+        "Rédaction de fiches produits",
+        "Optimisation Google Business Profile",
+        "Création de campagne publicitaire",
+        "Analyse de statistiques web",
+        "Veille concurrentielle",
+        "Étude de marché documentaire",
+        "Benchmark concurrentiel",
+        "Enquête de satisfaction",
+        "Création de sondage",
+        "Communication événementielle",
+        "Communication associative",
+        "Conseil en personal branding",
+        "Stratégie de contenu",
+        "Modération de communauté"
+      ]
+    },
+    {
+      "label": "Rédaction, traduction et langues écrites",
+      "specialties": [
+        "Correction orthographique",
+        "Correction grammaticale",
+        "Relecture de texte",
+        "Réécriture de texte",
+        "Rédaction web",
+        "Rédaction d'article de blog",
+        "Rédaction de newsletter",
+        "Rédaction de biographie",
+        "Rédaction de fiche produit",
+        "Rédaction de discours",
+        "Rédaction de lettre personnelle",
+        "Rédaction de CV",
+        "Rédaction de lettre de motivation",
+        "Optimisation de profil LinkedIn",
+        "Transcription audio",
+        "Sous-titrage textuel",
+        "Traduction anglais français",
+        "Traduction espagnol français",
+        "Traduction allemand français",
+        "Traduction italien français",
+        "Traduction arabe français",
+        "Traduction japonais français",
+        "Traduction portugais français",
+        "Localisation de site web",
+        "Adaptation de contenus marketing",
+        "Mise en forme de rapport",
+        "Création de présentation orale",
+        "Préparation d'entretien professionnel"
+      ]
+    },
+    {
+      "label": "Assistance administrative et bureautique",
+      "specialties": [
+        "Classement de documents",
+        "Numérisation de documents",
+        "Organisation de dossiers numériques",
+        "Saisie de documents",
+        "Mise en page Word",
+        "Mise en page Google Docs",
+        "Tableau Excel simple",
+        "Tableau Google Sheets",
+        "Création de modèles de documents",
+        "Préparation de courriers courants",
+        "Aide aux formulaires administratifs",
+        "Suivi de factures personnelles",
+        "Organisation d'agenda",
+        "Prise de rendez-vous",
+        "Organisation de boîte mail",
+        "Gestion de planning",
+        "Création de base de contacts",
+        "Préparation de dossier administratif",
+        "Assistance virtuelle",
+        "Compte rendu de réunion",
+        "Prise de notes",
+        "Préparation de support de réunion",
+        "Archivage numérique",
+        "Aide à la recherche d'informations administratives"
+      ]
+    },
+    {
+      "label": "Gestion et accompagnement de microentreprise",
+      "specialties": [
+        "Création de tableau de suivi d'activité",
+        "Suivi administratif de devis",
+        "Préparation de factures",
+        "Classement de justificatifs",
+        "Tableau de trésorerie prévisionnelle",
+        "Tableau de suivi de dépenses",
+        "Organisation administrative de microentreprise",
+        "Création de modèles de devis",
+        "Création de modèles de factures",
+        "Aide à l'utilisation d'un logiciel de facturation",
+        "Organisation d'un catalogue de produits",
+        "Suivi de commandes",
+        "Gestion de fichiers clients",
+        "Organisation de processus",
+        "Préparation de présentation de projet",
+        "Création de business model canvas",
+        "Étude de concurrence",
+        "Aide à la définition d'offre",
+        "Aide au calcul de coûts indicatifs",
+        "Création de tableaux de bord commerciaux"
+      ]
+    },
+    {
+      "label": "Événementiel et animation",
+      "specialties": [
+        "Création de photobooth",
+        "Animation de jeux de société",
+        "Animation de quiz",
+        "Animation karaoké",
+        "Animation atelier créatif",
+        "Création de cartons d'invitation",
+        "Animation de soirée jeux",
+        "Photographie événementielle",
+        "Montage de vidéo souvenir"
+      ]
+    },
+    {
+      "label": "Mode, couture et personnalisation",
+      "specialties": [
+        "Remplacement de bouton",
+        "Ajustement de vêtement",
+        "Création de vêtement sur mesure",
+        "Customisation de vêtement",
+        "Broderie personnalisée",
+        "Flocage textile",
+        "Création de tote bag",
+        "Création d'accessoires textiles",
+        "Confection de rideaux",
+        "Création de costume",
+        "Conseil vestimentaire",
+        "Création de tenues",
+        "Photographie de vêtements",
+        "Mise en vente de vêtements d'occasion"
+      ]
+    },
+    {
+      "label": "Cuisine et ateliers culinaires",
+      "specialties": [
+        "Cours de cuisine débutant",
+        "Cours de pâtisserie",
+        "Cours de boulangerie maison",
+        "Cours de cuisine végétarienne",
+        "Cours de cuisine végétalienne",
+        "Cours de cuisine du monde",
+        "Cours de cuisine française",
+        "Cours de cuisine italienne",
+        "Cours de cuisine japonaise",
+        "Cours de cuisine maghrébine",
+        "Cours de cuisine indienne",
+        "Préparation de repas à domicile",
+        "Batch cooking à domicile",
+        "Aide à la préparation de buffet privé",
+        "Décoration de gâteaux",
+        "Atelier biscuits",
+        "Initiation à la conservation alimentaire",
+        "Organisation de recettes familiales"
+      ]
+    },
+    {
+      "label": "Architecture légère, 3D et fabrication numérique",
+      "specialties": [
+        "Modélisation 3D d'objet",
+        "Modélisation 3D de pièce",
+        "Impression 3D à la demande",
+        "Préparation de fichier STL",
+        "Retouche de modèle 3D",
+        "Création de prototype non critique",
+        "Conception de boîtier électronique non certifié",
+        "Découpe laser décorative",
+        "Gravure personnalisée",
+        "Conception de maquette miniature",
+        "Visualisation 3D intérieure",
+        "Rendu 3D produit",
+        "Création de notice de montage",
+        "Création de fichier SVG pour découpe",
+        "Réparation esthétique d'objet imprimé en 3D",
+        "Création de figurine 3D",
+        "Initiation à la modélisation 3D"
+      ]
+    },
+    {
+      "label": "Artisanat créatif et objets personnalisés",
+      "specialties": [
+        "Création de cartes personnalisées",
+        "Création de faire-part",
+        "Création d'affiches personnalisées",
+        "Création de bijoux fantaisie",
+        "Création de décorations en macramé",
+        "Création de bougies décoratives",
+        "Création de fleurs en papier",
+        "Création d'objets en résine décorative",
+        "Personnalisation de mugs",
+        "Personnalisation de tote bags",
+        "Personnalisation de carnets",
+        "Création de cadeaux personnalisés",
+        "Création de décorations saisonnières",
+        "Création de centres de table",
+        "Création de décorations de mariage",
+        "Restauration esthétique de petit objet",
+        "Peinture sur objet",
+        "Customisation de meubles"
+      ]
+    },
+    {
+      "label": "Accompagnement numérique et formation adulte",
+      "specialties": [
+        "Cours Excel",
+        "Cours organisation numérique",
+        "Cours bureautique pour seniors"
+      ]
+    }
+  ],
+  "studyFields": [
+    {
+      "label": "Informatique — développement logiciel",
+      "allowedSpecialties": [
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de smartphone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de tablette"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Mise à jour de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Organisation de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de photos"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Windows"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation macOS"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Linux"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation iPhone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Android"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à Internet"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à la messagerie électronique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux visioconférences"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux démarches en ligne"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration imprimante"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration Wi-Fi domestique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration objets connectés simples"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la sécurité des comptes"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Sensibilisation aux arnaques numériques"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à l'utilisation du cloud"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la bureautique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de périphériques"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site vitrine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site portfolio"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site événementiel"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site associatif"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site e-commerce"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Blog"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Landing page"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration HTML CSS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration front-end"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement JavaScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement TypeScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement React"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Vue.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Nuxt"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Next.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Node.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement API REST"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement backend"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement full-stack"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application mobile"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application hybride Capacitor"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application React Native"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application Flutter"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration CMS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "WordPress"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Shopify"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Prestashop"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Webflow"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Wix"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Correction de bugs"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Maintenance de site web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation responsive"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Accessibilité web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation de performance web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Mise en place de formulaire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration de paiement via prestataire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests fonctionnels"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests automatisés"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Documentation technique"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Audit technique non certifiant"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Déploiement d'application"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration nom de domaine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration hébergement web"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Saisie de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Structuration de fichiers CSV"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de tableaux de bord"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Analyse de données descriptive"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Visualisation de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Tableaux croisés dynamiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Formules Excel avancées"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation Excel"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts Python"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts JavaScript"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation de tâches bureautiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation no-code"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Zapier"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Make"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration n8n"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de base de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Requêtes SQL"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de rapports automatisés"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de chatbot informatif"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration API IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de prompts"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Atelier initiation IA générative"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Classification de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Extraction de données de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de workflow IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Évaluation de résultats IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Mise en place de FAQ intelligente"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Documentation de processus automatisés"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Recherche utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Interview utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Personas"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Parcours utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "User flow"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Wireframe"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Maquette Figma"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Prototype interactif"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design d'application mobile"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de site web"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design system"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Bibliothèque de composants"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Test utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit ergonomique"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Architecture de l'information"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Microcopy UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Optimisation de formulaire"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design responsive"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de tableau de bord"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Conception d'onboarding"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Accessibilité des interfaces"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Refonte d'interface"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Handoff design développeur"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Préparation de repas à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Batch cooking à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Aide à la préparation de buffet privé"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Décoration de gâteaux"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Initiation à la conservation alimentaire"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D d'objet"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D de pièce"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Impression 3D à la demande"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Préparation de fichier STL"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Retouche de modèle 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de prototype non critique"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de boîtier électronique non certifié"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Découpe laser décorative"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Gravure personnalisée"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de maquette miniature"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Visualisation 3D intérieure"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Rendu 3D produit"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de notice de montage"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de fichier SVG pour découpe"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Réparation esthétique d'objet imprimé en 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de figurine 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Initiation à la modélisation 3D"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours Excel"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours organisation numérique"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours bureautique pour seniors"
+        }
+      ]
+    },
+    {
+      "label": "Informatique — réseaux et systèmes",
+      "allowedSpecialties": [
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de smartphone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de tablette"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Mise à jour de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Organisation de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de photos"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Windows"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation macOS"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Linux"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation iPhone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Android"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à Internet"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à la messagerie électronique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux visioconférences"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux démarches en ligne"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration imprimante"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration Wi-Fi domestique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration objets connectés simples"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la sécurité des comptes"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Sensibilisation aux arnaques numériques"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à l'utilisation du cloud"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la bureautique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de périphériques"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D d'objet"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D de pièce"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Impression 3D à la demande"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Préparation de fichier STL"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Retouche de modèle 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de prototype non critique"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de boîtier électronique non certifié"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Découpe laser décorative"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Gravure personnalisée"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de maquette miniature"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Visualisation 3D intérieure"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Rendu 3D produit"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de notice de montage"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de fichier SVG pour découpe"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Réparation esthétique d'objet imprimé en 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de figurine 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Initiation à la modélisation 3D"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours Excel"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours organisation numérique"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours bureautique pour seniors"
+        }
+      ]
+    },
+    {
+      "label": "Informatique — data et intelligence artificielle",
+      "allowedSpecialties": [
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site vitrine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site portfolio"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site événementiel"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site associatif"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site e-commerce"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Blog"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Landing page"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration HTML CSS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration front-end"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement JavaScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement TypeScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement React"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Vue.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Nuxt"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Next.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Node.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement API REST"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement backend"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement full-stack"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application mobile"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application hybride Capacitor"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application React Native"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application Flutter"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration CMS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "WordPress"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Shopify"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Prestashop"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Webflow"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Wix"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Correction de bugs"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Maintenance de site web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation responsive"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Accessibilité web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation de performance web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Mise en place de formulaire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration de paiement via prestataire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests fonctionnels"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests automatisés"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Documentation technique"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Audit technique non certifiant"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Déploiement d'application"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration nom de domaine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration hébergement web"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Saisie de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Structuration de fichiers CSV"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de tableaux de bord"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Analyse de données descriptive"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Visualisation de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Tableaux croisés dynamiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Formules Excel avancées"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation Excel"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts Python"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts JavaScript"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation de tâches bureautiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation no-code"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Zapier"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Make"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration n8n"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de base de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Requêtes SQL"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de rapports automatisés"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de chatbot informatif"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration API IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de prompts"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Atelier initiation IA générative"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Classification de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Extraction de données de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de workflow IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Évaluation de résultats IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Mise en place de FAQ intelligente"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Documentation de processus automatisés"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D d'objet"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D de pièce"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Impression 3D à la demande"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Préparation de fichier STL"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Retouche de modèle 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de prototype non critique"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de boîtier électronique non certifié"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Découpe laser décorative"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Gravure personnalisée"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de maquette miniature"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Visualisation 3D intérieure"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Rendu 3D produit"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de notice de montage"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de fichier SVG pour découpe"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Réparation esthétique d'objet imprimé en 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de figurine 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Initiation à la modélisation 3D"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours Excel"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours organisation numérique"
+        },
+        {
+          "domain": "Accompagnement numérique et formation adulte",
+          "specialty": "Cours bureautique pour seniors"
+        }
+      ]
+    },
+    {
+      "label": "Design graphique et communication visuelle",
+      "allowedSpecialties": [
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin académique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Illustration"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Aquarelle"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture acrylique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture à l'huile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Croquis"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Portrait dessiné"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Calligraphie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Lettering"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Bande dessinée"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Manga"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Modelage d'argile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Poterie loisir"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Origami"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Scrapbooking"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Tricot"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Crochet"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Broderie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Couture débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Patchwork"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Upcycling textile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Fabrication de bougies décoratives"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Décoration florale"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Atelier créatif à domicile"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Refonte de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Charte graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Identité visuelle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Carte de visite"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Flyer"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Affiche"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Brochure"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Dépliant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Menu de restaurant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Packaging graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Visuel réseaux sociaux"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Bannière web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Miniature YouTube"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation PowerPoint"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation commerciale"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Infographie"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Illustration vectorielle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Retouche graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Mise en page de document"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de pictogrammes"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de stickers"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Design de newsletter"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de templates Canva"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de supports imprimables"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Recherche utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Interview utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Personas"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Parcours utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "User flow"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Wireframe"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Maquette Figma"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Prototype interactif"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design d'application mobile"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de site web"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design system"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Bibliothèque de composants"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Test utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit ergonomique"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Architecture de l'information"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Microcopy UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Optimisation de formulaire"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design responsive"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de tableau de bord"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Conception d'onboarding"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Accessibilité des interfaces"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Refonte d'interface"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Handoff design développeur"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Portrait photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de famille"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de couple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de grossesse"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de produit"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo immobilière"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo culinaire"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo événement privé"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo pour réseaux sociaux"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Retouche photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Tri et sélection de photos"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de reels"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage TikTok"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage YouTube"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Sous-titrage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Correction colorimétrique"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Étalonnage simple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Motion design"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Animation 2D"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de GIF"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Captation vidéo événementielle"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Interview vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast audio"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Enregistrement voix off"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de diaporama souvenir"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de photobooth"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de jeux de société"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de quiz"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation karaoké"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation atelier créatif"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de cartons d'invitation"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de soirée jeux"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Photographie événementielle"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Montage de vidéo souvenir"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cartes personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de faire-part"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'affiches personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations en macramé"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bougies décoratives"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de fleurs en papier"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'objets en résine décorative"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de mugs"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de tote bags"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de carnets"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cadeaux personnalisés"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations saisonnières"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de centres de table"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations de mariage"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Restauration esthétique de petit objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Peinture sur objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Customisation de meubles"
+        }
+      ]
+    },
+    {
+      "label": "Design UX/UI et produit numérique",
+      "allowedSpecialties": [
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site vitrine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site portfolio"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site événementiel"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site associatif"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Site e-commerce"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Blog"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Landing page"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration HTML CSS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration front-end"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement JavaScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement TypeScript"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement React"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Vue.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Nuxt"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Next.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement Node.js"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement API REST"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement backend"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement full-stack"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Développement application mobile"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application hybride Capacitor"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application React Native"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Application Flutter"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration CMS"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "WordPress"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Shopify"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Prestashop"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Webflow"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Wix"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Correction de bugs"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Maintenance de site web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation responsive"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Accessibilité web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Optimisation de performance web"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Mise en place de formulaire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Intégration de paiement via prestataire"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests fonctionnels"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Tests automatisés"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Documentation technique"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Audit technique non certifiant"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Déploiement d'application"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration nom de domaine"
+        },
+        {
+          "domain": "Développement web et applications",
+          "specialty": "Configuration hébergement web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Refonte de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Charte graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Identité visuelle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Carte de visite"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Flyer"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Affiche"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Brochure"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Dépliant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Menu de restaurant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Packaging graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Visuel réseaux sociaux"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Bannière web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Miniature YouTube"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation PowerPoint"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation commerciale"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Infographie"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Illustration vectorielle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Retouche graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Mise en page de document"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de pictogrammes"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de stickers"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Design de newsletter"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de templates Canva"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de supports imprimables"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Recherche utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Interview utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Personas"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Parcours utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "User flow"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Wireframe"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Maquette Figma"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Prototype interactif"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design d'application mobile"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de site web"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design system"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Bibliothèque de composants"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Test utilisateur"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Audit ergonomique"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Architecture de l'information"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Microcopy UX"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Optimisation de formulaire"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design responsive"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Design de tableau de bord"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Conception d'onboarding"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Accessibilité des interfaces"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Refonte d'interface"
+        },
+        {
+          "domain": "UX, UI et design produit",
+          "specialty": "Handoff design développeur"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Préparation de repas à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Batch cooking à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Aide à la préparation de buffet privé"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Décoration de gâteaux"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Initiation à la conservation alimentaire"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        }
+      ]
+    },
+    {
+      "label": "Marketing et communication",
+      "allowedSpecialties": [
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Refonte de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Charte graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Identité visuelle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Carte de visite"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Flyer"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Affiche"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Brochure"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Dépliant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Menu de restaurant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Packaging graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Visuel réseaux sociaux"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Bannière web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Miniature YouTube"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation PowerPoint"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation commerciale"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Infographie"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Illustration vectorielle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Retouche graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Mise en page de document"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de pictogrammes"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de stickers"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Design de newsletter"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de templates Canva"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de supports imprimables"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Portrait photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de famille"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de couple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de grossesse"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de produit"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo immobilière"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo culinaire"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo événement privé"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo pour réseaux sociaux"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Retouche photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Tri et sélection de photos"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de reels"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage TikTok"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage YouTube"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Sous-titrage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Correction colorimétrique"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Étalonnage simple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Motion design"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Animation 2D"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de GIF"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Captation vidéo événementielle"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Interview vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast audio"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Enregistrement voix off"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de diaporama souvenir"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Stratégie de communication"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Calendrier éditorial"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Gestion de réseaux sociaux"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Community management"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Rédaction de publications"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Planification de contenus"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de newsletters"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Campagne emailing"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Audit de présence en ligne"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Référencement naturel SEO"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Recherche de mots-clés"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Optimisation de fiches produits"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Rédaction de fiches produits"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Optimisation Google Business Profile"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de campagne publicitaire"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Analyse de statistiques web"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Veille concurrentielle"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Étude de marché documentaire"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Benchmark concurrentiel"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Enquête de satisfaction"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de sondage"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Communication événementielle"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Communication associative"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Conseil en personal branding"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Stratégie de contenu"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Modération de communauté"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Correction orthographique"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Correction grammaticale"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Relecture de texte"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Réécriture de texte"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction web"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction d'article de blog"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de newsletter"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de biographie"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de fiche produit"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de discours"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de lettre personnelle"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de CV"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de lettre de motivation"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Optimisation de profil LinkedIn"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Transcription audio"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Sous-titrage textuel"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction anglais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction espagnol français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction allemand français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction italien français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction arabe français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction japonais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction portugais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Localisation de site web"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Adaptation de contenus marketing"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Mise en forme de rapport"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Création de présentation orale"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Préparation d'entretien professionnel"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de photobooth"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de jeux de société"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de quiz"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation karaoké"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation atelier créatif"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de cartons d'invitation"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de soirée jeux"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Photographie événementielle"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Montage de vidéo souvenir"
+        }
+      ]
+    },
+    {
+      "label": "Audiovisuel, cinéma et photographie",
+      "allowedSpecialties": [
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Portrait photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de famille"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de couple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de grossesse"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo de produit"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo immobilière"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo culinaire"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo événement privé"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Photo pour réseaux sociaux"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Retouche photo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Tri et sélection de photos"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de reels"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage TikTok"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage YouTube"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Sous-titrage vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Correction colorimétrique"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Étalonnage simple"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Motion design"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Animation 2D"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de GIF"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Captation vidéo événementielle"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Interview vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast vidéo"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Montage de podcast audio"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Enregistrement voix off"
+        },
+        {
+          "domain": "Photo, vidéo et audiovisuel",
+          "specialty": "Création de diaporama souvenir"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de photobooth"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de jeux de société"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de quiz"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation karaoké"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation atelier créatif"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Création de cartons d'invitation"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Animation de soirée jeux"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Photographie événementielle"
+        },
+        {
+          "domain": "Événementiel et animation",
+          "specialty": "Montage de vidéo souvenir"
+        }
+      ]
+    },
+    {
+      "label": "Mathématiques et statistiques",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Mathématiques primaire"
+        },
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Mathématiques collège"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Mathématiques lycée"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Mathématiques supérieur"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Statistiques"
+        }
+      ]
+    },
+    {
+      "label": "Physique et chimie",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Physique-chimie collège"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Physique-chimie lycée"
+        }
+      ]
+    },
+    {
+      "label": "Lettres et littérature française",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Français primaire"
+        },
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Français collège"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Français lycée"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Correction orthographique"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Correction grammaticale"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Relecture de texte"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction web"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction d'article de blog"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de newsletter"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de biographie"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de fiche produit"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de discours"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de lettre personnelle"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de CV"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Rédaction de lettre de motivation"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction anglais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction espagnol français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction allemand français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction italien français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction arabe français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction japonais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction portugais français"
+        }
+      ]
+    },
+    {
+      "label": "Langues étrangères et traduction",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Anglais primaire"
+        },
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Anglais collège"
+        },
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Espagnol collège"
+        },
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Allemand collège"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Français langue étrangère"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Conversation en français"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Anglais débutant"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Anglais conversation"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Anglais professionnel"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Espagnol"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Allemand"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Italien"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Arabe littéraire"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Arabe dialectal"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Japonais"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Langue des signes française initiation"
+        },
+        {
+          "domain": "Langues et conversation",
+          "specialty": "Conversation bilingue"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Sous-titrage textuel"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction anglais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction espagnol français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction allemand français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction italien français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction arabe français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction japonais français"
+        },
+        {
+          "domain": "Rédaction, traduction et langues écrites",
+          "specialty": "Traduction portugais français"
+        }
+      ]
+    },
+    {
+      "label": "Histoire et géographie",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "Histoire-géographie collège"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Histoire-géographie lycée"
+        }
+      ]
+    },
+    {
+      "label": "Sciences de la vie et biologie",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire primaire et collège",
+          "specialty": "SVT collège"
+        },
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "SVT lycée"
+        }
+      ]
+    },
+    {
+      "label": "Économie et gestion",
+      "allowedSpecialties": [
+        {
+          "domain": "Soutien scolaire lycée et supérieur",
+          "specialty": "Économie"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Gestion de réseaux sociaux"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Optimisation Google Business Profile"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Étude de marché documentaire"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Tableau Excel simple"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Aide aux formulaires administratifs"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Gestion de planning"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Préparation de dossier administratif"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Aide à la recherche d'informations administratives"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Suivi administratif de devis"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Organisation administrative de microentreprise"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Gestion de fichiers clients"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de business model canvas"
+        }
+      ]
+    },
+    {
+      "label": "Commerce et entrepreneuriat",
+      "allowedSpecialties": [
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Stratégie de communication"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Calendrier éditorial"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Gestion de réseaux sociaux"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Community management"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Rédaction de publications"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Planification de contenus"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de newsletters"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Campagne emailing"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Audit de présence en ligne"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Référencement naturel SEO"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Recherche de mots-clés"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Optimisation de fiches produits"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Rédaction de fiches produits"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Optimisation Google Business Profile"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de campagne publicitaire"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Analyse de statistiques web"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Veille concurrentielle"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Étude de marché documentaire"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Benchmark concurrentiel"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Enquête de satisfaction"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Création de sondage"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Communication événementielle"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Communication associative"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Conseil en personal branding"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Stratégie de contenu"
+        },
+        {
+          "domain": "Marketing et communication",
+          "specialty": "Modération de communauté"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Classement de documents"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Numérisation de documents"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Organisation de dossiers numériques"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Saisie de documents"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Mise en page Word"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Mise en page Google Docs"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Tableau Excel simple"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Tableau Google Sheets"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Création de modèles de documents"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Préparation de courriers courants"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Aide aux formulaires administratifs"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Suivi de factures personnelles"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Organisation d'agenda"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Prise de rendez-vous"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Organisation de boîte mail"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Gestion de planning"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Création de base de contacts"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Préparation de dossier administratif"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Assistance virtuelle"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Compte rendu de réunion"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Prise de notes"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Préparation de support de réunion"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Archivage numérique"
+        },
+        {
+          "domain": "Assistance administrative et bureautique",
+          "specialty": "Aide à la recherche d'informations administratives"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de tableau de suivi d'activité"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Suivi administratif de devis"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Préparation de factures"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Classement de justificatifs"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Tableau de trésorerie prévisionnelle"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Tableau de suivi de dépenses"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Organisation administrative de microentreprise"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de modèles de devis"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de modèles de factures"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Aide à l'utilisation d'un logiciel de facturation"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Organisation d'un catalogue de produits"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Suivi de commandes"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Gestion de fichiers clients"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Organisation de processus"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Préparation de présentation de projet"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de business model canvas"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Étude de concurrence"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Aide à la définition d'offre"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Aide au calcul de coûts indicatifs"
+        },
+        {
+          "domain": "Gestion et accompagnement de microentreprise",
+          "specialty": "Création de tableaux de bord commerciaux"
+        }
+      ]
+    },
+    {
+      "label": "Arts plastiques et illustration",
+      "allowedSpecialties": [
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin académique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Illustration"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Aquarelle"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture acrylique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture à l'huile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Croquis"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Portrait dessiné"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Calligraphie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Lettering"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Bande dessinée"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Manga"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Modelage d'argile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Poterie loisir"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Origami"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Scrapbooking"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Tricot"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Crochet"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Broderie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Couture débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Patchwork"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Upcycling textile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Fabrication de bougies décoratives"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Décoration florale"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Atelier créatif à domicile"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Refonte de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Charte graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Identité visuelle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Carte de visite"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Flyer"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Affiche"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Brochure"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Dépliant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Menu de restaurant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Packaging graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Visuel réseaux sociaux"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Bannière web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Miniature YouTube"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation PowerPoint"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation commerciale"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Infographie"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Illustration vectorielle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Retouche graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Mise en page de document"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de pictogrammes"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de stickers"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Design de newsletter"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de templates Canva"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de supports imprimables"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cartes personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de faire-part"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'affiches personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations en macramé"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bougies décoratives"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de fleurs en papier"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'objets en résine décorative"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de mugs"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de tote bags"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de carnets"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cadeaux personnalisés"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations saisonnières"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de centres de table"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations de mariage"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Restauration esthétique de petit objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Peinture sur objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Customisation de meubles"
+        }
+      ]
+    },
+    {
+      "label": "Musique et musicologie",
+      "allowedSpecialties": [
+        {
+          "domain": "Musique et chant",
+          "specialty": "Piano"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Guitare acoustique"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Guitare électrique"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Basse"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Batterie"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Violon"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Violoncelle"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Flûte traversière"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Flûte à bec"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Saxophone"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Clarinette"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Trompette"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Ukulélé"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Harpe"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Chant"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Solfège"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Théorie musicale"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Éveil musical"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Composition musicale"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "MAO"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Production musicale"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Mixage audio"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Écriture de chansons"
+        },
+        {
+          "domain": "Musique et chant",
+          "specialty": "Préparation audition musicale"
+        }
+      ]
+    },
+    {
+      "label": "Métiers de la mode et du textile",
+      "allowedSpecialties": [
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin académique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Illustration"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Aquarelle"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture acrylique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture à l'huile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Croquis"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Portrait dessiné"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Calligraphie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Lettering"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Bande dessinée"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Manga"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Modelage d'argile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Poterie loisir"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Origami"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Scrapbooking"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Tricot"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Crochet"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Broderie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Couture débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Patchwork"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Upcycling textile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Fabrication de bougies décoratives"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Décoration florale"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Atelier créatif à domicile"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Remplacement de bouton"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Ajustement de vêtement"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Création de vêtement sur mesure"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Customisation de vêtement"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Broderie personnalisée"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Flocage textile"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Création de tote bag"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Création d'accessoires textiles"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Confection de rideaux"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Création de costume"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Conseil vestimentaire"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Création de tenues"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Photographie de vêtements"
+        },
+        {
+          "domain": "Mode, couture et personnalisation",
+          "specialty": "Mise en vente de vêtements d'occasion"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cartes personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de faire-part"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'affiches personnalisées"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations en macramé"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de bougies décoratives"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de fleurs en papier"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création d'objets en résine décorative"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de mugs"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de tote bags"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Personnalisation de carnets"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de cadeaux personnalisés"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations saisonnières"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de centres de table"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Création de décorations de mariage"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Restauration esthétique de petit objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Peinture sur objet"
+        },
+        {
+          "domain": "Artisanat créatif et objets personnalisés",
+          "specialty": "Customisation de meubles"
+        }
+      ]
+    },
+    {
+      "label": "Architecture et design d’espace",
+      "allowedSpecialties": [
+        {
+          "domain": "Peinture et décoration intérieure",
+          "specialty": "Conseil en couleurs"
+        },
+        {
+          "domain": "Peinture et décoration intérieure",
+          "specialty": "Conseil en décoration intérieure"
+        },
+        {
+          "domain": "Peinture et décoration intérieure",
+          "specialty": "Création de planches d'ambiance"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin académique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Illustration"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Aquarelle"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture acrylique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture à l'huile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Croquis"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Portrait dessiné"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Calligraphie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Lettering"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Bande dessinée"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Manga"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Modelage d'argile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Poterie loisir"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Origami"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Scrapbooking"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Tricot"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Crochet"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Broderie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Couture débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Patchwork"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Upcycling textile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Fabrication de bougies décoratives"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Décoration florale"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Atelier créatif à domicile"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Refonte de logo"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Charte graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Identité visuelle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Carte de visite"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Flyer"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Affiche"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Brochure"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Dépliant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Menu de restaurant"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Packaging graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Visuel réseaux sociaux"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Bannière web"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Miniature YouTube"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation PowerPoint"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Présentation commerciale"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Infographie"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Illustration vectorielle"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Retouche graphique"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Mise en page de document"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de pictogrammes"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de stickers"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Design de newsletter"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de templates Canva"
+        },
+        {
+          "domain": "Graphisme et identité visuelle",
+          "specialty": "Création de supports imprimables"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Préparation de repas à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Batch cooking à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Aide à la préparation de buffet privé"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Décoration de gâteaux"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Initiation à la conservation alimentaire"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        }
+      ]
+    },
+    {
+      "label": "Paysage et horticulture",
+      "allowedSpecialties": [
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Arrosage de plantes"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Plantation de fleurs"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Plantation d'arbustes"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Rempotage de plantes"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Entretien de plantes d'intérieur"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Conseil en jardinage amateur"
+        },
+        {
+          "domain": "Jardinage et entretien extérieur",
+          "specialty": "Création de potager urbain"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Dessin académique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Illustration"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Aquarelle"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture acrylique"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Peinture à l'huile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Croquis"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Portrait dessiné"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Calligraphie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Lettering"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Bande dessinée"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Manga"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Modelage d'argile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Poterie loisir"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Origami"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Scrapbooking"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Création de bijoux fantaisie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Tricot"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Crochet"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Broderie"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Couture débutant"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Patchwork"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Upcycling textile"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Fabrication de bougies décoratives"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Décoration florale"
+        },
+        {
+          "domain": "Arts plastiques et loisirs créatifs",
+          "specialty": "Atelier créatif à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Préparation de repas à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Batch cooking à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Aide à la préparation de buffet privé"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Décoration de gâteaux"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Initiation à la conservation alimentaire"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        }
+      ]
+    },
+    {
+      "label": "Électronique et systèmes embarqués",
+      "allowedSpecialties": [
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration d'ordinateur"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de smartphone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration de tablette"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Mise à jour de logiciels"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Organisation de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de photos"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Transfert de fichiers"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Windows"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation macOS"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Linux"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation iPhone"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation Android"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à Internet"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation à la messagerie électronique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux visioconférences"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Initiation aux démarches en ligne"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration imprimante"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration Wi-Fi domestique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Configuration objets connectés simples"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la sécurité des comptes"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Sensibilisation aux arnaques numériques"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à l'utilisation du cloud"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Aide à la bureautique"
+        },
+        {
+          "domain": "Informatique et assistance numérique",
+          "specialty": "Installation de périphériques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Saisie de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Structuration de fichiers CSV"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de tableaux de bord"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Analyse de données descriptive"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Visualisation de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Tableaux croisés dynamiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Formules Excel avancées"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation Excel"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts Python"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Scripts JavaScript"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation de tâches bureautiques"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Automatisation no-code"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Zapier"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration Make"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration n8n"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de base de données"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Requêtes SQL"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de rapports automatisés"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de chatbot informatif"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Intégration API IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Conception de prompts"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Atelier initiation IA générative"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Classification de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Extraction de données de documents"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Création de workflow IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Évaluation de résultats IA"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Mise en place de FAQ intelligente"
+        },
+        {
+          "domain": "Données, automatisation et intelligence artificielle",
+          "specialty": "Documentation de processus automatisés"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Préparation de repas à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Batch cooking à domicile"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Aide à la préparation de buffet privé"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Décoration de gâteaux"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Initiation à la conservation alimentaire"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D d'objet"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Modélisation 3D de pièce"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Impression 3D à la demande"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Préparation de fichier STL"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Retouche de modèle 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de prototype non critique"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de boîtier électronique non certifié"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Découpe laser décorative"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Gravure personnalisée"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Conception de maquette miniature"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Visualisation 3D intérieure"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Rendu 3D produit"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de notice de montage"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de fichier SVG pour découpe"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Réparation esthétique d'objet imprimé en 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Création de figurine 3D"
+        },
+        {
+          "domain": "Architecture légère, 3D et fabrication numérique",
+          "specialty": "Initiation à la modélisation 3D"
+        }
+      ]
+    },
+    {
+      "label": "Sciences et techniques des activités physiques et sportives (STAPS)",
+      "allowedSpecialties": [
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Course à pied accompagnée"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation à la boxe sans combat"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Cours de corde à sauter"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au badminton"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au tennis"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au basketball"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au football"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au volleyball"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au roller"
+        },
+        {
+          "domain": "Sport et activités physiques",
+          "specialty": "Initiation au skateboard"
+        }
+      ]
+    },
+    {
+      "label": "Hôtellerie-restauration et arts culinaires",
+      "allowedSpecialties": [
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine débutant"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de pâtisserie"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de boulangerie maison"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétarienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine végétalienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine du monde"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine française"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine italienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine japonaise"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine maghrébine"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Cours de cuisine indienne"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Atelier biscuits"
+        },
+        {
+          "domain": "Cuisine et ateliers culinaires",
+          "specialty": "Organisation de recettes familiales"
+        }
+      ]
+    }
+  ]
+}

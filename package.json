@@ -11,11 +11,16 @@
     "start": "node dist/server.js",
     "lint": "eslint \"src/**/*.ts\" --ignore-pattern \"**/*.spec.ts\"",
     "test": "jest",
+    "catalog:import": "ts-node prisma/seed-catalog.ts",
+    "catalog:check": "ts-node prisma/check-catalog.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prepare": "husky"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed-catalog.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
