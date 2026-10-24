@@ -95,6 +95,89 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/auth/roles': {
+      post: {
+        summary: 'Activate STUDENT or CUSTOMER on the authenticated account',
+        description:
+          'Idempotently adds a role to the current account and returns its updated roles and a renewed JWT. Never grants ADMIN, creates a second account, changes existing profile data or publishes/verifies a student profile. Permissions are reloaded from the database, including for existing tokens.',
+        tags: ['Auth'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['role'],
+                properties: {
+                  role: {
+                    type: 'string',
+                    enum: ['STUDENT', 'CUSTOMER'],
+                    example: 'STUDENT',
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description:
+              'Role activated or already present; current account and renewed JWT',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['user', 'accessToken'],
+                  properties: {
+                    user: {
+                      type: 'object',
+                      required: ['id', 'email', 'status', 'roles'],
+                      properties: {
+                        id: { type: 'string', format: 'uuid' },
+                        email: {
+                          type: 'string',
+                          format: 'email',
+                          nullable: true,
+                        },
+                        status: { type: 'string', enum: ['ACTIVE'] },
+                        roles: {
+                          type: 'array',
+                          uniqueItems: true,
+                          items: {
+                            type: 'string',
+                            enum: ['STUDENT', 'CUSTOMER', 'ADMIN'],
+                          },
+                        },
+                      },
+                    },
+                    accessToken: {
+                      type: 'string',
+                      description: 'JWT containing the updated roles',
+                    },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description: 'VALIDATION_ERROR: role must be STUDENT or CUSTOMER',
+          },
+          401: {
+            description:
+              'UNAUTHORIZED: missing/invalid token or account no longer exists',
+          },
+          403: {
+            description:
+              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED; ADMIN remains exempt from age checks',
+          },
+          409: {
+            description:
+              'ROLE_ACTIVATION_CONFLICT: concurrent changes prevented completion after three attempts; retry the request',
+          },
+        },
+      },
+    },
     '/api/user-profiles': {
       post: {
         summary: 'Create the authenticated user profile',

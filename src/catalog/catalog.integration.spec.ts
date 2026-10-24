@@ -1176,6 +1176,180 @@ databaseTests(
         expect(me.body).not.toHaveProperty('birthDate');
       },
     );
+    async function registerForRoleActivation(role: UserRole) {
+      const registered = await request(app)
+        .post('/api/auth/register')
+        .send({
+          email: `${randomUUID()}@test.invalid`,
+          password: 'password123',
+          birthDate: '2000-01-01',
+          role,
+        });
+      expect(registered.status).toBe(201);
+      return registered;
+    }
+
+    it.each([
+      [UserRole.CUSTOMER, UserRole.STUDENT],
+      [UserRole.STUDENT, UserRole.CUSTOMER],
+    ])(
+      'persists role activation %s -> %s without replacing account or profile data',
+      async (initial, added) => {
+        const registered = await registerForRoleActivation(initial);
+        const userId: string = registered.body.user.id;
+        const common = await prisma.userProfile.create({
+          data: { userId, firstName: 'Role test', city: 'Test' },
+        });
+        const student =
+          initial === UserRole.STUDENT
+            ? await prisma.studentProfile.create({
+                data: { userId, domainId: domains.get('Test Web')! },
+              })
+            : null;
+        const accountBefore = await prisma.user.findUniqueOrThrow({
+          where: { id: userId },
+        });
+        const countBefore = await prisma.user.count();
+        const response = await request(app)
+          .post('/api/auth/roles')
+          .set('Authorization', `Bearer ${registered.body.accessToken}`)
+          .send({ role: added });
+        expect(response.status).toBe(200);
+        expect(response.body.user.id).toBe(userId);
+        expect(response.body.user.roles).toEqual(
+          expect.arrayContaining([initial, added]),
+        );
+        expect(response.body.user.roles).toHaveLength(2);
+        const jwtPayload = jwt.verify(
+          response.body.accessToken,
+          config.jwtSecret,
+        ) as jwt.JwtPayload;
+        expect(jwtPayload.sub).toBe(userId);
+        expect(jwtPayload.roles).toEqual(response.body.user.roles);
+        expect(jwtPayload).not.toHaveProperty('birthDate');
+        expect(response.body.user).not.toHaveProperty('birthDate');
+        expect(response.body.user).not.toHaveProperty('passwordHash');
+        expect(await prisma.user.count()).toBe(countBefore);
+        expect(
+          await prisma.user.findUniqueOrThrow({ where: { id: userId } }),
+        ).toEqual(accountBefore);
+        expect(
+          await prisma.userProfile.findUnique({ where: { userId } }),
+        ).toEqual(common);
+        expect(
+          await prisma.studentProfile.findUnique({ where: { userId } }),
+        ).toEqual(student);
+        expect(
+          await prisma.studentVerification.count({
+            where: { studentId: userId },
+          }),
+        ).toBe(0);
+        const me = await request(app)
+          .get('/api/auth/me')
+          .set('Authorization', `Bearer ${registered.body.accessToken}`);
+        expect(me.status).toBe(200);
+        expect(me.body.roles).toEqual(expect.arrayContaining([initial, added]));
+        const publicProfile = await request(app).get(
+          `/api/users/${userId}/student-profile`,
+        );
+        expect(publicProfile.status).toBe(404);
+      },
+    );
+
+    it('handles concurrent and repeated activations without duplicate roles', async () => {
+      const registered = await registerForRoleActivation(UserRole.CUSTOMER);
+      const userId: string = registered.body.user.id;
+      const activate = () =>
+        request(app)
+          .post('/api/auth/roles')
+          .set('Authorization', `Bearer ${registered.body.accessToken}`)
+          .send({ role: UserRole.STUDENT });
+      const concurrent = await Promise.all(Array.from({ length: 4 }, activate));
+      expect(concurrent.map((response) => response.status)).toEqual([
+        200, 200, 200, 200,
+      ]);
+      const repeated = await activate();
+      expect(repeated.status).toBe(200);
+      expect(
+        await prisma.userRoleAssignment.findMany({
+          where: { userId },
+          orderBy: { role: 'asc' },
+          select: { role: true },
+        }),
+      ).toEqual([{ role: UserRole.STUDENT }, { role: UserRole.CUSTOMER }]);
+      expect(repeated.body.user.roles).toHaveLength(2);
+    });
+
+    it('refuses self-assignment of ADMIN and leaves stored roles unchanged', async () => {
+      const registered = await registerForRoleActivation(UserRole.CUSTOMER);
+      const userId: string = registered.body.user.id;
+      const response = await request(app)
+        .post('/api/auth/roles')
+        .set('Authorization', `Bearer ${registered.body.accessToken}`)
+        .send({ role: UserRole.ADMIN });
+      expect(response.status).toBe(400);
+      expect(
+        await prisma.userRoleAssignment.findMany({
+          where: { userId },
+          select: { role: true },
+        }),
+      ).toEqual([{ role: UserRole.CUSTOMER }]);
+    });
+
+    it.each([
+      {
+        status: AccountStatus.ACTIVE,
+        birthDate: null,
+        code: 'BIRTH_DATE_REQUIRED',
+      },
+      {
+        status: AccountStatus.ACTIVE,
+        birthDate: new Date('2020-01-01'),
+        code: 'ADULT_REQUIRED',
+      },
+      {
+        status: AccountStatus.SUSPENDED,
+        birthDate: new Date('2000-01-01'),
+        code: 'ACCOUNT_NOT_ACTIVE',
+      },
+      {
+        status: AccountStatus.DELETED,
+        birthDate: null,
+        code: 'ACCOUNT_NOT_ACTIVE',
+      },
+    ])(
+      'rejects an ineligible role activation without a database mutation: $code ($status)',
+      async ({ status, birthDate, code }) => {
+        // Synthetic persisted states; ordinary registration cannot create these accounts.
+        const user = await prisma.user.create({
+          data: {
+            status,
+            birthDate,
+            roles: { create: { role: UserRole.CUSTOMER } },
+          },
+        });
+        const token = jwt.sign(
+          { sub: user.id, roles: [UserRole.CUSTOMER] },
+          config.jwtSecret,
+        );
+        const response = await request(app)
+          .post('/api/auth/roles')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ role: UserRole.STUDENT });
+        expect(response.status).toBe(403);
+        expect(response.body.code).toBe(code);
+        expect(
+          await prisma.user.findUniqueOrThrow({ where: { id: user.id } }),
+        ).toEqual(user);
+        expect(
+          await prisma.userRoleAssignment.findMany({
+            where: { userId: user.id },
+            select: { role: true },
+          }),
+        ).toEqual([{ role: UserRole.CUSTOMER }]);
+      },
+    );
+
     it('allows undated administrators to log in and manage historical accounts without an age transition', async () => {
       const password = 'admin-integration-test';
       const salt = 'admin-integration-salt';

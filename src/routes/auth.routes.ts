@@ -8,6 +8,7 @@ import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
+import { activateUserRole } from '@/services/user-roles';
 
 const scrypt = promisify(scryptCallback);
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -189,4 +190,23 @@ authRouter.post('/auth/login', async (request, response) => {
 
 authRouter.get('/auth/me', requireAuth, (_request, response) => {
   response.status(200).json(response.locals.authUser as AuthUser);
+});
+
+authRouter.post('/auth/roles', requireAuth, async (request, response) => {
+  const role: unknown = request.body?.role;
+  if (role !== UserRole.STUDENT && role !== UserRole.CUSTOMER) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      'role must be STUDENT or CUSTOMER',
+    );
+  }
+
+  const { id: userId } = response.locals.authUser as AuthUser;
+  const user = await activateUserRole(userId, role);
+
+  response.status(200).json({
+    user: formatUser(user),
+    accessToken: createToken(user),
+  });
 });
