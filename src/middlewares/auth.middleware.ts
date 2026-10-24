@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '@/config/env';
 import { AppError } from '@/errors/app-error';
 import { prisma } from '@/prisma/client';
+import { assertAdult } from '@/services/age';
 
 export type AuthUser = {
   id: string;
@@ -46,6 +47,7 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
         id: true,
         email: true,
         status: true,
+        birthDate: true,
         roles: {
           select: {
             role: true,
@@ -64,6 +66,7 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
       return;
     }
 
+    assertAdult(user.birthDate);
     response.locals.authUser = {
       id: user.id,
       email: user.email,
@@ -71,7 +74,11 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
     } satisfies AuthUser;
 
     next();
-  } catch {
+  } catch (error) {
+    if (error instanceof AppError) {
+      next(error);
+      return;
+    }
     next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
   }
 };
