@@ -19,6 +19,7 @@ import { studentEducationsRouter } from '@/routes/student-educations.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
+import { authRouter } from '@/routes/auth.routes';
 import {
   lockStudentProfile,
   removeIneligibleSpecialties,
@@ -93,6 +94,7 @@ databaseTests(
     app.use(express.json());
     app.use(
       '/api',
+      authRouter,
       studyFieldsRouter,
       studentEducationsRouter,
       studentSpecialtiesRouter,
@@ -126,6 +128,7 @@ databaseTests(
       await prisma.user.create({
         data: {
           id: studentId,
+          birthDate: new Date('2000-01-01'),
           roles: {
             create: [{ role: UserRole.STUDENT }, { role: UserRole.CUSTOMER }],
           },
@@ -569,7 +572,9 @@ databaseTests(
     it('preserves mission snapshots when deleting the last eligible education', async () => {
       const row = await education('Test Developpement');
       await addSpecialty('Site vitrine');
-      const customer = await prisma.user.create({ data: {} });
+      const customer = await prisma.user.create({
+        data: { birthDate: new Date('2000-01-01') },
+      });
       const mission = await prisma.mission.create({
         data: {
           customerUserId: customer.id,
@@ -852,7 +857,9 @@ databaseTests(
           priceCents: 2500,
         });
       expect(offer.status).toBe(201);
-      const customer = await prisma.user.create({ data: {} });
+      const customer = await prisma.user.create({
+        data: { birthDate: new Date('2000-01-01') },
+      });
       const mission = await prisma.mission.create({
         data: {
           customerUserId: customer.id,
@@ -1115,5 +1122,54 @@ databaseTests(
       );
       expect(await catalogCounts()).toEqual(before);
     }, 20000);
+
+    it('preserves null historical dates but rejects new active accounts without a birth date', async () => {
+      const legacy = await prisma.user.findUnique({
+        where: { id: '10000000-0000-4000-8000-000000000001' },
+      });
+      expect(legacy?.birthDate).toBeNull();
+      const id = randomUUID();
+      await expect(prisma.user.create({ data: { id } })).rejects.toThrow();
+      expect(await prisma.user.findUnique({ where: { id } })).toBeNull();
+    });
+
+    it.each([UserRole.CUSTOMER, UserRole.STUDENT])(
+      'enforces majority and birth-date privacy on real registration: %s',
+      async (role) => {
+        const email = `${randomUUID()}@test.invalid`;
+        for (const birthDate of [
+          undefined,
+          '2099-01-01',
+          '2001-02-29',
+          '2020-01-01',
+        ]) {
+          const response = await request(app)
+            .post('/api/auth/register')
+            .send({ email, password: 'password123', birthDate, role });
+          expect([400, 403]).toContain(response.status);
+          expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
+        }
+        const registered = await request(app).post('/api/auth/register').send({
+          email,
+          password: 'password123',
+          birthDate: '2000-01-01',
+          role,
+        });
+        expect(registered.status).toBe(201);
+        expect(registered.body.user.roles).toEqual([role]);
+        expect(registered.body.user).not.toHaveProperty('birthDate');
+        expect(
+          jwt.verify(registered.body.accessToken, config.jwtSecret),
+        ).not.toHaveProperty('birthDate');
+        expect(
+          (await prisma.user.findUnique({ where: { email } }))?.birthDate,
+        ).toEqual(new Date('2000-01-01'));
+        const me = await request(app)
+          .get('/api/auth/me')
+          .set('Authorization', `Bearer ${registered.body.accessToken}`);
+        expect(me.status).toBe(200);
+        expect(me.body).not.toHaveProperty('birthDate');
+      },
+    );
   },
 );
