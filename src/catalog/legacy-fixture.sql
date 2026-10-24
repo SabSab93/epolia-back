@@ -1,6 +1,13 @@
 INSERT INTO users (id, email, updated_at) VALUES
 ('10000000-0000-4000-8000-000000000001', 'legacy-student@test.invalid', NOW()),
 ('10000000-0000-4000-8000-000000000002', 'legacy-customer@test.invalid', NOW());
+-- Accounts dedicated to the majority migration regression tests.
+INSERT INTO users (id, email, updated_at) VALUES
+('10000000-0000-4000-8000-000000000008', 'legacy-admin@test.invalid', NOW()),
+('10000000-0000-4000-8000-000000000009', 'legacy-managed@test.invalid', NOW());
+INSERT INTO user_roles (user_id, role) VALUES
+('10000000-0000-4000-8000-000000000008', 'ADMIN'),
+('10000000-0000-4000-8000-000000000009', 'CUSTOMER');
 INSERT INTO user_roles (user_id, role) VALUES
 ('10000000-0000-4000-8000-000000000001', 'STUDENT'),
 ('10000000-0000-4000-8000-000000000002', 'CUSTOMER');

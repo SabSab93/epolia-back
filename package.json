@@ -13,6 +13,7 @@
     "test": "jest",
     "catalog:import": "ts-node -r tsconfig-paths/register prisma/seed-catalog.ts",
     "catalog:check": "ts-node -r tsconfig-paths/register prisma/check-catalog.ts",
+    "users:prepare-majority": "ts-node -r tsconfig-paths/register src/scripts/prepare-majority-admin.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",

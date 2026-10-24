@@ -87,5 +87,5 @@ jobs:
           npx prisma migrate resolve --applied 20261004120000_init_final_mld
       - name: Apply additive migrations
         run: npx prisma migrate deploy
-      - name: Test PostgreSQL catalog and eligibility
-        run: npm test -- --runInBand catalog.integration.spec.ts
+      - name: Test PostgreSQL catalog, eligibility and majority transition
+        run: npm test -- --runInBand catalog.integration.spec.ts majority.integration.spec.ts
