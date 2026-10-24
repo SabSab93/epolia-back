@@ -22,6 +22,7 @@ jest.mock('@/prisma/client', () => {
 });
 
 const userMock = {
+  birthDate: new Date('2000-01-01T00:00:00Z'),
   id: '0f2f2c96-8f55-4a42-86ad-b9d9981edb34',
   email: 'user@example.com',
   status: AccountStatus.ACTIVE,
@@ -94,6 +95,7 @@ describe('Auth routes', () => {
     const response = await request(createTestApp())
       .post('/api/auth/register')
       .send({
+        birthDate: '2000-01-01',
         email: 'USER@example.com',
         password: 'password123',
         role: UserRole.STUDENT,
@@ -133,6 +135,7 @@ describe('Auth routes', () => {
     });
 
     await request(createTestApp()).post('/api/auth/register').send({
+      birthDate: '2000-01-01',
       email: userMock.email,
       password: 'password123',
     });
@@ -205,6 +208,7 @@ describe('Auth routes', () => {
     });
 
     await request(createTestApp()).post('/api/auth/register').send({
+      birthDate: '2000-01-01',
       email: userMock.email,
       password: 'password123',
     });
@@ -308,6 +312,7 @@ describe('Auth routes', () => {
         id: true,
         email: true,
         status: true,
+        birthDate: true,
         roles: {
           select: {
             role: true,
@@ -354,4 +359,104 @@ describe('Auth routes', () => {
       message: 'Authentication required',
     });
   });
+  it.each([UserRole.CUSTOMER, UserRole.STUDENT])(
+    'requires an adult birth date before registering %s',
+    async (role) => {
+      for (const [birthDate, status] of [
+        [undefined, 400],
+        ['2099-01-01', 400],
+        ['2001-02-29', 400],
+        ['2020-01-01', 403],
+      ] as const) {
+        const response = await request(createTestApp())
+          .post('/api/auth/register')
+          .send({
+            email: 'new@example.com',
+            password: 'password123',
+            role,
+            birthDate,
+          });
+        expect(response.status).toBe(status);
+        expect(prismaMock.user.create).not.toHaveBeenCalled();
+      }
+    },
+  );
+
+  it('does not expose birth dates through register, login, JWT or auth/me', async () => {
+    prismaMock.user.create.mockImplementation(async (args) => ({
+      ...userMock,
+      passwordHash: (args as { data: { passwordHash: string } }).data
+        .passwordHash,
+    }));
+    const registered = await request(createTestApp())
+      .post('/api/auth/register')
+      .send({
+        email: userMock.email,
+        password: 'password123',
+        birthDate: '2000-01-01',
+      });
+    expect(registered.status).toBe(201);
+    expect(registered.body.user).not.toHaveProperty('birthDate');
+    expect(
+      jwt.verify(registered.body.accessToken, config.jwtSecret),
+    ).not.toHaveProperty('birthDate');
+    const created = firstCallArg<{ data: { passwordHash: string } }>(
+      prismaMock.user.create,
+    );
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      passwordHash: created.data.passwordHash,
+    });
+    const login = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: userMock.email, password: 'password123' });
+    expect(login.status).toBe(200);
+    expect(login.body.user).not.toHaveProperty('birthDate');
+    const me = await request(createTestApp())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${login.body.accessToken}`);
+    expect(me.status).toBe(200);
+    expect(me.body).not.toHaveProperty('birthDate');
+  });
+
+  it.each([null, new Date('2020-01-01')])(
+    'rejects login and old JWT access with an ineligible stored birth date: %p',
+    async (birthDate) => {
+      prismaMock.user.create.mockImplementation(async (args) => ({
+        ...userMock,
+        passwordHash: (args as { data: { passwordHash: string } }).data
+          .passwordHash,
+      }));
+      const registered = await request(createTestApp())
+        .post('/api/auth/register')
+        .send({
+          email: userMock.email,
+          password: 'password123',
+          birthDate: '2000-01-01',
+        });
+      const created = firstCallArg<{ data: { passwordHash: string } }>(
+        prismaMock.user.create,
+      );
+      prismaMock.user.findUnique.mockResolvedValue({
+        ...userMock,
+        birthDate,
+        passwordHash: created.data.passwordHash,
+      });
+      const login = await request(createTestApp())
+        .post('/api/auth/login')
+        .send({
+          email: userMock.email,
+          password: 'password123',
+          birthDate: '2000-01-01',
+        });
+      expect(login.status).toBe(403);
+      expect(login.body.code).toBe(
+        birthDate ? 'ADULT_REQUIRED' : 'BIRTH_DATE_REQUIRED',
+      );
+      const me = await request(createTestApp())
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${registered.body.accessToken}`);
+      expect(me.status).toBe(403);
+    },
+  );
 });
