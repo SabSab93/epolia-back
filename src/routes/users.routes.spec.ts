@@ -32,6 +32,7 @@ jest.mock('@/prisma/client', () => {
       create: jest.fn(),
     },
     $transaction: jest.fn(),
+    $queryRaw: jest.fn(),
   };
 
   return {
@@ -40,6 +41,7 @@ jest.mock('@/prisma/client', () => {
 });
 
 const userMock = {
+  birthDate: new Date('2000-01-01T00:00:00Z'),
   id: '0f2f2c96-8f55-4a42-86ad-b9d9981edb34',
   email: 'user@example.com',
   phone: '+33600000000',
@@ -60,6 +62,7 @@ const userMock = {
 
 const adminUserMock = {
   ...userMock,
+  birthDate: null,
   id: 'b42c1e76-cfc8-4f38-84c7-3c2f304285d0',
   email: 'admin@example.com',
   roles: [
@@ -160,6 +163,7 @@ describe('Users routes', () => {
     const transaction: TransactionMock = (callback) => callback(prismaMock);
 
     prismaMock.$transaction.mockImplementation(transaction);
+    prismaMock.user.findUnique.mockResolvedValue(userMock);
     prismaMock.user.findUnique.mockResolvedValueOnce(adminUserMock);
   });
 
@@ -239,6 +243,7 @@ describe('Users routes', () => {
       .post('/api/users/local')
       .set('Authorization', adminAuthorizationHeader())
       .send({
+        birthDate: '2000-01-01',
         email: 'user@example.com',
         passwordHash: 'hashed-password',
         phone: '+33600000000',
@@ -262,7 +267,10 @@ describe('Users routes', () => {
     const response = await request(createTestApp())
       .post('/api/users/local')
       .set('Authorization', adminAuthorizationHeader())
-      .send({ email: 'user@example.com' });
+      .send({
+        birthDate: '2000-01-01',
+        email: 'user@example.com',
+      });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
@@ -352,6 +360,7 @@ describe('Users routes', () => {
         email: null,
         phone: null,
         passwordHash: null,
+        birthDate: null,
         status: AccountStatus.DELETED,
       },
     });
@@ -383,4 +392,85 @@ describe('Users routes', () => {
       },
     });
   });
+  it('requires an adult birth date for admin-created accounts', async () => {
+    const response = await request(createTestApp())
+      .post('/api/users/local')
+      .set('Authorization', adminAuthorizationHeader())
+      .send({
+        email: 'new@example.com',
+        passwordHash: 'hash',
+        roles: [UserRole.CUSTOMER],
+      });
+    expect(response.status).toBe(400);
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it('creates an ADMIN without collecting a birth date', async () => {
+    prismaMock.user.create.mockResolvedValue(adminUserMock);
+    const response = await request(createTestApp())
+      .post('/api/users/local')
+      .set('Authorization', adminAuthorizationHeader())
+      .send({
+        email: 'new-admin@example.com',
+        passwordHash: 'hash',
+        roles: [UserRole.ADMIN],
+      });
+    expect(response.status).toBe(201);
+    expect(
+      firstCallArg<{ data: { birthDate: Date | null } }>(prismaMock.user.create)
+        .data.birthDate,
+    ).toBeNull();
+  });
+
+  it('reactivates an ADMIN without an age check', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...adminUserMock,
+      status: AccountStatus.SUSPENDED,
+    });
+    prismaMock.user.update.mockResolvedValue(adminUserMock);
+    const response = await request(createTestApp())
+      .patch(`/api/users/${adminUserMock.id}/status`)
+      .set('Authorization', adminAuthorizationHeader())
+      .send({ status: AccountStatus.ACTIVE });
+    expect(response.status).toBe(200);
+    expect(prismaMock.user.update).toHaveBeenCalled();
+  });
+
+  it('allows an authorized administrator to assign ADMIN without collecting a birth date', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      birthDate: null,
+    });
+    prismaMock.userRoleAssignment.upsert.mockResolvedValue({
+      userId: userMock.id,
+      role: UserRole.ADMIN,
+    });
+    const response = await request(createTestApp())
+      .post(`/api/users/${userMock.id}/roles`)
+      .set('Authorization', adminAuthorizationHeader())
+      .send({ role: UserRole.ADMIN });
+    expect(response.status).toBe(200);
+    expect(prismaMock.userRoleAssignment.upsert).toHaveBeenCalled();
+  });
+
+  it.each([null, new Date('2020-01-01')])(
+    'blocks role assignment and reactivation without an adult birth date: %p',
+    async (birthDate) => {
+      prismaMock.user.findUnique.mockResolvedValue({ ...userMock, birthDate });
+      const role = await request(createTestApp())
+        .post(`/api/users/${userMock.id}/roles`)
+        .set('Authorization', adminAuthorizationHeader())
+        .send({ role: UserRole.CUSTOMER });
+      expect(role.status).toBe(403);
+      expect(prismaMock.userRoleAssignment.upsert).not.toHaveBeenCalled();
+      // Supply the admin session again for the second HTTP request.
+      prismaMock.user.findUnique.mockResolvedValueOnce(adminUserMock);
+      const active = await request(createTestApp())
+        .patch(`/api/users/${userMock.id}/status`)
+        .set('Authorization', adminAuthorizationHeader())
+        .send({ status: AccountStatus.ACTIVE });
+      expect(active.status).toBe(403);
+      expect(prismaMock.user.update).not.toHaveBeenCalled();
+    },
+  );
 });

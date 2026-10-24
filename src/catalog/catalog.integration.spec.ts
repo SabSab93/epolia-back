@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, scryptSync } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { join } from 'node:path';
@@ -19,6 +19,8 @@ import { studentEducationsRouter } from '@/routes/student-educations.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
+import { authRouter } from '@/routes/auth.routes';
+import { usersRouter } from '@/routes/users.routes';
 import {
   lockStudentProfile,
   removeIneligibleSpecialties,
@@ -93,10 +95,12 @@ databaseTests(
     app.use(express.json());
     app.use(
       '/api',
+      authRouter,
       studyFieldsRouter,
       studentEducationsRouter,
       studentSpecialtiesRouter,
       studentProfilesRouter,
+      usersRouter,
     );
     app.use(errorHandler);
     let studentId: string;
@@ -126,6 +130,7 @@ databaseTests(
       await prisma.user.create({
         data: {
           id: studentId,
+          birthDate: new Date('2000-01-01'),
           roles: {
             create: [{ role: UserRole.STUDENT }, { role: UserRole.CUSTOMER }],
           },
@@ -569,7 +574,9 @@ databaseTests(
     it('preserves mission snapshots when deleting the last eligible education', async () => {
       const row = await education('Test Developpement');
       await addSpecialty('Site vitrine');
-      const customer = await prisma.user.create({ data: {} });
+      const customer = await prisma.user.create({
+        data: { birthDate: new Date('2000-01-01') },
+      });
       const mission = await prisma.mission.create({
         data: {
           customerUserId: customer.id,
@@ -852,7 +859,9 @@ databaseTests(
           priceCents: 2500,
         });
       expect(offer.status).toBe(201);
-      const customer = await prisma.user.create({ data: {} });
+      const customer = await prisma.user.create({
+        data: { birthDate: new Date('2000-01-01') },
+      });
       const mission = await prisma.mission.create({
         data: {
           customerUserId: customer.id,
@@ -1115,5 +1124,98 @@ databaseTests(
       );
       expect(await catalogCounts()).toEqual(before);
     }, 20000);
+
+    it('preserves null historical dates but rejects public registration without a birth date', async () => {
+      const legacy = await prisma.user.findUnique({
+        where: { id: '10000000-0000-4000-8000-000000000001' },
+      });
+      expect(legacy?.birthDate).toBeNull();
+      const email = `${randomUUID()}@test.invalid`;
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({ email, password: 'password123' });
+      expect(response.status).toBe(400);
+      expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
+    });
+
+    it.each([UserRole.CUSTOMER, UserRole.STUDENT])(
+      'enforces majority and birth-date privacy on real registration: %s',
+      async (role) => {
+        const email = `${randomUUID()}@test.invalid`;
+        for (const birthDate of [
+          undefined,
+          '2099-01-01',
+          '2001-02-29',
+          '2020-01-01',
+        ]) {
+          const response = await request(app)
+            .post('/api/auth/register')
+            .send({ email, password: 'password123', birthDate, role });
+          expect([400, 403]).toContain(response.status);
+          expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
+        }
+        const registered = await request(app).post('/api/auth/register').send({
+          email,
+          password: 'password123',
+          birthDate: '2000-01-01',
+          role,
+        });
+        expect(registered.status).toBe(201);
+        expect(registered.body.user.roles).toEqual([role]);
+        expect(registered.body.user).not.toHaveProperty('birthDate');
+        expect(
+          jwt.verify(registered.body.accessToken, config.jwtSecret),
+        ).not.toHaveProperty('birthDate');
+        expect(
+          (await prisma.user.findUnique({ where: { email } }))?.birthDate,
+        ).toEqual(new Date('2000-01-01'));
+        const me = await request(app)
+          .get('/api/auth/me')
+          .set('Authorization', `Bearer ${registered.body.accessToken}`);
+        expect(me.status).toBe(200);
+        expect(me.body).not.toHaveProperty('birthDate');
+      },
+    );
+    it('allows undated administrators to log in and manage historical accounts without an age transition', async () => {
+      const password = 'admin-integration-test';
+      const salt = 'admin-integration-salt';
+      const admin = await prisma.user.create({
+        data: {
+          email: `${randomUUID()}@test.invalid`,
+          passwordHash: `${salt}:${scryptSync(password, salt, 64).toString('hex')}`,
+          roles: { create: { role: UserRole.ADMIN } },
+        },
+      });
+      expect(admin.birthDate).toBeNull();
+      const login = await request(app)
+        .post('/api/auth/login')
+        .send({ email: admin.email, password });
+      expect(login.status).toBe(200);
+      const authorization = `Bearer ${login.body.accessToken}`;
+      const legacyId = '10000000-0000-4000-8000-000000000002';
+      const suspended = await request(app)
+        .patch(`/api/users/${legacyId}/status`)
+        .set('Authorization', authorization)
+        .send({ status: AccountStatus.SUSPENDED });
+      expect(suspended.status).toBe(200);
+      const deletion = await request(app)
+        .post(`/api/users/${legacyId}/deletion-request`)
+        .set('Authorization', authorization)
+        .send({});
+      expect(deletion.status).toBe(200);
+      expect(
+        await prisma.privacyRequest.count({ where: { userId: legacyId } }),
+      ).toBe(1);
+      expect(
+        (await prisma.user.findUniqueOrThrow({ where: { id: legacyId } }))
+          .birthDate,
+      ).toBeNull();
+      const reactivated = await request(app)
+        .patch(`/api/users/${legacyId}/status`)
+        .set('Authorization', authorization)
+        .send({ status: AccountStatus.ACTIVE });
+      expect(reactivated.status).toBe(403);
+      expect(reactivated.body.code).toBe('BIRTH_DATE_REQUIRED');
+    });
   },
 );

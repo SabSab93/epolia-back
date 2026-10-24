@@ -9,6 +9,7 @@ import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
+import { isAdult } from '@/services/age';
 import {
   eligibleSpecialtyWhere,
   lockStudentProfile,
@@ -177,11 +178,12 @@ studentProfilesRouter.get(
 
       const owner = await tx.user.findUnique({
         where: { id: profile.userId },
-        select: { status: true },
+        select: { status: true, birthDate: true },
       });
       if (
         profile.status !== ProfileStatus.VISIBLE ||
-        owner?.status !== AccountStatus.ACTIVE
+        owner?.status !== AccountStatus.ACTIVE ||
+        !isAdult(owner.birthDate)
       ) {
         throw new AppError(
           404,

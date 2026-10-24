@@ -7,6 +7,7 @@ import { config } from '@/config/env';
 import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
+import { assertAdult, parseAdultBirthDate } from '@/services/age';
 
 const scrypt = promisify(scryptCallback);
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -16,6 +17,7 @@ const authUserSelect = {
   email: true,
   status: true,
   passwordHash: true,
+  birthDate: true,
   roles: {
     select: {
       role: true,
@@ -106,6 +108,7 @@ authRouter.post('/auth/register', async (request, response) => {
     throw new AppError(400, 'VALIDATION_ERROR', 'role is invalid');
   }
 
+  const birthDate = parseAdultBirthDate(body.birthDate);
   const passwordHash = await hashPassword(password);
   const userRole =
     role === UserRole.STUDENT ? UserRole.STUDENT : UserRole.CUSTOMER;
@@ -115,6 +118,7 @@ authRouter.post('/auth/register', async (request, response) => {
       data: {
         email: email.trim().toLowerCase(),
         passwordHash,
+        birthDate,
         status: AccountStatus.ACTIVE,
         roles: {
           create: [{ role: userRole }],
@@ -174,6 +178,9 @@ authRouter.post('/auth/login', async (request, response) => {
     throw new AppError(403, 'ACCOUNT_NOT_ACTIVE', 'Account is not active');
   }
 
+  if (!user.roles.some(({ role }) => role === UserRole.ADMIN)) {
+    assertAdult(user.birthDate);
+  }
   response.status(200).json({
     user: formatUser(user),
     accessToken: createToken(user),

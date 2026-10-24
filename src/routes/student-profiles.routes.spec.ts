@@ -39,6 +39,7 @@ jest.mock('@/prisma/client', () => {
 });
 
 const userMock = {
+  birthDate: new Date('2000-01-01T00:00:00Z'),
   id: '0f2f2c96-8f55-4a42-86ad-b9d9981edb34',
   email: 'student@example.com',
   status: AccountStatus.ACTIVE,
@@ -517,4 +518,16 @@ describe('Student profile routes', () => {
     );
     expect(response.status).toBe(404);
   });
+  it.each([null, new Date('2020-01-01')])(
+    'hides public student profiles without an adult owner: %p',
+    async (birthDate) => {
+      prismaMock.studentProfile.findUnique.mockResolvedValue(profileMock);
+      prismaMock.user.findUnique.mockResolvedValue({ ...userMock, birthDate });
+      const response = await request(createTestApp()).get(
+        `/api/users/${userMock.id}/student-profile`,
+      );
+      expect(response.status).toBe(404);
+      expect(response.body.code).toBe('STUDENT_PROFILE_NOT_FOUND');
+    },
+  );
 });

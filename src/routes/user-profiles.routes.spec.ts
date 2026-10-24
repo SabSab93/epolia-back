@@ -27,6 +27,7 @@ jest.mock('@/prisma/client', () => {
 });
 
 const userMock = {
+  birthDate: new Date('2000-01-01T00:00:00Z'),
   id: '0f2f2c96-8f55-4a42-86ad-b9d9981edb34',
   email: 'user@example.com',
   status: AccountStatus.ACTIVE,
