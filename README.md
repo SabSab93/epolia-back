@@ -65,13 +65,6 @@ Les routes utilisent le préfixe `/api`. L'authentification locale, les profils 
 
 Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
 
-## Majorité
-
-Les comptes CUSTOMER et STUDENT doivent avoir au moins 18 ans. La date de
-naissance est obligatoire avant leur création et validée côté serveur.
-Les administrateurs sont exemptés de ce contrôle. La date est déclarative,
-sans vérification d’identité, et n’est pas exposée dans les réponses publiques.
-
 ## Imports internes
 
 Utiliser des alias pour les imports locaux, y compris dans les tests :
