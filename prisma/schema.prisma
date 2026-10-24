@@ -110,6 +110,7 @@ model User {
   phone               String?       @unique
   providerUserId      String?       @unique @map("provider_user_id")
   passwordHash        String?       @map("password_hash")
+  birthDate           DateTime?     @map("birth_date") @db.Date
   status              AccountStatus @default(ACTIVE)
   emailVerifiedAt     DateTime?     @map("email_verified_at") @db.Timestamptz(6)
   deletionRequestedAt DateTime?     @map("deletion_requested_at") @db.Timestamptz(6)
