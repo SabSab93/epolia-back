@@ -24,10 +24,16 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['email', 'password'],
+                required: ['email', 'password', 'birthDate'],
                 properties: {
                   email: { type: 'string', example: 'user@example.com' },
                   password: { type: 'string', example: 'password123' },
+                  birthDate: {
+                    type: 'string',
+                    format: 'date',
+                    description:
+                      'Required civil date, age at least 18 (UTC). Never returned in user responses.',
+                  },
                   role: {
                     type: 'string',
                     enum: ['STUDENT', 'CUSTOMER'],
@@ -40,6 +46,7 @@ export const swaggerDocument = {
         },
         responses: {
           201: { description: 'User registered' },
+          403: { description: 'ADULT_REQUIRED: user must be at least 18' },
           400: { description: 'Validation error' },
           409: { description: 'Email already used' },
         },
@@ -68,7 +75,9 @@ export const swaggerDocument = {
           200: { description: 'User logged in' },
           400: { description: 'Validation error' },
           401: { description: 'Invalid email or password' },
-          403: { description: 'Account is not active' },
+          403: {
+            description: 'Account inactive, missing birth date or age below 18',
+          },
         },
       },
     },
@@ -80,7 +89,9 @@ export const swaggerDocument = {
         responses: {
           200: { description: 'Authenticated user' },
           401: { description: 'Authentication required' },
-          403: { description: 'Account is not active' },
+          403: {
+            description: 'Account inactive, missing birth date or age below 18',
+          },
         },
       },
     },
@@ -481,8 +492,36 @@ export const swaggerDocument = {
     },
     '/api/users/local': {
       post: {
-        summary: 'Create a local user',
+        summary: 'Create a local adult user',
         tags: ['UsersAdmin'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email', 'passwordHash', 'birthDate'],
+                properties: {
+                  email: { type: 'string', format: 'email' },
+                  passwordHash: { type: 'string', writeOnly: true },
+                  birthDate: {
+                    type: 'string',
+                    format: 'date',
+                    writeOnly: true,
+                  },
+                  phone: { type: 'string' },
+                  roles: {
+                    type: 'array',
+                    items: {
+                      type: 'string',
+                      enum: ['STUDENT', 'CUSTOMER', 'ADMIN'],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
         security: [{ bearerAuth: [] }],
         responses: {
           201: { description: 'User created' },
@@ -493,7 +532,7 @@ export const swaggerDocument = {
     },
     '/api/users/{userId}/roles': {
       post: {
-        summary: 'Assign a role to a user',
+        summary: 'Assign a role to an active adult user',
         tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
         parameters: [{ $ref: '#/components/parameters/UserId' }],
