@@ -8,6 +8,7 @@ import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
+import { activateUserRole } from '@/services/user-roles';
 
 const scrypt = promisify(scryptCallback);
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -192,7 +193,7 @@ authRouter.get('/auth/me', requireAuth, (_request, response) => {
 });
 
 authRouter.post('/auth/roles', requireAuth, async (request, response) => {
-  const role = request.body?.role;
+  const role: unknown = request.body?.role;
   if (role !== UserRole.STUDENT && role !== UserRole.CUSTOMER) {
     throw new AppError(
       400,
@@ -202,66 +203,10 @@ authRouter.post('/auth/roles', requireAuth, async (request, response) => {
   }
 
   const { id: userId } = response.locals.authUser as AuthUser;
-  for (let attempt = 0; ; attempt++) {
-    try {
-      const user = await prisma.$transaction(
-        async (tx) => {
-          const current = await tx.user.findUnique({
-            where: { id: userId },
-            select: {
-              status: true,
-              birthDate: true,
-              roles: { select: { role: true } },
-            },
-          });
-          if (!current) {
-            throw new AppError(401, 'UNAUTHORIZED', 'Authentication required');
-          }
-          if (current.status !== AccountStatus.ACTIVE) {
-            throw new AppError(
-              403,
-              'ACCOUNT_NOT_ACTIVE',
-              'Account is not active',
-            );
-          }
-          if (!current.roles.some(({ role }) => role === UserRole.ADMIN)) {
-            assertAdult(current.birthDate);
-          }
-          await tx.userRoleAssignment.createMany({
-            data: { userId, role },
-            skipDuplicates: true,
-          });
-          return tx.user.findUniqueOrThrow({
-            where: { id: userId },
-            select: {
-              id: true,
-              email: true,
-              status: true,
-              roles: { select: { role: true } },
-            },
-          });
-        },
-        { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-      );
+  const user = await activateUserRole(userId, role);
 
-      response.status(200).json({
-        user: formatUser(user),
-        accessToken: createToken(user),
-      });
-      return;
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === 'P2034'
-      ) {
-        if (attempt < 2) continue;
-        throw new AppError(
-          409,
-          'ROLE_ACTIVATION_CONFLICT',
-          'Please retry role activation',
-        );
-      }
-      throw error;
-    }
-  }
+  response.status(200).json({
+    user: formatUser(user),
+    accessToken: createToken(user),
+  });
 });

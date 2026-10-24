@@ -80,6 +80,45 @@ describe('Activating a role on the authenticated account', () => {
     expect(db.$transaction).toHaveBeenCalledTimes(3);
   });
 
+  it('succeeds on the third attempt after two conflicts', async () => {
+    const conflict = new Prisma.PrismaClientKnownRequestError(
+      'Write conflict',
+      {
+        code: 'P2034',
+        clientVersion: '6.19.3',
+      },
+    );
+    db.$transaction
+      .mockRejectedValueOnce(conflict)
+      .mockRejectedValueOnce(conflict);
+
+    const response = await request(app)
+      .post('/api/auth/roles')
+      .set('Authorization', authorization())
+      .send({ role: UserRole.STUDENT });
+
+    expect(response.status).toBe(200);
+    expect(db.$transaction).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not retry other Prisma errors', async () => {
+    db.$transaction.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Database unavailable', {
+        code: 'P2024',
+        clientVersion: '6.19.3',
+      }),
+    );
+
+    const response = await request(app)
+      .post('/api/auth/roles')
+      .set('Authorization', authorization())
+      .send({ role: UserRole.STUDENT });
+
+    expect(response.status).toBe(500);
+    expect(response.body.code).toBe('INTERNAL_SERVER_ERROR');
+    expect(db.$transaction).toHaveBeenCalledTimes(1);
+  });
+
   it.each([
     [UserRole.CUSTOMER, UserRole.STUDENT],
     [UserRole.STUDENT, UserRole.CUSTOMER],
@@ -244,6 +283,7 @@ describe('Activating a role on the authenticated account', () => {
         isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
       });
       expect(db.userRoleAssignment.createMany).not.toHaveBeenCalled();
+      expect(db.$transaction).toHaveBeenCalledTimes(1);
     },
   );
 });
