@@ -1,4 +1,5 @@
 import { AccountStatus, UserRole } from '@prisma/client';
+import { scryptSync } from 'node:crypto';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';
@@ -71,6 +72,55 @@ function firstCallArg<T>(mock: SingleArgMock): T {
 describe('Auth routes', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  it('allows an active ADMIN to log in and use protected routes without a birth date', async () => {
+    const password = 'admin-test-password';
+    const salt = 'admin-test-salt';
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      birthDate: null,
+      roles: [{ role: UserRole.ADMIN }],
+      passwordHash: `${salt}:${scryptSync(password, salt, 64).toString('hex')}`,
+    });
+    const login = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: userMock.email, password });
+    expect(login.status).toBe(200);
+    const me = await request(createTestApp())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${login.body.accessToken}`);
+    expect(me.status).toBe(200);
+    expect(me.body.roles).toEqual([UserRole.ADMIN]);
+    expect(me.body).not.toHaveProperty('birthDate');
+  });
+
+  it('uses stored roles rather than an ADMIN claim to decide the exemption', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      birthDate: null,
+    });
+    const token = jwt.sign(
+      { sub: userMock.id, roles: [UserRole.ADMIN] },
+      config.jwtSecret,
+    );
+    const response = await request(createTestApp())
+      .get('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`);
+    expect(response.status).toBe(403);
+    expect(response.body.code).toBe('BIRTH_DATE_REQUIRED');
+  });
+
+  it('does not allow public registration to request the ADMIN exemption', async () => {
+    const response = await request(createTestApp())
+      .post('/api/auth/register')
+      .send({
+        email: userMock.email,
+        password: 'password123',
+        role: UserRole.ADMIN,
+      });
+    expect(response.status).toBe(400);
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
   it('registers a local user with a hashed password', async () => {

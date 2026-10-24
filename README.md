@@ -65,76 +65,12 @@ Les routes utilisent le préfixe `/api`. L'authentification locale, les profils 
 
 Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
 
-## Majorité et transition des comptes existants
+## Majorité
 
-`POST /api/auth/register` exige `birthDate` au format civil `YYYY-MM-DD`,
-avant la création du compte, pour CUSTOMER et STUDENT. L'âge est calculé en
-dates UTC ; les 18 ans sont atteints à minuit UTC, et au 1er mars en année
-non bissextile pour une naissance le 29 février. La date est déclarative :
-elle ne constitue pas une vérification d'identité. Elle n'est pas renvoyée
-dans les réponses utilisateur ni inscrite dans les JWT.
-
-Un compte historique sans date conserve `NULL` et reste bloqué au login,
-sur les routes protégées, à l'attribution de rôles et à la réactivation.
-Il ne faut ni lui inventer une date ni ajouter une collecte différée au
-parcours utilisateur. Sa suspension, l'enregistrement de sa demande de
-suppression et son anonymisation doivent néanmoins rester possibles par
-un administrateur autorisé. Le trigger de la migration corrective impose
-une date aux nouvelles lignes non supprimées, interdit d'effacer une date
-connue hors suppression et interdit une réactivation sans date. Il laisse
-les anciennes lignes sans date être gérées administrativement.
-
-### Bascule opérateur avant ouverture du trafic
-
-Cette procédure nécessite un accès opérateur autorisé à la base cible.
-Elle ne s'exécute ni au démarrage de l'application ni automatiquement en CI.
-Ne pas lancer les commandes sur une base partagée sans autorisation de
-l'environnement concerné.
-
-1. Avant la bascule, identifier un administrateur existant et actif dont la
-   date de naissance réelle est confirmée par un processus autorisé.
-   Si cette information n'est pas disponible, interrompre la bascule :
-   aucun rôle ou compte n'est créé par la procédure, aucun compte n'est réactivé.
-2. Sauvegarder la base selon la procédure de l'environnement et maintenir
-   le trafic fermé pendant la transition. Configurer `DATABASE_URL` et
-   `DIRECT_URL` pour la bonne base, puis appliquer **toutes** les migrations
-   avec `npx prisma migrate deploy`. Ne pas modifier la migration initiale
-   de naissance si elle a déjà été appliquée : la nouvelle migration la corrige.
-3. Vérifier l'accès d'administration disponible :
-
-   ```bash
-   npm run users:prepare-majority -- --check
-   ```
-
-   Cette commande est en lecture seule ; elle termine en erreur si aucun
-   administrateur actif n'a une date adulte. Si elle réussit, aucun remplissage
-   des anciennes dates n'est nécessaire pour maintenir l'administration.
-4. Si nécessaire, fournir par **entrée standard** un objet JSON contenant
-   `userId` (UUID de l'administrateur existant) et `birthDate` (date civile
-   réellement confirmée). Préparer cette entrée dans un fichier temporaire
-   protégé, hors du dépôt ; ne pas inscrire la date dans les arguments de la
-   commande, l'historique du shell, les logs ou les exemples nominatifs.
-
-   ```bash
-   npm run users:prepare-majority -- --apply < /chemin/protege/admin-majority.json
-   npm run users:prepare-majority -- --check
-   ```
-
-   `--apply` ne remplit qu'une date absente sur un administrateur **déjà actif**.
-   Il refuse les dates invalides/mineures, les comptes ordinaires, suspendus
-   ou supprimés et le remplacement d'une date connue. Répéter la même entrée
-   est sans effet. Il n'ajoute aucun rôle et ne change aucun statut.
-   Sans les dépendances de développement, le build propose les mêmes modes :
-   `node dist/scripts/prepare-majority-admin.js --check` et `--apply` avec
-   la même entrée standard.
-5. Vérifier connexion, `/api/auth/me` et une route admin avec le compte retenu,
-   sans enregistrer ses données sensibles. Retirer le fichier temporaire selon
-   les règles de l'environnement, puis ouvrir le trafic seulement si les
-   vérifications réussissent. Les autres comptes sans date restent bloqués.
-
-Front #2/#5 doivent transmettre `birthDate` à l'inscription et gérer les
-erreurs `BIRTH_DATE_REQUIRED` / `ADULT_REQUIRED`, sans proposer une saisie
-de naissance après création du compte. Le second rôle reste suivi dans #69.
+Les comptes CUSTOMER et STUDENT doivent avoir au moins 18 ans. La date de
+naissance est obligatoire avant leur création et validée côté serveur.
+Les administrateurs sont exemptés de ce contrôle. La date est déclarative,
+sans vérification d’identité, et n’est pas exposée dans les réponses publiques.
 
 ## Imports internes
 

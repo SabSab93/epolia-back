@@ -492,7 +492,7 @@ export const swaggerDocument = {
     },
     '/api/users/local': {
       post: {
-        summary: 'Create a local adult user',
+        summary: 'Create a local user (ADMIN exempt from age checks)',
         tags: ['UsersAdmin'],
         requestBody: {
           required: true,
@@ -500,7 +500,7 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['email', 'passwordHash', 'birthDate'],
+                required: ['email', 'passwordHash'],
                 properties: {
                   email: { type: 'string', format: 'email' },
                   passwordHash: { type: 'string', writeOnly: true },
@@ -508,6 +508,8 @@ export const swaggerDocument = {
                     type: 'string',
                     format: 'date',
                     writeOnly: true,
+                    description:
+                      'Required and age at least 18 unless roles includes ADMIN.',
                   },
                   phone: { type: 'string' },
                   roles: {
@@ -532,7 +534,8 @@ export const swaggerDocument = {
     },
     '/api/users/{userId}/roles': {
       post: {
-        summary: 'Assign a role to an active adult user',
+        summary:
+          'Assign a role to an active user (ADMIN exempt from age checks)',
         tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
         parameters: [{ $ref: '#/components/parameters/UserId' }],

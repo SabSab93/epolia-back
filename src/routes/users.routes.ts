@@ -154,8 +154,10 @@ usersRouter.post('/users/local', async (request, response) => {
     throw new AppError(400, 'VALIDATION_ERROR', 'roles are invalid');
   }
 
-  const birthDate = parseAdultBirthDate(body.birthDate);
   const userRoles = roles ? [...new Set(roles as UserRole[])] : undefined;
+  const birthDate = userRoles?.includes(UserRole.ADMIN)
+    ? null
+    : parseAdultBirthDate(body.birthDate);
   const user = await prisma.user.create({
     data: {
       email: email.trim(),
@@ -174,14 +176,17 @@ usersRouter.post('/users/local', async (request, response) => {
   response.status(201).json(user);
 });
 
-async function lockAdultUser(tx: Prisma.TransactionClient, userId: string) {
+async function lockUser(tx: Prisma.TransactionClient, userId: string) {
   await tx.$queryRaw`SELECT id FROM users WHERE id = ${userId}::uuid FOR UPDATE`;
   const user = await tx.user.findUnique({
     where: { id: userId },
-    select: { status: true, birthDate: true },
+    select: {
+      status: true,
+      birthDate: true,
+      roles: { select: { role: true } },
+    },
   });
   if (!user) throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
-  assertAdult(user.birthDate);
   return user;
 }
 
@@ -198,9 +203,15 @@ usersRouter.post('/users/:userId/roles', async (request, response) => {
 
   const roleValue = role as UserRole;
   const assignment = await prisma.$transaction(async (tx) => {
-    const user = await lockAdultUser(tx, request.params.userId);
+    const user = await lockUser(tx, request.params.userId);
     if (user.status !== AccountStatus.ACTIVE)
       throw new AppError(403, 'ACCOUNT_NOT_ACTIVE', 'Account is not active');
+    if (
+      roleValue !== UserRole.ADMIN &&
+      !user.roles.some(({ role }) => role === UserRole.ADMIN)
+    ) {
+      assertAdult(user.birthDate);
+    }
     return tx.userRoleAssignment.upsert({
       where: {
         userId_role: {
@@ -247,8 +258,12 @@ usersRouter.patch('/users/:userId/status', async (request, response) => {
   }
 
   const user = await prisma.$transaction(async (tx) => {
-    if (status === AccountStatus.ACTIVE)
-      await lockAdultUser(tx, request.params.userId);
+    if (status === AccountStatus.ACTIVE) {
+      const target = await lockUser(tx, request.params.userId);
+      if (!target.roles.some(({ role }) => role === UserRole.ADMIN)) {
+        assertAdult(target.birthDate);
+      }
+    }
     return tx.user.update({
       where: { id: request.params.userId },
       data: { status: status as AccountStatus },

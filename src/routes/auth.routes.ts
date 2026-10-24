@@ -178,7 +178,9 @@ authRouter.post('/auth/login', async (request, response) => {
     throw new AppError(403, 'ACCOUNT_NOT_ACTIVE', 'Account is not active');
   }
 
-  assertAdult(user.birthDate);
+  if (!user.roles.some(({ role }) => role === UserRole.ADMIN)) {
+    assertAdult(user.birthDate);
+  }
   response.status(200).json({
     user: formatUser(user),
     accessToken: createToken(user),

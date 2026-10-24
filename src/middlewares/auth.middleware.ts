@@ -66,7 +66,9 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
       return;
     }
 
-    assertAdult(user.birthDate);
+    if (!user.roles.some(({ role }) => role === UserRole.ADMIN)) {
+      assertAdult(user.birthDate);
+    }
     response.locals.authUser = {
       id: user.id,
       email: user.email,

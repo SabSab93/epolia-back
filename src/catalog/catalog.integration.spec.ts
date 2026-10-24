@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { randomUUID, scryptSync } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { join } from 'node:path';
@@ -20,6 +20,7 @@ import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
 import { authRouter } from '@/routes/auth.routes';
+import { usersRouter } from '@/routes/users.routes';
 import {
   lockStudentProfile,
   removeIneligibleSpecialties,
@@ -99,6 +100,7 @@ databaseTests(
       studentEducationsRouter,
       studentSpecialtiesRouter,
       studentProfilesRouter,
+      usersRouter,
     );
     app.use(errorHandler);
     let studentId: string;
@@ -1123,14 +1125,17 @@ databaseTests(
       expect(await catalogCounts()).toEqual(before);
     }, 20000);
 
-    it('preserves null historical dates but rejects new active accounts without a birth date', async () => {
+    it('preserves null historical dates but rejects public registration without a birth date', async () => {
       const legacy = await prisma.user.findUnique({
         where: { id: '10000000-0000-4000-8000-000000000001' },
       });
       expect(legacy?.birthDate).toBeNull();
-      const id = randomUUID();
-      await expect(prisma.user.create({ data: { id } })).rejects.toThrow();
-      expect(await prisma.user.findUnique({ where: { id } })).toBeNull();
+      const email = `${randomUUID()}@test.invalid`;
+      const response = await request(app)
+        .post('/api/auth/register')
+        .send({ email, password: 'password123' });
+      expect(response.status).toBe(400);
+      expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
     });
 
     it.each([UserRole.CUSTOMER, UserRole.STUDENT])(
@@ -1171,5 +1176,46 @@ databaseTests(
         expect(me.body).not.toHaveProperty('birthDate');
       },
     );
+    it('allows undated administrators to log in and manage historical accounts without an age transition', async () => {
+      const password = 'admin-integration-test';
+      const salt = 'admin-integration-salt';
+      const admin = await prisma.user.create({
+        data: {
+          email: `${randomUUID()}@test.invalid`,
+          passwordHash: `${salt}:${scryptSync(password, salt, 64).toString('hex')}`,
+          roles: { create: { role: UserRole.ADMIN } },
+        },
+      });
+      expect(admin.birthDate).toBeNull();
+      const login = await request(app)
+        .post('/api/auth/login')
+        .send({ email: admin.email, password });
+      expect(login.status).toBe(200);
+      const authorization = `Bearer ${login.body.accessToken}`;
+      const legacyId = '10000000-0000-4000-8000-000000000002';
+      const suspended = await request(app)
+        .patch(`/api/users/${legacyId}/status`)
+        .set('Authorization', authorization)
+        .send({ status: AccountStatus.SUSPENDED });
+      expect(suspended.status).toBe(200);
+      const deletion = await request(app)
+        .post(`/api/users/${legacyId}/deletion-request`)
+        .set('Authorization', authorization)
+        .send({});
+      expect(deletion.status).toBe(200);
+      expect(
+        await prisma.privacyRequest.count({ where: { userId: legacyId } }),
+      ).toBe(1);
+      expect(
+        (await prisma.user.findUniqueOrThrow({ where: { id: legacyId } }))
+          .birthDate,
+      ).toBeNull();
+      const reactivated = await request(app)
+        .patch(`/api/users/${legacyId}/status`)
+        .set('Authorization', authorization)
+        .send({ status: AccountStatus.ACTIVE });
+      expect(reactivated.status).toBe(403);
+      expect(reactivated.body.code).toBe('BIRTH_DATE_REQUIRED');
+    });
   },
 );

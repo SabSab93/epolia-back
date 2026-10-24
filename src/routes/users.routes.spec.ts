@@ -62,6 +62,7 @@ const userMock = {
 
 const adminUserMock = {
   ...userMock,
+  birthDate: null,
   id: 'b42c1e76-cfc8-4f38-84c7-3c2f304285d0',
   email: 'admin@example.com',
   roles: [
@@ -402,6 +403,54 @@ describe('Users routes', () => {
       });
     expect(response.status).toBe(400);
     expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it('creates an ADMIN without collecting a birth date', async () => {
+    prismaMock.user.create.mockResolvedValue(adminUserMock);
+    const response = await request(createTestApp())
+      .post('/api/users/local')
+      .set('Authorization', adminAuthorizationHeader())
+      .send({
+        email: 'new-admin@example.com',
+        passwordHash: 'hash',
+        roles: [UserRole.ADMIN],
+      });
+    expect(response.status).toBe(201);
+    expect(
+      firstCallArg<{ data: { birthDate: Date | null } }>(prismaMock.user.create)
+        .data.birthDate,
+    ).toBeNull();
+  });
+
+  it('reactivates an ADMIN without an age check', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...adminUserMock,
+      status: AccountStatus.SUSPENDED,
+    });
+    prismaMock.user.update.mockResolvedValue(adminUserMock);
+    const response = await request(createTestApp())
+      .patch(`/api/users/${adminUserMock.id}/status`)
+      .set('Authorization', adminAuthorizationHeader())
+      .send({ status: AccountStatus.ACTIVE });
+    expect(response.status).toBe(200);
+    expect(prismaMock.user.update).toHaveBeenCalled();
+  });
+
+  it('allows an authorized administrator to assign ADMIN without collecting a birth date', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      birthDate: null,
+    });
+    prismaMock.userRoleAssignment.upsert.mockResolvedValue({
+      userId: userMock.id,
+      role: UserRole.ADMIN,
+    });
+    const response = await request(createTestApp())
+      .post(`/api/users/${userMock.id}/roles`)
+      .set('Authorization', adminAuthorizationHeader())
+      .send({ role: UserRole.ADMIN });
+    expect(response.status).toBe(200);
+    expect(prismaMock.userRoleAssignment.upsert).toHaveBeenCalled();
   });
 
   it.each([null, new Date('2020-01-01')])(
