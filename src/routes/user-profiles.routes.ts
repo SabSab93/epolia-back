@@ -6,6 +6,10 @@ import { prisma } from '@/prisma/client';
 
 export const userProfilesRouter = Router();
 
+function profileNotFound() {
+  return new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
+}
+
 function cleanText(value: unknown) {
   if (value === null) {
     return null;
@@ -103,33 +107,35 @@ userProfilesRouter.get(
     });
 
     if (!profile) {
-      throw new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
+      throw profileNotFound();
     }
 
     response.status(200).json(profile);
   },
 );
 
-userProfilesRouter.get('/users/:userId/profile', async (request, response) => {
-  const profile = await prisma.userProfile.findUnique({
-    where: {
-      userId: request.params.userId,
-    },
-    select: {
-      userId: true,
-      firstName: true,
-      lastName: true,
-      photoUrl: true,
-      city: true,
-    },
-  });
+userProfilesRouter.get(
+  '/users/:userId/profile',
+  requireAuth,
+  async (request, response) => {
+    const { id: userId } = response.locals.authUser as AuthUser;
+    if (request.params.userId !== userId) throw profileNotFound();
 
-  if (!profile) {
-    throw new AppError(404, 'PROFILE_NOT_FOUND', 'Profile not found');
-  }
+    const profile = await prisma.userProfile.findUnique({
+      where: { userId },
+      select: {
+        userId: true,
+        firstName: true,
+        lastName: true,
+        photoUrl: true,
+        city: true,
+      },
+    });
 
-  response.status(200).json(profile);
-});
+    if (!profile) throw profileNotFound();
+    response.status(200).json(profile);
+  },
+);
 
 userProfilesRouter.patch(
   '/user-profiles/me',

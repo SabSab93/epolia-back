@@ -50,4 +50,5 @@ export const config = {
   jsonBodyLimit: process.env.JSON_BODY_LIMIT || '1mb',
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',
+  registrationTermsVersion: process.env.REGISTRATION_TERMS_VERSION?.trim(),
 };

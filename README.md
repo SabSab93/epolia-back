@@ -32,6 +32,9 @@ Variables principales :
 - `DATABASE_URL` et `DIRECT_URL` : connexions PostgreSQL utilisées par Prisma. Avec Supabase, `DATABASE_URL` peut utiliser une connexion poolée ; `DIRECT_URL` doit utiliser la connexion directe pour les migrations.
 - `CORS_ORIGIN` : origines web autorisées, séparées par des virgules.
 - `JWT_SECRET` : obligatoire en production, avec au moins 32 caractères hors espaces de début et de fin. Les valeurs de développement `dev-secret-change-me` et `change-me-in-local-env` sont refusées.
+- `REGISTRATION_TERMS_VERSION` : version exacte des CGU présentées à l’inscription. Tant qu’aucune version n’est configurée, la création de compte renvoie `503 REGISTRATION_TERMS_UNAVAILABLE`.
+
+Pour tester l’inscription, configurer une version de test dans l’API et envoyer cette même version depuis l’interface avec le document provisoire « CGU à compléter ».
 
 Exemple local :
 
