@@ -20,6 +20,7 @@ enum AccountStatus {
   DELETED
 }
 
+/// Login providers other than e-mail/password. Kept for Google sign-in (issue #90), unused until then.
 enum AuthProvider {
   GOOGLE
 }
@@ -108,6 +109,7 @@ model User {
   id                  String        @id @default(uuid()) @db.Uuid
   email               String?       @unique
   phone               String?       @unique
+  /// Payment provider (Mangopay) user id, not a login provider. See README "Moyens de connexion".
   providerUserId      String?       @unique @map("provider_user_id")
   passwordHash        String?       @map("password_hash")
   birthDate           DateTime?     @map("birth_date") @db.Date
@@ -155,6 +157,7 @@ model UserRoleAssignment {
   @@map("user_roles")
 }
 
+/// Link between an Epolia user and an external login (Google `sub`). Empty until issue #90.
 model AuthAccount {
   id                String       @id @default(uuid()) @db.Uuid
   userId            String       @map("user_id") @db.Uuid

@@ -68,6 +68,23 @@ Les routes utilisent le préfixe `/api`. L'authentification locale, les profils 
 
 Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
 
+## Moyens de connexion
+
+Décision de l'équipe (issue #81) :
+
+- **Disponible** : e-mail et mot de passe (`POST /api/auth/register`, `POST /api/auth/login`). C'est le seul moyen de connexion que l'app et la documentation doivent annoncer pour l'instant.
+- **Prévu** : la connexion avec Google, suivie dans l'issue #90. Aucune route Google n'existe encore.
+
+Les éléments Google déjà présents en base sont **conservés** pour #90 :
+
+| Élément                                                          | Rôle aujourd'hui                                                             |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Enum `AuthProvider` (`GOOGLE`) et table `auth_accounts`          | Vides : elles stockeront le lien entre un compte Epolia et son compte Google |
+| `GET /api/users/auth-accounts/:provider/:providerAccountId`      | Recherche admin d'un utilisateur par compte Google                           |
+| Suppression des `auth_accounts` dans `POST /users/:id/anonymize` | Efface les liens Google lors de l'anonymisation RGPD                         |
+
+`User.providerUserId` **ne concerne pas Google** : il suit le nommage des identifiants du prestataire de paiement (`providerWalletId`, `providerRecipientId`) et sera très probablement l'identifiant Mangopay de l'utilisateur. Ne pas le supprimer.
+
 ## Imports internes
 
 Utiliser des alias pour les imports locaux, y compris dans les tests :
