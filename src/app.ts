@@ -9,6 +9,7 @@ import { swaggerDocument } from '@/config/swagger';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
 import { authRouter } from '@/routes/auth.routes';
 import { domainsRouter } from '@/routes/domains.routes';
+import { emailVerificationRouter } from '@/routes/email-verification.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
 import { studentEducationsRouter } from '@/routes/student-educations.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
@@ -18,7 +19,17 @@ import { usersRouter } from '@/routes/users.routes';
 
 const app = express();
 
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        // Outside production, keep http forms working (e.g. the e-mail
+        // confirmation page opened on a phone over the local network).
+        upgradeInsecureRequests: config.nodeEnv === 'production' ? [] : null,
+      },
+    },
+  }),
+);
 app.use(
   cors({
     origin: config.corsOrigin,
@@ -47,6 +58,7 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);
+app.use('/api', emailVerificationRouter);
 app.use('/api', studyFieldsRouter);
 app.use('/api', studentEducationsRouter);
 app.use('/api', studentProfilesRouter);

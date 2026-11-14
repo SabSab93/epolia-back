@@ -8,6 +8,7 @@ import { AppError } from '@/errors/app-error';
 import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
+import { sendVerificationEmail } from '@/services/email-verification';
 import { activateUserRole } from '@/services/user-roles';
 
 const scrypt = promisify(scryptCallback);
@@ -17,6 +18,7 @@ const termsOfUseConsentType = 'TERMS_OF_USE';
 const authUserSelect = {
   id: true,
   email: true,
+  emailVerifiedAt: true,
   status: true,
   passwordHash: true,
   birthDate: true,
@@ -74,12 +76,14 @@ function createToken(user: {
 function formatUser(user: {
   id: string;
   email: string | null;
+  emailVerifiedAt: Date | null;
   status: AccountStatus;
   roles: { role: UserRole }[];
 }) {
   return {
     id: user.id,
     email: user.email,
+    emailVerified: Boolean(user.emailVerifiedAt),
     status: user.status,
     roles: user.roles.map((role) => role.role),
   };
@@ -178,6 +182,7 @@ authRouter.post('/auth/register', async (request, response) => {
     response.status(201).json({
       user: formatUser(user),
       accessToken: createToken(user),
+      emailVerificationSent: await trySendVerificationEmail(user),
     });
   } catch (error) {
     if (
@@ -190,6 +195,33 @@ authRouter.post('/auth/register', async (request, response) => {
     throw error;
   }
 });
+
+// The account exists even when the e-mail cannot be sent: the app then offers
+// to resend the link instead of losing the registration.
+async function trySendVerificationEmail(user: {
+  id: string;
+  email: string | null;
+}) {
+  if (!user.email) {
+    return false;
+  }
+  try {
+    await sendVerificationEmail({ id: user.id, email: user.email });
+    return true;
+  } catch (error) {
+    // No e-mail address or token in the log, only the kind of failure.
+    const reason =
+      error instanceof AppError
+        ? error.code
+        : error instanceof Prisma.PrismaClientKnownRequestError
+          ? `PRISMA_${error.code}`
+          : error instanceof Error
+            ? error.name
+            : 'unknown';
+    console.error(`Verification e-mail not sent at registration: ${reason}`);
+    return false;
+  }
+}
 
 authRouter.post('/auth/login', async (request, response) => {
   const body = request.body || {};

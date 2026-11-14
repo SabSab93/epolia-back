@@ -445,6 +445,7 @@ describe('Auth routes', () => {
     expect(response.body).toEqual({
       id: userMock.id,
       email: userMock.email,
+      emailVerified: false,
       roles: [UserRole.CUSTOMER, UserRole.STUDENT],
     });
   });
@@ -469,6 +470,7 @@ describe('Auth routes', () => {
     expect(response.body).toEqual({
       id: userMock.id,
       email: userMock.email,
+      emailVerified: false,
       roles: [UserRole.CUSTOMER],
     });
     expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
@@ -476,6 +478,7 @@ describe('Auth routes', () => {
       select: {
         id: true,
         email: true,
+        emailVerifiedAt: true,
         status: true,
         birthDate: true,
         roles: {

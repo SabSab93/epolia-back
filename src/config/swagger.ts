@@ -67,7 +67,8 @@ export const swaggerDocument = {
         responses: {
           201: {
             description:
-              'User, role, profile and acceptance recorded atomically',
+              'User, role, profile and acceptance recorded atomically. ' +
+              'The response contains `user.emailVerified` (false) and `emailVerificationSent`: true when the confirmation e-mail was accepted by the sending service (not proof of delivery), false when it could not be sent. The account exists in both cases; the app can then call POST /api/auth/email-verification.',
           },
           403: { description: 'ADULT_REQUIRED: user must be at least 18' },
           400: {
@@ -104,7 +105,10 @@ export const swaggerDocument = {
           },
         },
         responses: {
-          200: { description: 'User logged in' },
+          200: {
+            description:
+              'User logged in. `user.emailVerified` is read from the database.',
+          },
           400: { description: 'Validation error' },
           401: { description: 'Invalid email or password' },
           403: {
@@ -119,7 +123,10 @@ export const swaggerDocument = {
         tags: ['Auth'],
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Authenticated user' },
+          200: {
+            description:
+              'Authenticated user: id, email, emailVerified (read from the database on every request) and roles',
+          },
           401: { description: 'Authentication required' },
           403: {
             description: 'Account inactive, missing birth date or age below 18',
@@ -203,6 +210,7 @@ export const swaggerDocument = {
                           format: 'email',
                           nullable: true,
                         },
+                        emailVerified: { type: 'boolean' },
                         status: { type: 'string', enum: ['ACTIVE'] },
                         roles: {
                           type: 'array',
@@ -237,6 +245,95 @@ export const swaggerDocument = {
           409: {
             description:
               'ROLE_ACTIVATION_CONFLICT: concurrent changes prevented completion after three attempts; retry the request',
+          },
+        },
+      },
+    },
+    '/api/auth/email-verification': {
+      post: {
+        summary: 'Send a new e-mail confirmation link',
+        description:
+          'Creates a one-time link valid 24 hours and invalidates the previous ones. At most one e-mail per minute and five per 24 hours per account. A 202 means the sending service accepted the e-mail, not that it reached the inbox.',
+        tags: ['Auth'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          202: {
+            description: 'E-mail accepted by the sending service',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    emailVerificationSent: { type: 'boolean', enum: [true] },
+                  },
+                },
+              },
+            },
+          },
+          401: { description: 'UNAUTHORIZED' },
+          403: {
+            description:
+              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED',
+          },
+          409: { description: 'EMAIL_ALREADY_VERIFIED' },
+          429: {
+            description:
+              'EMAIL_VERIFICATION_RATE_LIMITED: wait one minute, at most 5 e-mails per 24 hours',
+          },
+          502: {
+            description:
+              'EMAIL_SEND_FAILED: the sending service refused or could not be reached',
+          },
+          503: {
+            description:
+              'EMAIL_SERVICE_UNAVAILABLE: sending is not configured on the server',
+          },
+        },
+      },
+    },
+    '/api/auth/verify-email': {
+      get: {
+        summary: 'Page opened from the confirmation e-mail (HTML)',
+        description:
+          'Shows a button that posts the token. Opening the link does not confirm anything, so mail scanners that open links cannot consume it.',
+        tags: ['Auth'],
+        parameters: [
+          {
+            name: 'token',
+            in: 'query',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          200: { description: 'HTML page with the confirmation button' },
+          400: { description: 'HTML page: incorrect link' },
+        },
+      },
+      post: {
+        summary: 'Confirm the e-mail address (HTML form)',
+        description:
+          'Consumes the one-time link. Two simultaneous clicks confirm only once. A link sent to a previous address never confirms the current one. Returns an HTML page for the person; the app reads the new state from GET /api/auth/me.',
+        tags: ['Auth'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/x-www-form-urlencoded': {
+              schema: {
+                type: 'object',
+                required: ['token'],
+                properties: { token: { type: 'string' } },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'HTML page: address confirmed' },
+          400: { description: 'HTML page: incorrect link' },
+          409: { description: 'HTML page: link already used' },
+          410: {
+            description:
+              'HTML page: link expired (older than 24 hours or replaced by a newer one)',
           },
         },
       },
