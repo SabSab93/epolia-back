@@ -1,4 +1,4 @@
-import { AccountStatus, UserRole } from '@prisma/client';
+import { AccountStatus, Prisma, UserRole } from '@prisma/client';
 import { scryptSync } from 'node:crypto';
 import express from 'express';
 import jwt from 'jsonwebtoken';
@@ -15,6 +15,7 @@ jest.mock('@/prisma/client', () => {
       findUnique: jest.fn(),
       create: jest.fn(),
     },
+    userConsent: { findFirst: jest.fn() },
   };
 
   return {
@@ -35,6 +36,17 @@ const userMock = {
   ],
 };
 
+const registrationTermsVersion = 'terms-test-v1';
+const testRegistration = {
+  email: userMock.email,
+  password: 'password123',
+  birthDate: '2000-01-01',
+  firstName: 'Camille',
+  lastName: 'Dupont',
+  termsAccepted: true,
+  termsVersion: registrationTermsVersion,
+};
+
 type SingleArgMock = jest.Mock<Promise<unknown>, [unknown]>;
 
 type PrismaMock = {
@@ -42,6 +54,7 @@ type PrismaMock = {
     findUnique: SingleArgMock;
     create: SingleArgMock;
   };
+  userConsent: { findFirst: SingleArgMock };
 };
 
 const prismaMock = prisma as unknown as PrismaMock;
@@ -72,6 +85,46 @@ function firstCallArg<T>(mock: SingleArgMock): T {
 describe('Auth routes', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+    jest.replaceProperty(
+      config,
+      'registrationTermsVersion',
+      registrationTermsVersion,
+    );
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('requires authentication to read terms acceptance', async () => {
+    const response = await request(createTestApp()).get(
+      '/api/auth/terms-acceptance',
+    );
+    expect(response.status).toBe(401);
+    expect(prismaMock.userConsent.findFirst).not.toHaveBeenCalled();
+  });
+
+  it('returns null when the authenticated account has no terms acceptance', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(userMock);
+    prismaMock.userConsent.findFirst.mockResolvedValue(null);
+    const token = jwt.sign(
+      { sub: userMock.id, roles: [UserRole.CUSTOMER] },
+      config.jwtSecret,
+    );
+
+    const response = await request(createTestApp())
+      .get('/api/auth/terms-acceptance')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeNull();
+    expect(prismaMock.userConsent.findFirst).toHaveBeenCalledWith({
+      where: {
+        userId: userMock.id,
+        consentType: 'TERMS_OF_USE',
+        granted: true,
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: { consentVersion: true, createdAt: true },
+    });
   });
 
   it('allows an active ADMIN to log in and use protected routes without a birth date', async () => {
@@ -115,60 +168,124 @@ describe('Auth routes', () => {
     const response = await request(createTestApp())
       .post('/api/auth/register')
       .send({
-        email: userMock.email,
-        password: 'password123',
+        ...testRegistration,
         role: UserRole.ADMIN,
       });
     expect(response.status).toBe(400);
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
-  it('registers a local user with a hashed password', async () => {
-    prismaMock.user.create.mockImplementation(async (args) => {
-      const createArgs = args as {
+  it.each([UserRole.CUSTOMER, UserRole.STUDENT])(
+    'registers %s with a hashed password, identity and dated terms acceptance',
+    async (role) => {
+      prismaMock.user.create.mockImplementation(async (args) => {
+        const createArgs = args as {
+          data: {
+            email: string;
+            passwordHash: string;
+            status: AccountStatus;
+            roles: { create: { role: UserRole }[] };
+          };
+        };
+
+        return {
+          ...userMock,
+          email: createArgs.data.email,
+          passwordHash: createArgs.data.passwordHash,
+          roles: createArgs.data.roles.create,
+        };
+      });
+
+      const response = await request(createTestApp())
+        .post('/api/auth/register')
+        .send({
+          ...testRegistration,
+          email: 'USER@example.com',
+          role,
+          firstName: ' Camille ',
+          lastName: ' Dupont ',
+        });
+
+      const createCall = firstCallArg<{
         data: {
           email: string;
           passwordHash: string;
-          status: AccountStatus;
           roles: { create: { role: UserRole }[] };
         };
-      };
+      }>(prismaMock.user.create);
 
-      return {
-        ...userMock,
-        email: createArgs.data.email,
-        passwordHash: createArgs.data.passwordHash,
-        roles: createArgs.data.roles.create,
-      };
-    });
+      expect(response.status).toBe(201);
+      expect(createCall.data.email).toBe('user@example.com');
+      expect(createCall.data.passwordHash).not.toBe('password123');
+      expect(createCall.data.passwordHash).toContain(':');
+      expect(createCall.data.roles.create).toEqual([{ role }]);
+      expect(createCall.data).toMatchObject({
+        profile: { create: { firstName: 'Camille', lastName: 'Dupont' } },
+        consents: {
+          create: {
+            consentType: 'TERMS_OF_USE',
+            consentVersion: registrationTermsVersion,
+            granted: true,
+          },
+        },
+      });
+      expect(response.body.user).toMatchObject({
+        email: 'user@example.com',
+        roles: [role],
+      });
+      expect(response.body.user).not.toHaveProperty('profile');
+      expect(response.body.user).not.toHaveProperty('consents');
+      expect(typeof response.body.accessToken).toBe('string');
+    },
+  );
+
+  it.each([
+    [{ firstName: undefined }, 'VALIDATION_ERROR'],
+    [{ lastName: '  ' }, 'VALIDATION_ERROR'],
+    [{ termsAccepted: false }, 'TERMS_ACCEPTANCE_REQUIRED'],
+    [{ termsAccepted: 'true' }, 'TERMS_ACCEPTANCE_REQUIRED'],
+    [{ termsVersion: undefined }, 'TERMS_VERSION_INVALID'],
+    [{ termsVersion: 'unknown-version' }, 'TERMS_VERSION_INVALID'],
+  ])(
+    'rejects invalid registration data %j before writing',
+    async (input, code) => {
+      const response = await request(createTestApp())
+        .post('/api/auth/register')
+        .send({ ...testRegistration, ...input });
+
+      expect(response.status).toBe(400);
+      expect(response.body.code).toBe(code);
+      expect(prismaMock.user.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('leaves registration unavailable when no terms version is configured', async () => {
+    jest.replaceProperty(config, 'registrationTermsVersion', undefined);
 
     const response = await request(createTestApp())
       .post('/api/auth/register')
-      .send({
-        birthDate: '2000-01-01',
-        email: 'USER@example.com',
-        password: 'password123',
-        role: UserRole.STUDENT,
-      });
+      .send(testRegistration);
 
-    const createCall = firstCallArg<{
-      data: {
-        email: string;
-        passwordHash: string;
-        roles: { create: { role: UserRole }[] };
-      };
-    }>(prismaMock.user.create);
+    expect(response.status).toBe(503);
+    expect(response.body.code).toBe('REGISTRATION_TERMS_UNAVAILABLE');
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
 
-    expect(response.status).toBe(201);
-    expect(createCall.data.email).toBe('user@example.com');
-    expect(createCall.data.passwordHash).not.toBe('password123');
-    expect(createCall.data.passwordHash).toContain(':');
-    expect(createCall.data.roles.create).toEqual([{ role: UserRole.STUDENT }]);
-    expect(response.body.user).toMatchObject({
-      email: 'user@example.com',
-      roles: [UserRole.STUDENT],
-    });
-    expect(typeof response.body.accessToken).toBe('string');
+  it('keeps the email conflict response when an account already exists', async () => {
+    prismaMock.user.create.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: Prisma.prismaVersion.client,
+        meta: { target: ['email'] },
+      }),
+    );
+
+    const response = await request(createTestApp())
+      .post('/api/auth/register')
+      .send(testRegistration);
+
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('EMAIL_ALREADY_USED');
   });
 
   it('logs in with a valid password', async () => {
@@ -184,11 +301,10 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/auth/register').send({
-      birthDate: '2000-01-01',
-      email: userMock.email,
-      password: 'password123',
-    });
+    const registered = await request(createTestApp())
+      .post('/api/auth/register')
+      .send(testRegistration);
+    expect(registered.status).toBe(201);
 
     prismaMock.user.findUnique.mockResolvedValue({
       ...userMock,
@@ -257,11 +373,10 @@ describe('Auth routes', () => {
       };
     });
 
-    await request(createTestApp()).post('/api/auth/register').send({
-      birthDate: '2000-01-01',
-      email: userMock.email,
-      password: 'password123',
-    });
+    const registered = await request(createTestApp())
+      .post('/api/auth/register')
+      .send(testRegistration);
+    expect(registered.status).toBe(201);
 
     prismaMock.user.findUnique.mockResolvedValue({
       ...userMock,
@@ -421,8 +536,8 @@ describe('Auth routes', () => {
         const response = await request(createTestApp())
           .post('/api/auth/register')
           .send({
+            ...testRegistration,
             email: 'new@example.com',
-            password: 'password123',
             role,
             birthDate,
           });
@@ -440,11 +555,7 @@ describe('Auth routes', () => {
     }));
     const registered = await request(createTestApp())
       .post('/api/auth/register')
-      .send({
-        email: userMock.email,
-        password: 'password123',
-        birthDate: '2000-01-01',
-      });
+      .send(testRegistration);
     expect(registered.status).toBe(201);
     expect(registered.body.user).not.toHaveProperty('birthDate');
     expect(
@@ -479,11 +590,7 @@ describe('Auth routes', () => {
       }));
       const registered = await request(createTestApp())
         .post('/api/auth/register')
-        .send({
-          email: userMock.email,
-          password: 'password123',
-          birthDate: '2000-01-01',
-        });
+        .send(testRegistration);
       const created = firstCallArg<{ data: { passwordHash: string } }>(
         prismaMock.user.create,
       );

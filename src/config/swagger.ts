@@ -24,10 +24,30 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['email', 'password', 'birthDate'],
+                required: [
+                  'email',
+                  'password',
+                  'birthDate',
+                  'firstName',
+                  'lastName',
+                  'termsAccepted',
+                  'termsVersion',
+                ],
                 properties: {
                   email: { type: 'string', example: 'user@example.com' },
-                  password: { type: 'string', example: 'password123' },
+                  password: {
+                    type: 'string',
+                    minLength: 8,
+                    example: 'password123',
+                  },
+                  firstName: { type: 'string', minLength: 1 },
+                  lastName: { type: 'string', minLength: 1 },
+                  termsAccepted: { type: 'boolean', enum: [true] },
+                  termsVersion: {
+                    type: 'string',
+                    description:
+                      'Version shown to the user, matching the version configured for registration.',
+                  },
                   birthDate: {
                     type: 'string',
                     format: 'date',
@@ -45,10 +65,20 @@ export const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'User registered' },
+          201: {
+            description:
+              'User, role, profile and acceptance recorded atomically',
+          },
           403: { description: 'ADULT_REQUIRED: user must be at least 18' },
-          400: { description: 'Validation error' },
+          400: {
+            description:
+              'Validation error, terms not accepted or invalid terms version',
+          },
           409: { description: 'Email already used' },
+          503: {
+            description:
+              'REGISTRATION_TERMS_UNAVAILABLE: no terms version configured',
+          },
         },
       },
     },
@@ -88,6 +118,37 @@ export const swaggerDocument = {
         security: [{ bearerAuth: [] }],
         responses: {
           200: { description: 'Authenticated user' },
+          401: { description: 'Authentication required' },
+          403: {
+            description: 'Account inactive, missing birth date or age below 18',
+          },
+        },
+      },
+    },
+    '/api/auth/terms-acceptance': {
+      get: {
+        summary:
+          'Return the authenticated user’s latest terms of use acceptance',
+        tags: ['Auth'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: {
+            description:
+              'Version and date of acceptance, or null when no acceptance has been recorded',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  nullable: true,
+                  required: ['version', 'acceptedAt'],
+                  properties: {
+                    version: { type: 'string' },
+                    acceptedAt: { type: 'string', format: 'date-time' },
+                  },
+                },
+              },
+            },
+          },
           401: { description: 'Authentication required' },
           403: {
             description: 'Account inactive, missing birth date or age below 18',
@@ -263,12 +324,20 @@ export const swaggerDocument = {
     },
     '/api/users/{userId}/profile': {
       get: {
-        summary: 'Get a public user profile by user id',
+        summary: 'Get the authenticated user’s profile by their own user id',
         tags: ['UserProfile'],
+        security: [{ bearerAuth: [] }],
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
-          200: { description: 'Public profile found' },
-          404: { description: 'Profile not found' },
+          200: { description: 'Profile found' },
+          401: { description: 'Authentication required' },
+          403: {
+            description: 'Account inactive, missing birth date or age below 18',
+          },
+          404: {
+            description:
+              'Profile not found or not owned by the authenticated user',
+          },
         },
       },
     },

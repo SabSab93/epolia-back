@@ -12,6 +12,7 @@ import { activateUserRole } from '@/services/user-roles';
 
 const scrypt = promisify(scryptCallback);
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const termsOfUseConsentType = 'TERMS_OF_USE';
 
 const authUserSelect = {
   id: true,
@@ -86,7 +87,7 @@ function formatUser(user: {
 
 authRouter.post('/auth/register', async (request, response) => {
   const body = request.body || {};
-  const { email, password, role } = body;
+  const { email, password, role, firstName, lastName } = body;
 
   if (
     typeof email !== 'string' ||
@@ -110,6 +111,42 @@ authRouter.post('/auth/register', async (request, response) => {
   }
 
   const birthDate = parseAdultBirthDate(body.birthDate);
+  if (
+    typeof firstName !== 'string' ||
+    !firstName.trim() ||
+    typeof lastName !== 'string' ||
+    !lastName.trim()
+  ) {
+    throw new AppError(
+      400,
+      'VALIDATION_ERROR',
+      'firstName and lastName are required',
+    );
+  }
+
+  const termsVersion = config.registrationTermsVersion;
+  if (!termsVersion) {
+    throw new AppError(
+      503,
+      'REGISTRATION_TERMS_UNAVAILABLE',
+      'Registration terms are not available',
+    );
+  }
+  if (body.termsAccepted !== true) {
+    throw new AppError(
+      400,
+      'TERMS_ACCEPTANCE_REQUIRED',
+      'Terms of use must be accepted',
+    );
+  }
+  if (body.termsVersion !== termsVersion) {
+    throw new AppError(
+      400,
+      'TERMS_VERSION_INVALID',
+      'Terms of use version is invalid',
+    );
+  }
+
   const passwordHash = await hashPassword(password);
   const userRole =
     role === UserRole.STUDENT ? UserRole.STUDENT : UserRole.CUSTOMER;
@@ -123,6 +160,16 @@ authRouter.post('/auth/register', async (request, response) => {
         status: AccountStatus.ACTIVE,
         roles: {
           create: [{ role: userRole }],
+        },
+        profile: {
+          create: { firstName: firstName.trim(), lastName: lastName.trim() },
+        },
+        consents: {
+          create: {
+            consentType: termsOfUseConsentType,
+            consentVersion: termsVersion,
+            granted: true,
+          },
         },
       },
       select: authUserSelect,
@@ -191,6 +238,25 @@ authRouter.post('/auth/login', async (request, response) => {
 authRouter.get('/auth/me', requireAuth, (_request, response) => {
   response.status(200).json(response.locals.authUser as AuthUser);
 });
+
+authRouter.get(
+  '/auth/terms-acceptance',
+  requireAuth,
+  async (_request, response) => {
+    const { id: userId } = response.locals.authUser as AuthUser;
+    const acceptance = await prisma.userConsent.findFirst({
+      where: { userId, consentType: termsOfUseConsentType, granted: true },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: { consentVersion: true, createdAt: true },
+    });
+
+    const proof = acceptance && {
+      version: acceptance.consentVersion,
+      acceptedAt: acceptance.createdAt,
+    };
+    response.status(200).json(proof);
+  },
+);
 
 authRouter.post('/auth/roles', requireAuth, async (request, response) => {
   const role: unknown = request.body?.role;

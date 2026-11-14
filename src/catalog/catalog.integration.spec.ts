@@ -20,6 +20,7 @@ import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
 import { authRouter } from '@/routes/auth.routes';
+import { userProfilesRouter } from '@/routes/user-profiles.routes';
 import { usersRouter } from '@/routes/users.routes';
 import {
   lockStudentProfile,
@@ -41,6 +42,15 @@ jest.mock('@/prisma/client', () => {
     }),
   };
 });
+
+const registrationTermsVersion = 'terms-test-v1';
+const testRegistration = {
+  password: 'password123',
+  firstName: 'Camille',
+  lastName: 'Dupont',
+  termsAccepted: true,
+  termsVersion: registrationTermsVersion,
+};
 
 const databaseTests = process.env.CATALOG_TEST_DATABASE_URL
   ? describe
@@ -100,6 +110,7 @@ databaseTests(
       studentEducationsRouter,
       studentSpecialtiesRouter,
       studentProfilesRouter,
+      userProfilesRouter,
       usersRouter,
     );
     app.use(errorHandler);
@@ -110,6 +121,11 @@ databaseTests(
     const fields = new Map<string, string>();
 
     beforeAll(async () => {
+      jest.replaceProperty(
+        config,
+        'registrationTermsVersion',
+        registrationTermsVersion,
+      );
       await importCatalog(prisma, catalog);
       for (const row of await prisma.domain.findMany())
         domains.set(row.label, row.id);
@@ -144,6 +160,7 @@ databaseTests(
     });
 
     afterAll(async () => {
+      jest.restoreAllMocks();
       await prisma.$disconnect();
     });
 
@@ -1133,7 +1150,7 @@ databaseTests(
       const email = `${randomUUID()}@test.invalid`;
       const response = await request(app)
         .post('/api/auth/register')
-        .send({ email, password: 'password123' });
+        .send({ ...testRegistration, email });
       expect(response.status).toBe(400);
       expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
     });
@@ -1150,38 +1167,94 @@ databaseTests(
         ]) {
           const response = await request(app)
             .post('/api/auth/register')
-            .send({ email, password: 'password123', birthDate, role });
+            .send({ ...testRegistration, email, birthDate, role });
           expect([400, 403]).toContain(response.status);
           expect(await prisma.user.findUnique({ where: { email } })).toBeNull();
         }
-        const registered = await request(app).post('/api/auth/register').send({
-          email,
-          password: 'password123',
-          birthDate: '2000-01-01',
-          role,
-        });
+        const registered = await request(app)
+          .post('/api/auth/register')
+          .send({
+            ...testRegistration,
+            email,
+            birthDate: '2000-01-01',
+            role,
+          });
         expect(registered.status).toBe(201);
         expect(registered.body.user.roles).toEqual([role]);
         expect(registered.body.user).not.toHaveProperty('birthDate');
         expect(
           jwt.verify(registered.body.accessToken, config.jwtSecret),
         ).not.toHaveProperty('birthDate');
-        expect(
-          (await prisma.user.findUnique({ where: { email } }))?.birthDate,
-        ).toEqual(new Date('2000-01-01'));
+        const account = await prisma.user.findUniqueOrThrow({
+          where: { email },
+          include: { profile: true, consents: true },
+        });
+        expect(account.birthDate).toEqual(new Date('2000-01-01'));
+        expect(account.profile).toMatchObject({
+          firstName: testRegistration.firstName,
+          lastName: testRegistration.lastName,
+        });
+        expect(account.consents).toEqual([
+          expect.objectContaining({
+            consentType: 'TERMS_OF_USE',
+            consentVersion: registrationTermsVersion,
+            granted: true,
+            createdAt: expect.any(Date),
+          }),
+        ]);
         const me = await request(app)
           .get('/api/auth/me')
           .set('Authorization', `Bearer ${registered.body.accessToken}`);
         expect(me.status).toBe(200);
         expect(me.body).not.toHaveProperty('birthDate');
+        const authorization = `Bearer ${registered.body.accessToken}`;
+        const [acceptance, profile] = await Promise.all([
+          request(app)
+            .get('/api/auth/terms-acceptance')
+            .set('Authorization', authorization),
+          request(app)
+            .get('/api/user-profiles/me')
+            .set('Authorization', authorization),
+        ]);
+        expect(acceptance.status).toBe(200);
+        expect(acceptance.body).toEqual({
+          version: registrationTermsVersion,
+          acceptedAt: account.consents[0]?.createdAt.toISOString(),
+        });
+        expect(profile.status).toBe(200);
+        expect(profile.body).toMatchObject({
+          firstName: testRegistration.firstName,
+          lastName: testRegistration.lastName,
+        });
       },
     );
+    it('records only one account, profile and acceptance for concurrent registration attempts', async () => {
+      const email = `${randomUUID()}@test.invalid`;
+      const input = { ...testRegistration, email, birthDate: '2000-01-01' };
+      const attempts = await Promise.all(
+        [input, input].map((body) =>
+          request(app).post('/api/auth/register').send(body),
+        ),
+      );
+
+      expect(attempts.map((response) => response.status).sort()).toEqual([
+        201, 409,
+      ]);
+      const account = await prisma.user.findUniqueOrThrow({
+        where: { email },
+        include: { profile: true, consents: true, roles: true },
+      });
+      expect(account.profile?.firstName).toBe(testRegistration.firstName);
+      expect(account.roles).toHaveLength(1);
+      expect(account.consents).toHaveLength(1);
+    });
+
     async function registerForRoleActivation(role: UserRole) {
       const registered = await request(app)
         .post('/api/auth/register')
         .send({
+          ...testRegistration,
           email: `${randomUUID()}@test.invalid`,
-          password: 'password123',
           birthDate: '2000-01-01',
           role,
         });
@@ -1197,8 +1270,9 @@ databaseTests(
       async (initial, added) => {
         const registered = await registerForRoleActivation(initial);
         const userId: string = registered.body.user.id;
-        const common = await prisma.userProfile.create({
-          data: { userId, firstName: 'Role test', city: 'Test' },
+        const common = await prisma.userProfile.update({
+          where: { userId },
+          data: { city: 'Test' },
         });
         const student =
           initial === UserRole.STUDENT

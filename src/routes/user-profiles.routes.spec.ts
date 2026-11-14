@@ -198,7 +198,7 @@ describe('User profile routes', () => {
     });
   });
 
-  it('returns a public profile by user id', async () => {
+  it('returns a profile by user id to its owner', async () => {
     prismaMock.userProfile.findUnique.mockResolvedValue({
       userId: userMock.id,
       firstName: 'Sabrina',
@@ -207,9 +207,9 @@ describe('User profile routes', () => {
       city: 'Paris',
     });
 
-    const response = await request(createTestApp()).get(
-      `/api/users/${userMock.id}/profile`,
-    );
+    const response = await request(createTestApp())
+      .get(`/api/users/${userMock.id}/profile`)
+      .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({
@@ -229,12 +229,29 @@ describe('User profile routes', () => {
     expect(prismaCall.select).not.toHaveProperty('longitude');
   });
 
-  it('returns 404 when a profile does not exist', async () => {
-    prismaMock.userProfile.findUnique.mockResolvedValue(null);
-
+  it('requires authentication to read a profile by user id', async () => {
     const response = await request(createTestApp()).get(
       `/api/users/${userMock.id}/profile`,
     );
+    expect(response.status).toBe(401);
+    expect(prismaMock.userProfile.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('does not disclose another user’s profile', async () => {
+    const response = await request(createTestApp())
+      .get('/api/users/b3bb8efe-0a97-4f88-8857-6b15b7e2fc2a/profile')
+      .set('Authorization', `Bearer ${createAccessToken()}`);
+    expect(response.status).toBe(404);
+    expect(response.body.code).toBe('PROFILE_NOT_FOUND');
+    expect(prismaMock.userProfile.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('returns 404 when a profile does not exist', async () => {
+    prismaMock.userProfile.findUnique.mockResolvedValue(null);
+
+    const response = await request(createTestApp())
+      .get(`/api/users/${userMock.id}/profile`)
+      .set('Authorization', `Bearer ${createAccessToken()}`);
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({
