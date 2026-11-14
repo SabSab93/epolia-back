@@ -72,7 +72,9 @@ export const swaggerDocument = {
           403: { description: 'ADULT_REQUIRED: user must be at least 18' },
           400: {
             description:
-              'Validation error, terms not accepted or invalid terms version',
+              'VALIDATION_ERROR: invalid registration data. ' +
+              'TERMS_ACCEPTANCE_REQUIRED: terms must be accepted. ' +
+              'TERMS_VERSION_INVALID: submitted terms version does not match the current version.',
           },
           409: { description: 'Email already used' },
           503: {

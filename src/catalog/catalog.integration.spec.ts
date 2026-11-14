@@ -1207,20 +1207,22 @@ databaseTests(
           .set('Authorization', `Bearer ${registered.body.accessToken}`);
         expect(me.status).toBe(200);
         expect(me.body).not.toHaveProperty('birthDate');
-        const authorization = `Bearer ${registered.body.accessToken}`;
-        const [acceptance, profile] = await Promise.all([
-          request(app)
-            .get('/api/auth/terms-acceptance')
-            .set('Authorization', authorization),
-          request(app)
-            .get('/api/user-profiles/me')
-            .set('Authorization', authorization),
-        ]);
+        const login = await request(app)
+          .post('/api/auth/login')
+          .send({ email, password: testRegistration.password });
+        expect(login.status).toBe(200);
+        const authorization = `Bearer ${login.body.accessToken}`;
+        const acceptance = await request(app)
+          .get('/api/auth/terms-acceptance')
+          .set('Authorization', authorization);
         expect(acceptance.status).toBe(200);
         expect(acceptance.body).toEqual({
           version: registrationTermsVersion,
           acceptedAt: account.consents[0]?.createdAt.toISOString(),
         });
+        const profile = await request(app)
+          .get('/api/user-profiles/me')
+          .set('Authorization', authorization);
         expect(profile.status).toBe(200);
         expect(profile.body).toMatchObject({
           firstName: testRegistration.firstName,
@@ -1247,6 +1249,49 @@ databaseTests(
       expect(account.profile?.firstName).toBe(testRegistration.firstName);
       expect(account.roles).toHaveLength(1);
       expect(account.consents).toHaveLength(1);
+    });
+
+    it('rolls back registration when PostgreSQL rejects the terms acceptance', async () => {
+      const email = `${randomUUID()}@test.invalid`;
+      const termsVersion = 'terms-rollback-test';
+      const registrationCounts = () =>
+        Promise.all([
+          prisma.user.count(),
+          prisma.userRoleAssignment.count(),
+          prisma.userProfile.count(),
+          prisma.userConsent.count(),
+        ]);
+
+      const countsBefore = await registrationCounts();
+      // Reject only the consent created by this test in the isolated database.
+      await prisma.$executeRaw`
+        ALTER TABLE user_consents ADD CONSTRAINT reject_rollback_test_consent
+        CHECK (consent_version <> 'terms-rollback-test')
+      `;
+      try {
+        jest.replaceProperty(config, 'registrationTermsVersion', termsVersion);
+        const response = await request(app)
+          .post('/api/auth/register')
+          .send({
+            ...testRegistration,
+            email,
+            birthDate: '2000-01-01',
+            termsVersion,
+          });
+
+        expect(response.status).toBe(500);
+        expect(response.body).toMatchObject({ code: 'INTERNAL_SERVER_ERROR' });
+        expect(await registrationCounts()).toEqual(countsBefore);
+      } finally {
+        jest.replaceProperty(
+          config,
+          'registrationTermsVersion',
+          registrationTermsVersion,
+        );
+        await prisma.$executeRaw`
+          ALTER TABLE user_consents DROP CONSTRAINT reject_rollback_test_consent
+        `;
+      }
     });
 
     async function registerForRoleActivation(role: UserRole) {
