@@ -346,6 +346,8 @@ export const swaggerDocument = {
     '/api/student-profiles': {
       post: {
         summary: 'Create the authenticated student profile',
+        description:
+          'Omit domainId to create a private draft before recording educations. If a draft already exists, resume it with GET /api/student-profiles/me.',
         tags: ['StudentProfile'],
         security: [{ bearerAuth: [] }],
         requestBody: {
@@ -357,7 +359,10 @@ export const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Student profile created' },
+          201: {
+            description:
+              'Student profile created. domainId is null when omitted.',
+          },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
           403: { description: 'Forbidden' },
@@ -371,7 +376,10 @@ export const swaggerDocument = {
         tags: ['StudentProfile'],
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Authenticated student profile found' },
+          200: {
+            description:
+              'Authenticated student profile found. domainId may be null.',
+          },
           401: { description: 'Authentication required' },
           403: { description: 'Forbidden' },
           404: { description: 'Student profile not found' },
@@ -455,7 +463,7 @@ export const swaggerDocument = {
         responses: {
           200: {
             description:
-              'Exact union of linked study field specialties, filtered by principal domain',
+              'Exact union of linked study field specialties. Before a principal domain is selected, use these results to suggest domains. Once selected, results are filtered by that domain.',
             content: {
               'application/json': {
                 schema: {
@@ -499,9 +507,19 @@ export const swaggerDocument = {
       post: {
         summary: 'Declare an education for the authenticated student',
         description:
-          'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. Changes return visible profiles to DRAFT.',
+          'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. A new education returns a visible profile to DRAFT.',
         tags: ['StudentEducation'],
         security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'Idempotency-Key',
+            in: 'header',
+            required: false,
+            schema: { type: 'string', format: 'uuid' },
+            description:
+              'Generate one UUID per new education and reuse it when retrying the same creation. Replays return the existing education without changing it while it exists. Use PATCH to edit an education.',
+          },
+        ],
         requestBody: {
           required: true,
           content: {
@@ -511,6 +529,14 @@ export const swaggerDocument = {
           },
         },
         responses: {
+          200: {
+            description: 'Existing education returned for a replay',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StudentEducation' },
+              },
+            },
+          },
           201: {
             description: 'Education declared, not verified',
             content: {
@@ -519,7 +545,10 @@ export const swaggerDocument = {
               },
             },
           },
-          400: { description: 'Invalid title, studyFieldId or dates' },
+          400: {
+            description:
+              'Invalid title, studyFieldId, dates or idempotency key',
+          },
           401: { description: 'Authentication required' },
           403: { description: 'Student role required' },
           404: { description: 'Student profile or study field not found' },
@@ -889,11 +918,12 @@ export const swaggerDocument = {
       },
       StudentProfileInput: {
         type: 'object',
-        required: ['domainId'],
         properties: {
           domainId: {
             type: 'string',
             format: 'uuid',
+            description:
+              'Omit to start a draft or to keep the currently selected domain.',
             example: '9324c24d-a476-41db-a0e3-12479bd81ed7',
           },
           title: { type: 'string', example: 'Developpeuse web' },

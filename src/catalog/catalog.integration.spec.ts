@@ -291,6 +291,107 @@ databaseTests(
       expect(rejected.body.code).toBe('SPECIALTY_NOT_ELIGIBLE');
     });
 
+    it('resumes private studies before choosing a domain and attaching a specialty', async () => {
+      await prisma.studentProfile.delete({ where: { userId: studentId } });
+      const authorization = `Bearer ${token}`;
+      const createDraft = () =>
+        request(app)
+          .post('/api/student-profiles')
+          .set('Authorization', authorization)
+          .send({});
+      const draft = await createDraft();
+      expect(draft.status).toBe(201);
+      expect(draft.body).toMatchObject({
+        domainId: null,
+        status: ProfileStatus.DRAFT,
+      });
+      expect((await createDraft()).status).toBe(409);
+
+      const education = await request(app)
+        .post('/api/student-educations')
+        .set('Authorization', authorization)
+        .send({
+          title: 'BUT Informatique',
+          studyFieldId: fields.get('Test Developpement'),
+          startDate: relativeDay(-30).toISOString().slice(0, 10),
+          endDate: relativeDay(30).toISOString().slice(0, 10),
+        });
+      expect(education.status).toBe(201);
+      const profile = await request(app)
+        .get('/api/student-profiles/me')
+        .set('Authorization', authorization);
+      expect(profile.body).toMatchObject({
+        domainId: null,
+        status: ProfileStatus.DRAFT,
+      });
+      const studies = await request(app)
+        .get('/api/student-educations/me')
+        .set('Authorization', authorization);
+      expect(studies.body).toMatchObject([
+        { id: education.body.id, title: 'BUT Informatique' },
+      ]);
+      expect(
+        (await request(app).get(`/api/users/${studentId}/student-profile`))
+          .status,
+      ).toBe(404);
+      const suggestions = await request(app)
+        .get('/api/student-specialties/eligible')
+        .set('Authorization', authorization);
+      expect(suggestions.body).toMatchObject([
+        {
+          id: specialties.get('Site vitrine'),
+          domainId: domains.get('Test Web'),
+        },
+      ]);
+      expect((await addSpecialty('Site vitrine')).body.code).toBe(
+        'DOMAIN_REQUIRED',
+      );
+
+      const completed = await request(app)
+        .patch('/api/student-profiles/me')
+        .set('Authorization', authorization)
+        .send({ domainId: domains.get('Test Web') });
+      expect(completed.status).toBe(200);
+      expect(completed.body).toMatchObject({
+        domainId: domains.get('Test Web'),
+        status: ProfileStatus.DRAFT,
+      });
+      expect((await addSpecialty('Site vitrine')).status).toBe(201);
+    });
+
+    it('replays education creation once per key without merging distinct entries', async () => {
+      const key = randomUUID();
+      const authorization = `Bearer ${token}`;
+      const addEducation = (idempotencyKey: string) =>
+        request(app)
+          .post('/api/student-educations')
+          .set('Authorization', authorization)
+          .set('Idempotency-Key', idempotencyKey)
+          .send({ title: 'BUT Informatique' });
+
+      expect((await addEducation('invalid')).status).toBe(400);
+      const responses = await Promise.all([
+        addEducation(key),
+        addEducation(key),
+      ]);
+      expect(responses.map(({ status }) => status).sort()).toEqual([200, 201]);
+      const id = responses[0]!.body.id;
+      expect(responses[1]!.body).toEqual(responses[0]!.body);
+      expect(responses[0]!.body).not.toHaveProperty('creationKey');
+
+      const another = await addEducation(randomUUID());
+      expect(another.status).toBe(201);
+      expect(another.body.id).not.toBe(id);
+
+      const list = await request(app)
+        .get('/api/student-educations/me')
+        .set('Authorization', authorization);
+      expect(list.status).toBe(200);
+      expect(
+        list.body.map((education: { id: string }) => education.id),
+      ).toEqual([id, another.body.id]);
+    });
+
     it.each([
       ['past', -30, -1],
       ['future', 1, 30],

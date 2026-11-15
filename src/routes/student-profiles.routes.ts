@@ -55,19 +55,13 @@ function cleanProfileStatus(value: unknown) {
   return value as ProfileStatus;
 }
 
-function cleanDomainId(value: unknown, isRequired: true): string;
-function cleanDomainId(value: unknown, isRequired?: false): string | undefined;
-function cleanDomainId(value: unknown, isRequired = false) {
-  if (value === undefined && !isRequired) {
+function cleanDomainId(value: unknown) {
+  if (value === undefined) {
     return undefined;
   }
 
   if (typeof value !== 'string' || value.trim() === '') {
-    throw new AppError(
-      400,
-      'VALIDATION_ERROR',
-      isRequired ? 'domainId is required' : 'domainId is invalid',
-    );
+    throw new AppError(400, 'VALIDATION_ERROR', 'domainId is invalid');
   }
 
   const domainId = value.trim();
@@ -114,7 +108,7 @@ studentProfilesRouter.post(
     const body = request.body || {};
     const title = cleanText(body.title);
     const status = cleanProfileStatus(body.status);
-    const domainId = cleanDomainId(body.domainId, true);
+    const domainId = cleanDomainId(body.domainId);
 
     if (body.title !== undefined && !title) {
       throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
@@ -182,6 +176,7 @@ studentProfilesRouter.get(
       });
       if (
         profile.status !== ProfileStatus.VISIBLE ||
+        !profile.domainId ||
         owner?.status !== AccountStatus.ACTIVE ||
         !isAdult(owner.birthDate)
       ) {

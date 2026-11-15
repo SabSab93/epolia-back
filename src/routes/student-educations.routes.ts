@@ -14,6 +14,10 @@ export const studentEducationsRouter = Router();
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const educationInclude = { studyField: { select: { id: true, label: true } } };
+const educationResponse = {
+  include: educationInclude,
+  omit: { creationKey: true },
+} as const;
 
 function requireStudent(response: { locals: { authUser?: AuthUser } }) {
   const user = response.locals.authUser as AuthUser;
@@ -135,7 +139,7 @@ studentEducationsRouter.get(
     await getStudentProfile(prisma, user.id);
     const educations = await prisma.studentEducation.findMany({
       where: { studentId: user.id },
-      include: educationInclude,
+      ...educationResponse,
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
 
@@ -148,22 +152,33 @@ studentEducationsRouter.post(
   requireAuth,
   async (request, response) => {
     const user = requireStudent(response);
+    const key = request.get('Idempotency-Key');
+    const creationKey =
+      key === undefined ? undefined : cleanId(key, 'Idempotency-Key');
     const data = cleanEducation(request.body ?? {}, true);
     assertDateOrder(data.startDate, data.endDate);
 
-    const education = await prisma.$transaction(async (tx) => {
+    const { education, status } = await prisma.$transaction(async (tx) => {
       await lockStudentProfile(tx, user.id);
+      if (creationKey) {
+        const existing = await tx.studentEducation.findUnique({
+          where: { studentId_creationKey: { studentId: user.id, creationKey } },
+          ...educationResponse,
+        });
+        if (existing) return { education: existing, status: 200 };
+      }
+
       await assertStudyField(tx, data.studyFieldId);
       const created = await tx.studentEducation.create({
-        data: { ...data, title: data.title!, studentId: user.id },
-        include: educationInclude,
+        data: { ...data, title: data.title!, studentId: user.id, creationKey },
+        ...educationResponse,
       });
       await unpublishStudentProfile(tx, user.id);
 
-      return created;
+      return { education: created, status: 201 };
     });
 
-    response.status(201).json(education);
+    response.status(status).json(education);
   },
 );
 
@@ -197,7 +212,7 @@ studentEducationsRouter.patch(
       const updated = await tx.studentEducation.update({
         where: { id },
         data,
-        include: educationInclude,
+        ...educationResponse,
       });
       await removeIneligibleSpecialties(tx, user.id, profile.domainId);
       await unpublishStudentProfile(tx, user.id);

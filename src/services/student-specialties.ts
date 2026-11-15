@@ -88,8 +88,11 @@ export async function assertSpecialtyEligible(
 export async function removeIneligibleSpecialties(
   tx: Prisma.TransactionClient,
   studentId: string,
-  domainId: string,
+  domainId: string | null,
 ) {
+  // A draft without a domain cannot acquire specialties.
+  if (domainId === null) return;
+
   return tx.studentSpecialty.deleteMany({
     where: {
       studentId,

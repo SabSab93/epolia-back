@@ -187,7 +187,7 @@ studentSpecialtiesRouter.get(
     const authUser = requireStudent(response);
     const profile = await getStudentProfile(prisma, authUser.id);
     const specialties = await prisma.specialty.findMany({
-      where: eligibleSpecialtyWhere(authUser.id, profile.domainId),
+      where: eligibleSpecialtyWhere(authUser.id, profile.domainId ?? undefined),
       select: {
         id: true,
         label: true,
@@ -215,6 +215,10 @@ studentSpecialtiesRouter.post(
     try {
       const studentSpecialty = await prisma.$transaction(async (tx) => {
         const profile = await lockStudentProfile(tx, authUser.id);
+        if (!profile.domainId) {
+          throw new AppError(409, 'DOMAIN_REQUIRED', 'Select a domain first');
+        }
+
         const specialty = await tx.specialty.findUnique({
           where: { id: specialtyId },
           select: { id: true, domainId: true },
