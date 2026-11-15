@@ -482,8 +482,22 @@ export const swaggerDocument = {
     '/api/student-educations/me': {
       get: {
         summary: 'List authenticated student educations',
+        description:
+          'Most recent start date first. Undated educations appear last. Without pagination parameters, all owned educations are returned.',
         tags: ['StudentEducation'],
         security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'limit',
+            in: 'query',
+            schema: { type: 'integer', minimum: 1, maximum: 100 },
+          },
+          {
+            name: 'offset',
+            in: 'query',
+            schema: { type: 'integer', minimum: 0, maximum: 2147483647 },
+          },
+        ],
         responses: {
           200: {
             description:
@@ -497,6 +511,7 @@ export const swaggerDocument = {
               },
             },
           },
+          400: { description: 'Invalid pagination parameters' },
           401: { description: 'Authentication required' },
           403: { description: 'Student role required' },
           404: { description: 'Student profile not found' },

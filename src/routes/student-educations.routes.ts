@@ -19,6 +19,33 @@ const educationResponse = {
   omit: { creationKey: true },
 } as const;
 
+function formatEducation(
+  education: Prisma.StudentEducationGetPayload<typeof educationResponse>,
+) {
+  return {
+    ...education,
+    startDate: education.startDate?.toISOString().slice(0, 10) ?? null,
+    endDate: education.endDate?.toISOString().slice(0, 10) ?? null,
+  };
+}
+
+function readPageValue(
+  value: unknown,
+  field: string,
+  min: number,
+  max: number,
+) {
+  if (value === undefined) return undefined;
+
+  const parsed =
+    typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : NaN;
+  if (!Number.isSafeInteger(parsed) || parsed < min || parsed > max) {
+    throw new AppError(400, 'VALIDATION_ERROR', `${field} is invalid`);
+  }
+
+  return parsed;
+}
+
 function requireStudent(response: { locals: { authUser?: AuthUser } }) {
   const user = response.locals.authUser as AuthUser;
 
@@ -134,16 +161,24 @@ async function assertStudyField(
 studentEducationsRouter.get(
   '/student-educations/me',
   requireAuth,
-  async (_request, response) => {
+  async (request, response) => {
     const user = requireStudent(response);
+    const take = readPageValue(request.query.limit, 'limit', 1, 100);
+    const skip = readPageValue(request.query.offset, 'offset', 0, 2147483647);
     await getStudentProfile(prisma, user.id);
     const educations = await prisma.studentEducation.findMany({
       where: { studentId: user.id },
       ...educationResponse,
-      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+      orderBy: [
+        { startDate: { sort: 'desc', nulls: 'last' } },
+        { createdAt: 'asc' },
+        { id: 'asc' },
+      ],
+      take,
+      skip,
     });
 
-    response.status(200).json(educations);
+    response.status(200).json(educations.map(formatEducation));
   },
 );
 
@@ -178,7 +213,7 @@ studentEducationsRouter.post(
       return { education: created, status: 201 };
     });
 
-    response.status(status).json(education);
+    response.status(status).json(formatEducation(education));
   },
 );
 
@@ -220,7 +255,7 @@ studentEducationsRouter.patch(
       return updated;
     });
 
-    response.status(200).json(education);
+    response.status(200).json(formatEducation(education));
   },
 );
 

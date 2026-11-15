@@ -619,6 +619,8 @@ databaseTests(
         title: 'Licence informatique',
         school: 'School',
         level: 'BAC+3',
+        startDate: '2025-09-01',
+        endDate: null,
       });
       const list = await request(app)
         .get('/api/student-educations/me')
@@ -628,9 +630,59 @@ databaseTests(
           expect.objectContaining({
             id: response.body.id,
             studyFieldId: fields.get('Test Developpement'),
+            startDate: '2025-09-01',
+            endDate: null,
           }),
         ]),
       );
+      const { startDate, endDate } = list.body.find(
+        (row: { id: string }) => row.id === response.body.id,
+      );
+      const updated = await request(app)
+        .patch(`/api/student-educations/${response.body.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ startDate, endDate });
+      expect(updated.status).toBe(200);
+      expect(updated.body).toMatchObject({
+        startDate: '2025-09-01',
+        endDate: null,
+      });
+    });
+
+    it('lists educations by start date and supports optional pagination', async () => {
+      const authorization = `Bearer ${token}`;
+      for (const [title, startDate] of [
+        ['Without dates', null],
+        ['Oldest', '2022-09-01'],
+        ['Latest', '2025-09-01'],
+      ]) {
+        const response = await request(app)
+          .post('/api/student-educations')
+          .set('Authorization', authorization)
+          .send({ title, startDate });
+        expect(response.status).toBe(201);
+      }
+
+      const list = (query = '') =>
+        request(app)
+          .get(`/api/student-educations/me${query}`)
+          .set('Authorization', authorization);
+      expect(
+        (await list()).body.map((row: { title: string }) => row.title),
+      ).toEqual(['Latest', 'Oldest', 'Without dates']);
+      const page = await list('?limit=1&offset=1');
+      expect(page.status).toBe(200);
+      expect(page.body).toMatchObject([
+        { title: 'Oldest', startDate: '2022-09-01' },
+      ]);
+      for (const query of [
+        '?limit=0',
+        '?limit=101',
+        '?offset=-1',
+        '?limit=1&limit=2',
+      ]) {
+        expect((await list(query)).status).toBe(400);
+      }
     });
 
     it('rejects unknown study fields and invalid dates', async () => {
