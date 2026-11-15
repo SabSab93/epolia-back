@@ -217,7 +217,7 @@ model Specialty {
 
 model StudentProfile {
   userId      String        @id @map("user_id") @db.Uuid
-  domainId    String        @map("domain_id") @db.Uuid
+  domainId    String?       @map("domain_id") @db.Uuid
   title       String?
   description String?
   status      ProfileStatus @default(DRAFT)
@@ -225,7 +225,7 @@ model StudentProfile {
   updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   user            User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  domain          Domain                 @relation(fields: [domainId], references: [id], onDelete: Restrict)
+  domain          Domain?                @relation(fields: [domainId], references: [id], onDelete: Restrict)
   taxProfile      StudentTaxProfile?
   specialties     StudentSpecialty[]
   hobbies         StudentHobby[]

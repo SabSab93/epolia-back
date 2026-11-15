@@ -173,7 +173,13 @@ describe('Student profile routes', () => {
     });
   });
 
-  it('rejects profile creation without a domain id', async () => {
+  it('creates a draft before a domain is chosen', async () => {
+    prismaMock.studentProfile.create.mockResolvedValue({
+      ...profileMock,
+      domainId: null,
+      status: ProfileStatus.DRAFT,
+    });
+
     const response = await request(createTestApp())
       .post('/api/student-profiles')
       .set('Authorization', `Bearer ${createAccessToken()}`)
@@ -181,25 +187,27 @@ describe('Student profile routes', () => {
         title: 'Developpeuse web',
       });
 
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      status: 400,
-      code: 'VALIDATION_ERROR',
-      message: 'domainId is required',
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({
+      domainId: null,
+      status: ProfileStatus.DRAFT,
     });
-    expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+    expect(firstCallArg(prismaMock.studentProfile.create)).toMatchObject({
+      data: { userId: userMock.id, status: ProfileStatus.DRAFT },
+    });
   });
 
-  it('rejects profile creation without a body', async () => {
+  it('rejects an explicit null domain id', async () => {
     const response = await request(createTestApp())
       .post('/api/student-profiles')
-      .set('Authorization', `Bearer ${createAccessToken()}`);
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({ domainId: null });
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({
       status: 400,
       code: 'VALIDATION_ERROR',
-      message: 'domainId is required',
+      message: 'domainId is invalid',
     });
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
   });

@@ -346,6 +346,8 @@ export const swaggerDocument = {
     '/api/student-profiles': {
       post: {
         summary: 'Create the authenticated student profile',
+        description:
+          'Omit domainId to create a private draft before recording educations. If a draft already exists, resume it with GET /api/student-profiles/me.',
         tags: ['StudentProfile'],
         security: [{ bearerAuth: [] }],
         requestBody: {
@@ -357,7 +359,10 @@ export const swaggerDocument = {
           },
         },
         responses: {
-          201: { description: 'Student profile created' },
+          201: {
+            description:
+              'Student profile created. domainId is null when omitted.',
+          },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
           403: { description: 'Forbidden' },
@@ -371,7 +376,10 @@ export const swaggerDocument = {
         tags: ['StudentProfile'],
         security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: 'Authenticated student profile found' },
+          200: {
+            description:
+              'Authenticated student profile found. domainId may be null.',
+          },
           401: { description: 'Authentication required' },
           403: { description: 'Forbidden' },
           404: { description: 'Student profile not found' },
@@ -455,7 +463,7 @@ export const swaggerDocument = {
         responses: {
           200: {
             description:
-              'Exact union of linked study field specialties, filtered by principal domain',
+              'Exact union of linked study field specialties. Before a principal domain is selected, use these results to suggest domains. Once selected, results are filtered by that domain.',
             content: {
               'application/json': {
                 schema: {
@@ -889,11 +897,12 @@ export const swaggerDocument = {
       },
       StudentProfileInput: {
         type: 'object',
-        required: ['domainId'],
         properties: {
           domainId: {
             type: 'string',
             format: 'uuid',
+            description:
+              'Omit to start a draft or to keep the currently selected domain.',
             example: '9324c24d-a476-41db-a0e3-12479bd81ed7',
           },
           title: { type: 'string', example: 'Developpeuse web' },
