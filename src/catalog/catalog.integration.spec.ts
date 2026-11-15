@@ -359,6 +359,39 @@ databaseTests(
       expect((await addSpecialty('Site vitrine')).status).toBe(201);
     });
 
+    it('replays education creation once per key without merging distinct entries', async () => {
+      const key = randomUUID();
+      const authorization = `Bearer ${token}`;
+      const addEducation = (idempotencyKey: string) =>
+        request(app)
+          .post('/api/student-educations')
+          .set('Authorization', authorization)
+          .set('Idempotency-Key', idempotencyKey)
+          .send({ title: 'BUT Informatique' });
+
+      expect((await addEducation('invalid')).status).toBe(400);
+      const responses = await Promise.all([
+        addEducation(key),
+        addEducation(key),
+      ]);
+      expect(responses.map(({ status }) => status).sort()).toEqual([200, 201]);
+      const id = responses[0]!.body.id;
+      expect(responses[1]!.body).toEqual(responses[0]!.body);
+      expect(responses[0]!.body).not.toHaveProperty('creationKey');
+
+      const another = await addEducation(randomUUID());
+      expect(another.status).toBe(201);
+      expect(another.body.id).not.toBe(id);
+
+      const list = await request(app)
+        .get('/api/student-educations/me')
+        .set('Authorization', authorization);
+      expect(list.status).toBe(200);
+      expect(
+        list.body.map((education: { id: string }) => education.id),
+      ).toEqual([id, another.body.id]);
+    });
+
     it.each([
       ['past', -30, -1],
       ['future', 1, 30],

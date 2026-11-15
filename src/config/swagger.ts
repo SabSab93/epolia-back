@@ -507,9 +507,19 @@ export const swaggerDocument = {
       post: {
         summary: 'Declare an education for the authenticated student',
         description:
-          'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. Changes return visible profiles to DRAFT.',
+          'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. A new education returns a visible profile to DRAFT.',
         tags: ['StudentEducation'],
         security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'Idempotency-Key',
+            in: 'header',
+            required: false,
+            schema: { type: 'string', format: 'uuid' },
+            description:
+              'Generate one UUID per new education and reuse it when retrying the same creation. Replays return the existing education without changing it while it exists. Use PATCH to edit an education.',
+          },
+        ],
         requestBody: {
           required: true,
           content: {
@@ -519,6 +529,14 @@ export const swaggerDocument = {
           },
         },
         responses: {
+          200: {
+            description: 'Existing education returned for a replay',
+            content: {
+              'application/json': {
+                schema: { $ref: '#/components/schemas/StudentEducation' },
+              },
+            },
+          },
           201: {
             description: 'Education declared, not verified',
             content: {
@@ -527,7 +545,10 @@ export const swaggerDocument = {
               },
             },
           },
-          400: { description: 'Invalid title, studyFieldId or dates' },
+          400: {
+            description:
+              'Invalid title, studyFieldId, dates or idempotency key',
+          },
           401: { description: 'Authentication required' },
           403: { description: 'Student role required' },
           404: { description: 'Student profile or study field not found' },

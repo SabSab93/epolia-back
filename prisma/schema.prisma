@@ -320,6 +320,7 @@ model StudentEducation {
   id           String    @id @default(uuid()) @db.Uuid
   studentId    String    @map("student_id") @db.Uuid
   studyFieldId String?   @map("study_field_id") @db.Uuid
+  creationKey  String?   @map("creation_key") @db.Uuid
   title        String
   school       String?
   level        String?
@@ -331,6 +332,7 @@ model StudentEducation {
   student    StudentProfile @relation(fields: [studentId], references: [userId], onDelete: Cascade)
   studyField StudyField?    @relation(fields: [studyFieldId], references: [id], onDelete: Restrict)
 
+  @@unique([studentId, creationKey])
   @@index([studentId])
   @@index([studyFieldId])
   @@map("student_educations")
