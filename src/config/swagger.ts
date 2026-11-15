@@ -479,6 +479,132 @@ export const swaggerDocument = {
         },
       },
     },
+    '/api/student-availabilities/me': {
+      get: {
+        summary: 'List owned availability slots overlapping a date range',
+        description:
+          'Returns slots intersecting [from, to), ordered by start. Both bounds must include an explicit timezone offset.',
+        tags: ['StudentAvailability'],
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          {
+            name: 'from',
+            in: 'query',
+            required: true,
+            schema: { type: 'string', format: 'date-time' },
+          },
+          {
+            name: 'to',
+            in: 'query',
+            required: true,
+            schema: { type: 'string', format: 'date-time' },
+          },
+        ],
+        responses: {
+          200: {
+            description: 'Owned slots',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: { $ref: '#/components/schemas/StudentAvailability' },
+                },
+              },
+            },
+          },
+          400: { description: 'Invalid date range' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Student profile not found' },
+        },
+      },
+      post: {
+        summary: 'Add an owned availability slot',
+        tags: ['StudentAvailability'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                allOf: [
+                  { $ref: '#/components/schemas/StudentAvailabilityTimes' },
+                  { type: 'object', required: ['startsAt', 'endsAt'] },
+                ],
+              },
+            },
+          },
+        },
+        responses: {
+          201: { $ref: '#/components/responses/StudentAvailabilitySaved' },
+          400: { description: 'Invalid slot or date range' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: { description: 'Student profile not found' },
+          409: {
+            description:
+              'The slot overlaps another owned slot. Adjacent slots are allowed.',
+          },
+        },
+      },
+    },
+    '/api/student-availabilities/{availabilityId}': {
+      parameters: [
+        {
+          name: 'availabilityId',
+          in: 'path',
+          required: true,
+          schema: { type: 'string', format: 'uuid' },
+        },
+      ],
+      patch: {
+        summary: 'Change the start or end of an owned slot',
+        tags: ['StudentAvailability'],
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                allOf: [
+                  { $ref: '#/components/schemas/StudentAvailabilityTimes' },
+                  {
+                    anyOf: [
+                      { required: ['startsAt'] },
+                      { required: ['endsAt'] },
+                    ],
+                  },
+                ],
+              },
+            },
+          },
+        },
+        responses: {
+          200: { $ref: '#/components/responses/StudentAvailabilitySaved' },
+          400: { description: 'Invalid slot or date range' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: {
+            description: 'Owned availability or student profile not found',
+          },
+          409: { description: 'The updated slot overlaps another owned slot' },
+        },
+      },
+      delete: {
+        summary: 'Remove an owned availability slot',
+        tags: ['StudentAvailability'],
+        security: [{ bearerAuth: [] }],
+        responses: {
+          204: { description: 'Slot removed' },
+          400: { description: 'Invalid availability identifier' },
+          401: { description: 'Authentication required' },
+          403: { description: 'Student role required' },
+          404: {
+            description: 'Owned availability or student profile not found',
+          },
+        },
+      },
+    },
     '/api/student-educations/me': {
       get: {
         summary: 'List authenticated student educations',
@@ -804,6 +930,16 @@ export const swaggerDocument = {
     },
   },
   components: {
+    responses: {
+      StudentAvailabilitySaved: {
+        description: 'Saved slot with UTC timestamps',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/StudentAvailability' },
+          },
+        },
+      },
+    },
     parameters: {
       UserId: {
         name: 'userId',
@@ -848,6 +984,43 @@ export const swaggerDocument = {
           domainId: { type: 'string', format: 'uuid' },
           domain: { $ref: '#/components/schemas/StudyField' },
         },
+      },
+      StudentAvailabilityTimes: {
+        type: 'object',
+        properties: {
+          startsAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-11-16T18:00:00+01:00',
+          },
+          endsAt: {
+            type: 'string',
+            format: 'date-time',
+            example: '2026-11-16T20:00:00+01:00',
+          },
+        },
+      },
+      StudentAvailability: {
+        allOf: [
+          { $ref: '#/components/schemas/StudentAvailabilityTimes' },
+          {
+            type: 'object',
+            required: [
+              'id',
+              'studentId',
+              'startsAt',
+              'endsAt',
+              'createdAt',
+              'updatedAt',
+            ],
+            properties: {
+              id: { type: 'string', format: 'uuid' },
+              studentId: { type: 'string', format: 'uuid' },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
+            },
+          },
+        ],
       },
       StudentEducationInput: {
         allOf: [

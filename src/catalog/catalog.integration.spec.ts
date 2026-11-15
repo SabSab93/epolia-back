@@ -16,6 +16,7 @@ import { config } from '@/config/env';
 import { errorHandler } from '@/middlewares/error.middleware';
 import { prisma } from '@/prisma/client';
 import { studentEducationsRouter } from '@/routes/student-educations.routes';
+import { studentAvailabilitiesRouter } from '@/routes/student-availabilities.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
@@ -107,6 +108,7 @@ databaseTests(
       '/api',
       authRouter,
       studyFieldsRouter,
+      studentAvailabilitiesRouter,
       studentEducationsRouter,
       studentSpecialtiesRouter,
       studentProfilesRouter,
@@ -271,6 +273,149 @@ databaseTests(
         }),
       );
       expect(await snapshot()).toEqual(before);
+    });
+
+    it('keeps owned availability across timezone and calendar boundaries without changing a mission', async () => {
+      const authorization = `Bearer ${token}`;
+      const customer = await prisma.user.create({
+        data: {
+          birthDate: new Date('2000-01-01'),
+          roles: { create: { role: UserRole.CUSTOMER } },
+        },
+      });
+      const otherStudent = await prisma.user.create({
+        data: {
+          birthDate: new Date('2000-01-01'),
+          roles: { create: { role: UserRole.STUDENT } },
+          studentProfile: { create: {} },
+        },
+      });
+      const mission = await prisma.mission.create({
+        data: {
+          customerUserId: customer.id,
+          studentId,
+          description: 'Scheduled mission',
+          startsAt: new Date('2030-03-31T00:00:00Z'),
+          endsAt: new Date('2030-03-31T01:00:00Z'),
+        },
+      });
+      const created = await request(app)
+        .post('/api/student-availabilities/me')
+        .set('Authorization', authorization)
+        .send({
+          studentId: otherStudent.id,
+          startsAt: '2030-03-30T23:30:00+01:00',
+          endsAt: '2030-03-31T03:30:00+02:00',
+        });
+      expect(created.status).toBe(201);
+      expect(created.body).toMatchObject({
+        studentId,
+        startsAt: '2030-03-30T22:30:00.000Z',
+        endsAt: '2030-03-31T01:30:00.000Z',
+      });
+
+      const list = (from: string, to: string) =>
+        request(app)
+          .get('/api/student-availabilities/me')
+          .set('Authorization', authorization)
+          .query({ from, to });
+      expect(
+        (await list('2030-03-31T00:00:00Z', '2030-04-01T00:00:00Z')).body,
+      ).toEqual([created.body]);
+      expect(
+        (await list('2030-03-31T01:30:00Z', '2030-04-01T00:00:00Z')).body,
+      ).toEqual([]);
+      expect(
+        (await list('2030-04-01T00:00:00Z', '2030-03-31T00:00:00Z')).status,
+      ).toBe(400);
+
+      const url = `/api/student-availabilities/${created.body.id}`;
+      const otherToken = jwt.sign(
+        { sub: otherStudent.id, roles: [UserRole.STUDENT] },
+        config.jwtSecret,
+      );
+      expect(
+        (
+          await request(app)
+            .patch(url)
+            .set('Authorization', `Bearer ${otherToken}`)
+            .send({ endsAt: '2030-03-31T02:00:00Z' })
+        ).status,
+      ).toBe(404);
+      expect(
+        (
+          await request(app)
+            .delete(url)
+            .set('Authorization', `Bearer ${otherToken}`)
+        ).status,
+      ).toBe(404);
+      const customerToken = jwt.sign(
+        { sub: customer.id, roles: [UserRole.CUSTOMER] },
+        config.jwtSecret,
+      );
+      expect(
+        (
+          await request(app)
+            .get('/api/student-availabilities/me')
+            .set('Authorization', `Bearer ${customerToken}`)
+        ).status,
+      ).toBe(403);
+      expect(
+        (await request(app).get('/api/student-availabilities/me')).status,
+      ).toBe(401);
+
+      const updated = await request(app)
+        .patch(url)
+        .set('Authorization', authorization)
+        .send({ endsAt: '2030-03-31T02:00:00Z' });
+      expect(updated.status).toBe(200);
+      expect(updated.body.endsAt).toBe('2030-03-31T02:00:00.000Z');
+      expect(
+        (await request(app).delete(url).set('Authorization', authorization))
+          .status,
+      ).toBe(204);
+      expect(
+        await prisma.mission.findUnique({ where: { id: mission.id } }),
+      ).toEqual(mission);
+    });
+
+    it('rejects invalid or concurrent overlapping slots and allows adjacent slots', async () => {
+      const add = (startsAt: string, endsAt: string) =>
+        request(app)
+          .post('/api/student-availabilities/me')
+          .set('Authorization', `Bearer ${token}`)
+          .send({ startsAt, endsAt });
+      expect(
+        (await add('2030-04-01T10:00:00', '2030-04-01T12:00:00Z')).status,
+      ).toBe(400);
+      expect(
+        (await add('2030-02-30T10:00:00Z', '2030-04-01T12:00:00Z')).status,
+      ).toBe(400);
+      expect(
+        (await add('2030-04-01T12:00:00Z', '2030-04-01T12:00:00Z')).status,
+      ).toBe(400);
+
+      const responses = await Promise.all([
+        add('2030-04-01T10:00:00Z', '2030-04-01T12:00:00Z'),
+        add('2030-04-01T10:00:00Z', '2030-04-01T12:00:00Z'),
+      ]);
+      expect(responses.map(({ status }) => status).sort()).toEqual([201, 409]);
+      expect(responses.find(({ status }) => status === 409)?.body.code).toBe(
+        'AVAILABILITY_OVERLAP',
+      );
+      const adjacent = await add(
+        '2030-04-01T12:00:00Z',
+        '2030-04-01T13:00:00Z',
+      );
+      expect(adjacent.status).toBe(201);
+      const changed = await request(app)
+        .patch(`/api/student-availabilities/${adjacent.body.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ startsAt: '2030-04-01T11:00:00Z' });
+      expect(changed.status).toBe(409);
+      expect(
+        await prisma.studentAvailability.count({ where: { studentId } }),
+      ).toBe(2);
     });
 
     it('lists official study fields publicly', async () => {

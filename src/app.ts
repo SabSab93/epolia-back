@@ -10,6 +10,7 @@ import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
 import { authRouter } from '@/routes/auth.routes';
 import { domainsRouter } from '@/routes/domains.routes';
 import { studyFieldsRouter } from '@/routes/study-fields.routes';
+import { studentAvailabilitiesRouter } from '@/routes/student-availabilities.routes';
 import { studentEducationsRouter } from '@/routes/student-educations.routes';
 import { studentProfilesRouter } from '@/routes/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
@@ -48,6 +49,7 @@ app.get('/api/health', (_req, res) => {
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);
 app.use('/api', studyFieldsRouter);
+app.use('/api', studentAvailabilitiesRouter);
 app.use('/api', studentEducationsRouter);
 app.use('/api', studentProfilesRouter);
 app.use('/api', studentSpecialtiesRouter);
