@@ -7,6 +7,11 @@ import swaggerUi from 'swagger-ui-express';
 import { config } from '@/config/env';
 import { swaggerDocument } from '@/config/swagger';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
+import {
+  apiRateLimit,
+  loginRateLimit,
+  registerRateLimit,
+} from '@/middlewares/rate-limit.middleware';
 import { authRouter } from '@/routes/auth.routes';
 import { domainsRouter } from '@/routes/domains.routes';
 import { emailVerificationRouter } from '@/routes/email-verification.routes';
@@ -18,6 +23,8 @@ import { userProfilesRouter } from '@/routes/user-profiles.routes';
 import { usersRouter } from '@/routes/users.routes';
 
 const app = express();
+
+app.set('trust proxy', config.trustProxy);
 
 app.use(
   helmet({
@@ -55,6 +62,11 @@ app.get('/api/health', (_req, res) => {
     status: 'ok',
   });
 });
+
+// After the health check, which the host calls often from its own IP.
+app.use('/api', apiRateLimit);
+app.use('/api/auth/login', loginRateLimit);
+app.use('/api/auth/register', registerRateLimit);
 
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);

@@ -16,6 +16,7 @@ describe('Environment configuration', () => {
     delete process.env.JWT_SECRET;
     delete process.env.CORS_ORIGIN;
     delete process.env.PORT;
+    delete process.env.TRUST_PROXY;
   });
 
   afterEach(() => {
@@ -40,17 +41,52 @@ describe('Environment configuration', () => {
       process.env.NODE_ENV = value;
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
+      process.env.TRUST_PROXY = '1';
 
       expect(loadConfig().nodeEnv).toBe(value);
     },
   );
 
-  it('keeps local defaults when environment variables are absent', () => {
+  it.each([undefined, '', '   '])(
+    'requires JWT_SECRET outside tests: %j',
+    (value) => {
+      if (value !== undefined) process.env.JWT_SECRET = value;
+
+      expect(loadConfig).toThrow('JWT_SECRET is required');
+    },
+  );
+
+  it('uses a built-in secret in tests only', () => {
+    process.env.NODE_ENV = 'test';
+
+    expect(loadConfig().jwtSecret).toBe('test-secret-not-for-real-use');
+  });
+
+  it('keeps local defaults when optional variables are absent', () => {
+    process.env.JWT_SECRET = 'change-me-in-local-env';
+
     expect(loadConfig()).toMatchObject({
       nodeEnv: 'development',
-      jwtSecret: 'dev-secret-change-me',
       corsOrigin: true,
+      trustProxy: 0,
     });
+  });
+
+  it.each(['-1', '1.5', 'yes', '11'])(
+    'rejects an invalid TRUST_PROXY: %j',
+    (value) => {
+      process.env.JWT_SECRET = 'change-me-in-local-env';
+      process.env.TRUST_PROXY = value;
+
+      expect(loadConfig).toThrow('TRUST_PROXY must be a number of proxies');
+    },
+  );
+
+  it('reads the number of trusted proxies', () => {
+    process.env.JWT_SECRET = 'change-me-in-local-env';
+    process.env.TRUST_PROXY = ' 2 ';
+
+    expect(loadConfig().trustProxy).toBe(2);
   });
 
   it('accepts the usual local development configuration', () => {
@@ -67,6 +103,7 @@ describe('Environment configuration', () => {
 
   it('continues to allow a wildcard in development', () => {
     process.env.NODE_ENV = 'development';
+    process.env.JWT_SECRET = 'change-me-in-local-env';
     process.env.CORS_ORIGIN = '*';
 
     expect(loadConfig().corsOrigin).toBe(true);
@@ -77,6 +114,25 @@ describe('Environment configuration', () => {
       process.env.NODE_ENV = 'production';
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
+      process.env.TRUST_PROXY = '1';
+    });
+
+    it.each([undefined, '', '  '])('requires TRUST_PROXY: %j', (value) => {
+      if (value === undefined) {
+        delete process.env.TRUST_PROXY;
+      } else {
+        process.env.TRUST_PROXY = value;
+      }
+
+      expect(loadConfig).toThrow('TRUST_PROXY must be set in production');
+    });
+
+    it('rejects the built-in test secret', () => {
+      process.env.JWT_SECRET = 'test-secret-not-for-real-use';
+
+      expect(loadConfig).toThrow(
+        'JWT_SECRET must contain at least 32 characters',
+      );
     });
 
     it.each([
