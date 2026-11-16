@@ -28,8 +28,9 @@ export const requireAuth: RequestHandler = (request, response, next) =>
   authenticate(request, response, next, { allowUnverifiedEmail: false });
 
 /**
- * Only for setting up an account before the e-mail is confirmed: profile,
- * student profile, educations, specialties, roles, e-mail confirmation.
+ * Only for setting up an account before the e-mail is confirmed: reading
+ * one's own account (/auth/me, accepted terms, own profile), profile, student
+ * profile, educations, specialties, roles, e-mail confirmation.
  * Admin routes use it too until the back office is planned.
  */
 export const requireAuthAllowUnverified: RequestHandler = (
