@@ -7,7 +7,10 @@ import {
 } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { isAdult } from '@/services/age';
 import {
@@ -106,7 +109,7 @@ function handleStudentProfilePrismaError(error: unknown): never {
 
 studentProfilesRouter.post(
   '/student-profiles',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
@@ -143,7 +146,7 @@ studentProfilesRouter.post(
 
 studentProfilesRouter.get(
   '/student-profiles/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
@@ -230,7 +233,7 @@ studentProfilesRouter.get(
 
 studentProfilesRouter.patch(
   '/student-profiles/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 

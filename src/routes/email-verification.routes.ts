@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import {
   sendVerificationEmail,
   verifyEmailCode,
@@ -48,7 +51,7 @@ function unverifiedEmail(authUser: AuthUser) {
 
 emailVerificationRouter.post(
   '/auth/email-verification',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = response.locals.authUser as AuthUser;
     const email = unverifiedEmail(authUser);
@@ -62,7 +65,7 @@ emailVerificationRouter.post(
 
 emailVerificationRouter.post(
   '/auth/email-verification/verify',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
     const email = unverifiedEmail(authUser);

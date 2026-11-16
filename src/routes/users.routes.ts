@@ -8,7 +8,10 @@ import {
 } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
 
@@ -41,7 +44,7 @@ usersRouter.use((request, _response, next) => {
 
   next();
 });
-usersRouter.use(requireAuth);
+usersRouter.use(requireAuthAllowUnverified);
 usersRouter.use((_request, response, next) => {
   const authUser = response.locals.authUser as AuthUser;
 

@@ -1,7 +1,10 @@
 import { Prisma } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 
 export const userProfilesRouter = Router();
@@ -50,7 +53,7 @@ function cleanCoordinate(
 
 userProfilesRouter.post(
   '/user-profiles',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
     const body = request.body || {};
@@ -96,7 +99,7 @@ userProfilesRouter.post(
 
 userProfilesRouter.get(
   '/user-profiles/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 
@@ -116,7 +119,7 @@ userProfilesRouter.get(
 
 userProfilesRouter.get(
   '/users/:userId/profile',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const { id: userId } = response.locals.authUser as AuthUser;
     if (request.params.userId !== userId) throw profileNotFound();
@@ -139,7 +142,7 @@ userProfilesRouter.get(
 
 userProfilesRouter.patch(
   '/user-profiles/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = response.locals.authUser as AuthUser;
     const body = request.body || {};
@@ -180,7 +183,7 @@ userProfilesRouter.patch(
 
 userProfilesRouter.delete(
   '/user-profiles/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = response.locals.authUser as AuthUser;
 

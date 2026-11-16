@@ -5,7 +5,10 @@ import jwt, { type SignOptions } from 'jsonwebtoken';
 import { Router } from 'express';
 import { config } from '@/config/env';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
 import { sendVerificationEmail } from '@/services/email-verification';
@@ -267,13 +270,13 @@ authRouter.post('/auth/login', async (request, response) => {
   });
 });
 
-authRouter.get('/auth/me', requireAuth, (_request, response) => {
+authRouter.get('/auth/me', requireAuthAllowUnverified, (_request, response) => {
   response.status(200).json(response.locals.authUser as AuthUser);
 });
 
 authRouter.get(
   '/auth/terms-acceptance',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const { id: userId } = response.locals.authUser as AuthUser;
     const acceptance = await prisma.userConsent.findFirst({
@@ -290,21 +293,25 @@ authRouter.get(
   },
 );
 
-authRouter.post('/auth/roles', requireAuth, async (request, response) => {
-  const role: unknown = request.body?.role;
-  if (role !== UserRole.STUDENT && role !== UserRole.CUSTOMER) {
-    throw new AppError(
-      400,
-      'VALIDATION_ERROR',
-      'role must be STUDENT or CUSTOMER',
-    );
-  }
+authRouter.post(
+  '/auth/roles',
+  requireAuthAllowUnverified,
+  async (request, response) => {
+    const role: unknown = request.body?.role;
+    if (role !== UserRole.STUDENT && role !== UserRole.CUSTOMER) {
+      throw new AppError(
+        400,
+        'VALIDATION_ERROR',
+        'role must be STUDENT or CUSTOMER',
+      );
+    }
 
-  const { id: userId } = response.locals.authUser as AuthUser;
-  const user = await activateUserRole(userId, role);
+    const { id: userId } = response.locals.authUser as AuthUser;
+    const user = await activateUserRole(userId, role);
 
-  response.status(200).json({
-    user: formatUser(user),
-    accessToken: createToken(user),
-  });
-});
+    response.status(200).json({
+      user: formatUser(user),
+      accessToken: createToken(user),
+    });
+  },
+);

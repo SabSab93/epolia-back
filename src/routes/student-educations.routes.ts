@@ -1,7 +1,10 @@
 import { Prisma, UserRole } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import {
   getStudentProfile,
@@ -160,7 +163,7 @@ async function assertStudyField(
 
 studentEducationsRouter.get(
   '/student-educations/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const user = requireStudent(response);
     const take = readPageValue(request.query.limit, 'limit', 1, 100);
@@ -184,7 +187,7 @@ studentEducationsRouter.get(
 
 studentEducationsRouter.post(
   '/student-educations',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const user = requireStudent(response);
     const key = request.get('Idempotency-Key');
@@ -219,7 +222,7 @@ studentEducationsRouter.post(
 
 studentEducationsRouter.patch(
   '/student-educations/:educationId',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const user = requireStudent(response);
     const id = cleanId(request.params.educationId, 'educationId');
@@ -261,7 +264,7 @@ studentEducationsRouter.patch(
 
 studentEducationsRouter.delete(
   '/student-educations/:educationId',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const user = requireStudent(response);
     const id = cleanId(request.params.educationId, 'educationId');

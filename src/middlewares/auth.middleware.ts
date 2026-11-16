@@ -19,7 +19,32 @@ type JwtPayload = {
   roles?: UserRole[];
 };
 
-export const requireAuth: RequestHandler = async (request, response, next) => {
+/**
+ * Default for every signed-in route: the account must have confirmed its
+ * e-mail address. New routes are protected without anyone having to think
+ * about it.
+ */
+export const requireAuth: RequestHandler = (request, response, next) =>
+  authenticate(request, response, next, { allowUnverifiedEmail: false });
+
+/**
+ * Only for setting up an account before the e-mail is confirmed: reading
+ * one's own account (/auth/me, accepted terms, own profile), profile, student
+ * profile, educations, specialties, roles, e-mail confirmation.
+ * Admin routes use it too until the back office is planned.
+ */
+export const requireAuthAllowUnverified: RequestHandler = (
+  request,
+  response,
+  next,
+) => authenticate(request, response, next, { allowUnverifiedEmail: true });
+
+async function authenticate(
+  request: Parameters<RequestHandler>[0],
+  response: Parameters<RequestHandler>[1],
+  next: Parameters<RequestHandler>[2],
+  { allowUnverifiedEmail }: { allowUnverifiedEmail: boolean },
+) {
   const authorization = request.headers.authorization;
 
   if (!authorization?.startsWith('Bearer ')) {
@@ -71,6 +96,18 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
     if (!user.roles.some(({ role }) => role === UserRole.ADMIN)) {
       assertAdult(user.birthDate);
     }
+
+    if (!allowUnverifiedEmail && !user.emailVerifiedAt) {
+      next(
+        new AppError(
+          403,
+          'EMAIL_NOT_VERIFIED',
+          'Confirm your e-mail address to continue',
+        ),
+      );
+      return;
+    }
+
     response.locals.authUser = {
       id: user.id,
       email: user.email,
@@ -86,4 +123,4 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
     }
     next(new AppError(401, 'UNAUTHORIZED', 'Authentication required'));
   }
-};
+}
