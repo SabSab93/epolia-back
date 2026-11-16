@@ -20,7 +20,9 @@ export const errorHandler: ErrorRequestHandler = (
   void next;
 
   if (error instanceof AppError) {
+    // Details first: they can never replace status, code or message.
     response.status(error.status).json({
+      ...error.details,
       status: error.status,
       code: error.code,
       message: error.message,

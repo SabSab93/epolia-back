@@ -140,18 +140,20 @@ model User {
   consents                 UserConsent[]
   notifications            Notification[]
   adminAuditLogs           AdminAuditLog[]
-  emailVerificationTokens  EmailVerificationToken[]
+  emailVerificationCodes   EmailVerificationCode[]
 
   @@map("users")
 }
 
-/// One-time e-mail confirmation link. Only the SHA-256 hash of the token is stored.
-/// `email` is the address the link confirms: a link sent to an older address cannot confirm a new one.
-model EmailVerificationToken {
+/// 6-digit e-mail confirmation code, valid 10 minutes. Only a keyed hash (HMAC) of the code is stored.
+/// `email` is the address the code confirms: a code sent to an older address cannot confirm a new one.
+/// `attempts` counts every entry checked against the code: after 5, the code can no longer be used.
+model EmailVerificationCode {
   id        String    @id @default(uuid()) @db.Uuid
   userId    String    @map("user_id") @db.Uuid
   email     String
-  tokenHash String    @unique @map("token_hash")
+  codeHash  String    @map("code_hash")
+  attempts  Int       @default(0)
   expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
   usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -159,7 +161,7 @@ model EmailVerificationToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
-  @@map("email_verification_tokens")
+  @@map("email_verification_codes")
 }
 
 model UserRoleAssignment {

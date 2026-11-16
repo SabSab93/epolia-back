@@ -70,15 +70,16 @@ Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes re
 
 ## Confirmation de l'adresse e-mail
 
-Décisions de l'issue #76 :
+Un code à 6 chiffres est envoyé par e-mail et saisi dans l'application (issue #76, puis passage du lien au code) :
 
-- **Envoi** : [Resend](https://resend.com), avec `RESEND_API_KEY` et `EMAIL_FROM` (adresse d'un domaine vérifié chez Resend). Sans ces variables, aucun e-mail n'est envoyé et l'API le signale (`EMAIL_SERVICE_UNAVAILABLE`). Une réponse positive veut dire que Resend a accepté le message, pas qu'il est arrivé.
-- **Lien** : `PUBLIC_API_URL/api/auth/verify-email?token=…`. Il ouvre une page servie par l'API avec un bouton « Confirmer », valable sur navigateur, Android et iOS sans configuration de lien vers l'application. Ouvrir le lien ne confirme rien : les antivirus de messagerie qui ouvrent les liens ne peuvent donc pas le consommer. Si `APP_RETURN_URL` est renseignée (par exemple `epolia://email-verified`), la page affiche un bouton « Ouvrir l'application Epolia » ; il ne fonctionne que si l'application déclare cette adresse (schéma d'URL Capacitor, côté front). L'application relit ensuite `GET /api/auth/me` (`emailVerified`).
-- **Jeton** : 32 octets aléatoires, valable 24 h, utilisable une fois. Seule son empreinte SHA-256 est stockée (`email_verification_tokens`). Un nouvel envoi rend les liens précédents expirés. Le lien ne confirme que l'adresse à laquelle il a été envoyé.
-- **Inscription** : le compte est créé même si l'envoi échoue ; la réponse contient `emailVerificationSent: false` et l'application propose le renvoi (`POST /api/auth/email-verification`).
-- **Limites** : un envoi par minute et cinq par 24 h par compte, comptés en base.
+- **Envoi** : [Resend](https://resend.com), avec `RESEND_API_KEY` et `EMAIL_FROM` (adresse d'un domaine vérifié chez Resend). Sans ces variables, aucun e-mail n'est envoyé et l'API le signale (`EMAIL_SERVICE_UNAVAILABLE`). Une réponse positive veut dire que Resend a accepté le message, pas qu'il est arrivé. Le code n'apparaît pas dans l'objet du mail, que les téléphones affichent sur l'écran verrouillé.
+- **Code** : tiré au hasard (`crypto.randomInt`), valable 10 minutes. Seule une empreinte HMAC-SHA256 est stockée (`email_verification_codes`), calculée avec une clé dérivée de `JWT_SECRET` et l'identifiant du compte : une fuite de la base ne suffit pas à retrouver les codes en essayant le million de valeurs possibles. La comparaison se fait en temps constant. Un seul code est valable à la fois : le nouveau code n'est activé, et l'ancien expiré, qu'une fois le mail accepté par Resend (pendant l'envoi ou s'il échoue, l'ancien code marche toujours). Un code ne confirme que l'adresse à laquelle il a été envoyé.
+- **Essais** : 5 par code. Chaque essai est compté en base **avant** la comparaison, par une mise à jour conditionnelle : même des requêtes simultanées ne peuvent pas tester plus de 5 valeurs. Au 5e échec, l'API répond `410 EMAIL_VERIFICATION_TOO_MANY_ATTEMPTS` et il faut demander un nouveau code. **Après 20 échecs au total sur le compte**, plus aucun code n'est envoyé (`403 EMAIL_VERIFICATION_LOCKED`) : la probabilité de deviner un code reste ainsi bornée (20 sur un million) au lieu d'augmenter chaque jour. Le déblocage d'un compte n'est pas encore prévu (décision produit à prendre). Un code mal formé (pas 6 chiffres) n'est pas compté.
+- **Routes** (connecté) : `POST /api/auth/email-verification` envoie un code ; `POST /api/auth/email-verification/verify` avec `{ "code": "123456" }` le vérifie. L'application relit ensuite `GET /api/auth/me` (`emailVerified`).
+- **Inscription** : la réponse contient un `accessToken` et `emailVerificationSent`. Le compte est créé même si l'envoi échoue (`false`) ; l'application propose alors le renvoi.
+- **Limites d'envoi** : un par minute et cinq par 24 h par compte, comptés en base. Au plus 5 codes × 5 essais par jour, et 20 échecs au total.
+- **Anciens liens** : `GET /api/auth/verify-email` affiche une page fixe (410) qui explique que les liens sont remplacés par un code. Elle ne lit pas le jeton et pourra être supprimée plus tard.
 - **Avant confirmation** : la connexion et la création du profil restent possibles. Les futures routes de contact, de mission, de paiement et de publication du profil devront exiger `emailVerified` (disponible dans `response.locals.authUser`).
-- **Comptes existants** : non confirmés ; ils peuvent demander un lien.
 - Adresse confirmée, compte actif (`status`) et étudiant approuvé (`StudentVerification`) restent trois états distincts.
 
 ## Imports internes
