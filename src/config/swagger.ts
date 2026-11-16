@@ -507,7 +507,10 @@ export const swaggerDocument = {
           200: { description: 'Student profile updated' },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
+          403: {
+            description:
+              'Forbidden, status not allowed, or status change on a suspended profile',
+          },
           404: { description: 'Student profile not found' },
         },
       },
@@ -1054,9 +1057,9 @@ export const swaggerDocument = {
           },
           status: {
             type: 'string',
-            enum: ['DRAFT', 'SUSPENDED'],
+            enum: ['DRAFT'],
             description:
-              'Self-service publication is blocked until education verification is implemented (#55/#70)',
+              'Only DRAFT is accepted. Self-service publication is blocked until education verification is implemented (#55/#70). Suspension is decided by moderation: a suspended profile keeps its status.',
             example: 'DRAFT',
           },
         },

@@ -34,6 +34,16 @@ jest.mock('@/prisma/client', () => {
     privacyRequest: {
       create: jest.fn(),
     },
+    userProfile: { deleteMany: jest.fn() },
+    notification: { deleteMany: jest.fn() },
+    favorite: { deleteMany: jest.fn() },
+    studentEducation: { deleteMany: jest.fn() },
+    studentSpecialty: { deleteMany: jest.fn() },
+    studentHobby: { deleteMany: jest.fn() },
+    studentPortfolioItem: { deleteMany: jest.fn() },
+    studentAvailability: { deleteMany: jest.fn() },
+    studentVerification: { deleteMany: jest.fn() },
+    studentProfile: { updateMany: jest.fn() },
     $transaction: jest.fn(),
     $queryRaw: jest.fn(),
   };
@@ -101,6 +111,16 @@ type PrismaMock = {
   privacyRequest: {
     create: SingleArgMock;
   };
+  userProfile: { deleteMany: SingleArgMock };
+  notification: { deleteMany: SingleArgMock };
+  favorite: { deleteMany: SingleArgMock };
+  studentEducation: { deleteMany: SingleArgMock };
+  studentSpecialty: { deleteMany: SingleArgMock };
+  studentHobby: { deleteMany: SingleArgMock };
+  studentPortfolioItem: { deleteMany: SingleArgMock };
+  studentAvailability: { deleteMany: SingleArgMock };
+  studentVerification: { deleteMany: SingleArgMock };
+  studentProfile: { updateMany: SingleArgMock };
   $transaction: jest.MockedFunction<TransactionMock>;
 };
 
@@ -342,7 +362,7 @@ describe('Users routes', () => {
     );
   });
 
-  it('anonymizes a user and deletes auth accounts and confirmation links', async () => {
+  it('anonymizes a user and deletes their personal data', async () => {
     prismaMock.authAccount.deleteMany.mockResolvedValue({ count: 1 });
     prismaMock.emailVerificationCode.deleteMany.mockResolvedValue({
       count: 1,
@@ -365,6 +385,33 @@ describe('Users routes', () => {
     });
     expect(prismaMock.emailVerificationCode.deleteMany).toHaveBeenCalledWith({
       where: { userId: userMock.id },
+    });
+    expect(prismaMock.userProfile.deleteMany).toHaveBeenCalledWith({
+      where: { userId: userMock.id },
+    });
+    expect(prismaMock.notification.deleteMany).toHaveBeenCalledWith({
+      where: { userId: userMock.id },
+    });
+    expect(prismaMock.favorite.deleteMany).toHaveBeenCalledWith({
+      where: {
+        OR: [{ customerUserId: userMock.id }, { studentId: userMock.id }],
+      },
+    });
+    for (const studentData of [
+      prismaMock.studentEducation,
+      prismaMock.studentSpecialty,
+      prismaMock.studentHobby,
+      prismaMock.studentPortfolioItem,
+      prismaMock.studentAvailability,
+      prismaMock.studentVerification,
+    ]) {
+      expect(studentData.deleteMany).toHaveBeenCalledWith({
+        where: { studentId: userMock.id },
+      });
+    }
+    expect(prismaMock.studentProfile.updateMany).toHaveBeenCalledWith({
+      where: { userId: userMock.id },
+      data: { title: null, description: null },
     });
     expect(firstCallArg(prismaMock.user.update)).toMatchObject({
       where: { id: userMock.id },

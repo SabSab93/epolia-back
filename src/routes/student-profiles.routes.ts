@@ -52,6 +52,15 @@ function cleanProfileStatus(value: unknown) {
     );
   }
 
+  // Suspension is a moderation decision, never a self-service status.
+  if (value === ProfileStatus.SUSPENDED) {
+    throw new AppError(
+      403,
+      'PROFILE_STATUS_NOT_ALLOWED',
+      'Only moderation can suspend a profile',
+    );
+  }
+
   return value as ProfileStatus;
 }
 
@@ -241,6 +250,17 @@ studentProfilesRouter.patch(
     try {
       const profile = await prisma.$transaction(async (tx) => {
         const existingProfile = await lockStudentProfile(tx, authUser.id);
+        // Only moderation can lift a suspension.
+        if (
+          existingProfile.status === ProfileStatus.SUSPENDED &&
+          status !== undefined
+        ) {
+          throw new AppError(
+            403,
+            'PROFILE_SUSPENDED',
+            'A suspended profile can only be reinstated by moderation',
+          );
+        }
         const domainChanged =
           domainId !== undefined && domainId !== existingProfile.domainId;
         const updatedProfile = await tx.studentProfile.update({
