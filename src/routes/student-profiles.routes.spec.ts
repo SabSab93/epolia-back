@@ -483,6 +483,59 @@ describe('Student profile routes', () => {
     },
   );
 
+  it.each(['post', 'patch'] as const)(
+    'blocks self-service suspension through %s',
+    async (method) => {
+      const path =
+        method === 'post'
+          ? '/api/student-profiles'
+          : '/api/student-profiles/me';
+      const response = await request(createTestApp())
+        [method](path)
+        .set('Authorization', `Bearer ${createAccessToken()}`)
+        .send({ status: ProfileStatus.SUSPENDED });
+      expect(response.status).toBe(403);
+      expect(response.body.code).toBe('PROFILE_STATUS_NOT_ALLOWED');
+      expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+      expect(prismaMock.studentProfile.update).not.toHaveBeenCalled();
+    },
+  );
+
+  it('does not let a suspended student lift the suspension', async () => {
+    prismaMock.studentProfile.findUnique.mockResolvedValue({
+      ...profileMock,
+      status: ProfileStatus.SUSPENDED,
+    });
+
+    const response = await request(createTestApp())
+      .patch('/api/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({ status: ProfileStatus.DRAFT });
+
+    expect(response.status).toBe(403);
+    expect(response.body.code).toBe('PROFILE_SUSPENDED');
+    expect(prismaMock.studentProfile.update).not.toHaveBeenCalled();
+  });
+
+  it('keeps a suspended profile suspended when its text changes', async () => {
+    const suspendedProfile = {
+      ...profileMock,
+      status: ProfileStatus.SUSPENDED,
+    };
+    prismaMock.studentProfile.findUnique.mockResolvedValue(suspendedProfile);
+    prismaMock.studentProfile.update.mockResolvedValue(suspendedProfile);
+
+    const response = await request(createTestApp())
+      .patch('/api/student-profiles/me')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({ title: 'Developpeuse mobile' });
+
+    expect(response.status).toBe(200);
+    expect(firstCallArg(prismaMock.studentProfile.update)).toMatchObject({
+      data: { title: 'Developpeuse mobile', status: undefined },
+    });
+  });
+
   it.each([AccountStatus.SUSPENDED, AccountStatus.DELETED, null])(
     'hides public profiles for inactive or missing owners: %s',
     async (status) => {
