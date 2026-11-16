@@ -306,11 +306,15 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
     await tx.authAccount.deleteMany({
       where: { userId },
     });
+    await tx.emailVerificationToken.deleteMany({
+      where: { userId },
+    });
 
     return tx.user.update({
       where: { id: userId },
       data: {
         email: null,
+        emailVerifiedAt: null,
         phone: null,
         passwordHash: null,
         birthDate: null,

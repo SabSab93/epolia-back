@@ -24,6 +24,9 @@ jest.mock('@/prisma/client', () => {
       findUnique: jest.fn(),
       deleteMany: jest.fn(),
     },
+    emailVerificationToken: {
+      deleteMany: jest.fn(),
+    },
     userRoleAssignment: {
       upsert: jest.fn(),
       deleteMany: jest.fn(),
@@ -86,6 +89,9 @@ type PrismaMock = {
   };
   authAccount: {
     findUnique: SingleArgMock;
+    deleteMany: SingleArgMock;
+  };
+  emailVerificationToken: {
     deleteMany: SingleArgMock;
   };
   userRoleAssignment: {
@@ -336,8 +342,11 @@ describe('Users routes', () => {
     );
   });
 
-  it('anonymizes a user and deletes auth accounts', async () => {
+  it('anonymizes a user and deletes auth accounts and confirmation links', async () => {
     prismaMock.authAccount.deleteMany.mockResolvedValue({ count: 1 });
+    prismaMock.emailVerificationToken.deleteMany.mockResolvedValue({
+      count: 1,
+    });
     prismaMock.user.update.mockResolvedValue({
       ...userMock,
       email: null,
@@ -352,6 +361,9 @@ describe('Users routes', () => {
     expect(response.status).toBe(200);
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1);
     expect(prismaMock.authAccount.deleteMany).toHaveBeenCalledWith({
+      where: { userId: userMock.id },
+    });
+    expect(prismaMock.emailVerificationToken.deleteMany).toHaveBeenCalledWith({
       where: { userId: userMock.id },
     });
     expect(firstCallArg(prismaMock.user.update)).toMatchObject({

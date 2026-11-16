@@ -68,6 +68,19 @@ Les routes utilisent le préfixe `/api`. L'authentification locale, les profils 
 
 Le schéma Prisma couvre le MLD final, y compris les domaines dont les routes restent à développer.
 
+## Confirmation de l'adresse e-mail
+
+Décisions de l'issue #76 :
+
+- **Envoi** : [Resend](https://resend.com), avec `RESEND_API_KEY` et `EMAIL_FROM` (adresse d'un domaine vérifié chez Resend). Sans ces variables, aucun e-mail n'est envoyé et l'API le signale (`EMAIL_SERVICE_UNAVAILABLE`). Une réponse positive veut dire que Resend a accepté le message, pas qu'il est arrivé.
+- **Lien** : `PUBLIC_API_URL/api/auth/verify-email?token=…`. Il ouvre une page servie par l'API avec un bouton « Confirmer », valable sur navigateur, Android et iOS sans configuration de lien vers l'application. Ouvrir le lien ne confirme rien : les antivirus de messagerie qui ouvrent les liens ne peuvent donc pas le consommer. Si `APP_RETURN_URL` est renseignée (par exemple `epolia://email-verified`), la page affiche un bouton « Ouvrir l'application Epolia » ; il ne fonctionne que si l'application déclare cette adresse (schéma d'URL Capacitor, côté front). L'application relit ensuite `GET /api/auth/me` (`emailVerified`).
+- **Jeton** : 32 octets aléatoires, valable 24 h, utilisable une fois. Seule son empreinte SHA-256 est stockée (`email_verification_tokens`). Un nouvel envoi rend les liens précédents expirés. Le lien ne confirme que l'adresse à laquelle il a été envoyé.
+- **Inscription** : le compte est créé même si l'envoi échoue ; la réponse contient `emailVerificationSent: false` et l'application propose le renvoi (`POST /api/auth/email-verification`).
+- **Limites** : un envoi par minute et cinq par 24 h par compte, comptés en base.
+- **Avant confirmation** : la connexion et la création du profil restent possibles. Les futures routes de contact, de mission, de paiement et de publication du profil devront exiger `emailVerified` (disponible dans `response.locals.authUser`).
+- **Comptes existants** : non confirmés ; ils peuvent demander un lien.
+- Adresse confirmée, compte actif (`status`) et étudiant approuvé (`StudentVerification`) restent trois états distincts.
+
 ## Imports internes
 
 Utiliser des alias pour les imports locaux, y compris dans les tests :

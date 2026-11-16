@@ -9,6 +9,7 @@ import { assertAdult } from '@/services/age';
 export type AuthUser = {
   id: string;
   email: string | null;
+  emailVerified: boolean;
   roles: UserRole[];
 };
 
@@ -46,6 +47,7 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
       select: {
         id: true,
         email: true,
+        emailVerifiedAt: true,
         status: true,
         birthDate: true,
         roles: {
@@ -72,6 +74,7 @@ export const requireAuth: RequestHandler = async (request, response, next) => {
     response.locals.authUser = {
       id: user.id,
       email: user.email,
+      emailVerified: Boolean(user.emailVerifiedAt),
       roles: user.roles.map((role) => role.role),
     } satisfies AuthUser;
 

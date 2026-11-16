@@ -41,6 +41,7 @@ export async function activateUserRole(
             select: {
               id: true,
               email: true,
+              emailVerifiedAt: true,
               status: true,
               roles: { select: { role: true } },
             },
