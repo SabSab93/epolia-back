@@ -251,9 +251,9 @@ export const swaggerDocument = {
     },
     '/api/auth/email-verification': {
       post: {
-        summary: 'Send a new e-mail confirmation link',
+        summary: 'Send a new e-mail confirmation code',
         description:
-          'Creates a one-time link valid 24 hours and invalidates the previous ones. At most one e-mail per minute and five per 24 hours per account. A 202 means the sending service accepted the e-mail, not that it reached the inbox.',
+          'Sends a 6-digit code valid 10 minutes. The new code becomes valid, and the previous one stops working, only once the e-mail is accepted. At most one e-mail per minute and five per 24 hours per account. A 202 means the sending service accepted the e-mail, not that it reached the inbox.',
         tags: ['Auth'],
         security: [{ bearerAuth: [] }],
         responses: {
@@ -273,7 +273,7 @@ export const swaggerDocument = {
           401: { description: 'UNAUTHORIZED' },
           403: {
             description:
-              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED',
+              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED, ADULT_REQUIRED, or EMAIL_VERIFICATION_LOCKED (20 wrong codes on this account: no more codes are sent)',
           },
           409: { description: 'EMAIL_ALREADY_VERIFIED' },
           429: {
@@ -291,49 +291,58 @@ export const swaggerDocument = {
         },
       },
     },
-    '/api/auth/verify-email': {
-      get: {
-        summary: 'Page opened from the confirmation e-mail (HTML)',
-        description:
-          'Shows a button that posts the token. Opening the link does not confirm anything, so mail scanners that open links cannot consume it.',
-        tags: ['Auth'],
-        parameters: [
-          {
-            name: 'token',
-            in: 'query',
-            required: true,
-            schema: { type: 'string' },
-          },
-        ],
-        responses: {
-          200: { description: 'HTML page with the confirmation button' },
-          400: { description: 'HTML page: incorrect link' },
-        },
-      },
+    '/api/auth/email-verification/verify': {
       post: {
-        summary: 'Confirm the e-mail address (HTML form)',
+        summary: 'Confirm the e-mail address with the 6-digit code',
         description:
-          'Consumes the one-time link. Two simultaneous clicks confirm only once. A link sent to a previous address never confirms the current one. Returns an HTML page for the person; the app reads the new state from GET /api/auth/me.',
+          'Checks the last code sent to the signed-in account. Each check counts as one attempt before the comparison: at most 5 per code, even with simultaneous requests. A malformed code is not counted. A code sent to a previous address never confirms the current one. The app then reads the new state from GET /api/auth/me.',
         tags: ['Auth'],
+        security: [{ bearerAuth: [] }],
         requestBody: {
           required: true,
           content: {
-            'application/x-www-form-urlencoded': {
+            'application/json': {
               schema: {
                 type: 'object',
-                required: ['token'],
-                properties: { token: { type: 'string' } },
+                required: ['code'],
+                properties: {
+                  code: {
+                    type: 'string',
+                    pattern: '^\\d{6}$',
+                    example: '048213',
+                  },
+                },
               },
             },
           },
         },
         responses: {
-          200: { description: 'HTML page: address confirmed' },
-          400: { description: 'HTML page: incorrect link' },
-          409: { description: 'HTML page: link already used' },
+          200: {
+            description: 'Address confirmed',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    emailVerified: { type: 'boolean', enum: [true] },
+                  },
+                },
+              },
+            },
+          },
+          400: {
+            description:
+              'VALIDATION_ERROR (not 6 digits), EMAIL_REQUIRED, or EMAIL_VERIFICATION_CODE_INVALID with `attemptsRemaining` (1 to 4)',
+          },
+          401: { description: 'UNAUTHORIZED' },
+          403: {
+            description:
+              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED',
+          },
+          409: { description: 'EMAIL_ALREADY_VERIFIED' },
           410: {
             description:
-              'HTML page: link expired (older than 24 hours or replaced by a newer one)',
+              'The code can no longer be used, request a new one. EMAIL_VERIFICATION_CODE_EXPIRED: older than 10 minutes, replaced by a newer code, sent to a previous address, or no code sent. EMAIL_VERIFICATION_TOO_MANY_ATTEMPTS: 5 attempts used.',
           },
         },
       },

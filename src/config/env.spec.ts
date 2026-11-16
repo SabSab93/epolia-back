@@ -15,7 +15,6 @@ describe('Environment configuration', () => {
     delete process.env.NODE_ENV;
     delete process.env.JWT_SECRET;
     delete process.env.CORS_ORIGIN;
-    delete process.env.PUBLIC_API_URL;
     delete process.env.PORT;
   });
 
@@ -41,7 +40,6 @@ describe('Environment configuration', () => {
       process.env.NODE_ENV = value;
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
-      process.env.PUBLIC_API_URL = 'https://api.epolia.fr';
 
       expect(loadConfig().nodeEnv).toBe(value);
     },
@@ -52,7 +50,6 @@ describe('Environment configuration', () => {
       nodeEnv: 'development',
       jwtSecret: 'dev-secret-change-me',
       corsOrigin: true,
-      publicApiUrl: 'http://localhost:3000',
     });
   });
 
@@ -80,28 +77,6 @@ describe('Environment configuration', () => {
       process.env.NODE_ENV = 'production';
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
-      process.env.PUBLIC_API_URL = 'https://api.epolia.fr';
-    });
-
-    it.each([undefined, '', 'http://localhost:3000', 'http://api.epolia.fr'])(
-      'rejects a PUBLIC_API_URL that e-mail links cannot use: %j',
-      (value) => {
-        if (value === undefined) {
-          delete process.env.PUBLIC_API_URL;
-        } else {
-          process.env.PUBLIC_API_URL = value;
-        }
-
-        expect(loadConfig).toThrow(
-          'PUBLIC_API_URL must be the public HTTPS address of the API in production',
-        );
-      },
-    );
-
-    it('removes the trailing slash of PUBLIC_API_URL', () => {
-      process.env.PUBLIC_API_URL = 'https://api.epolia.fr/';
-
-      expect(loadConfig().publicApiUrl).toBe('https://api.epolia.fr');
     });
 
     it.each([

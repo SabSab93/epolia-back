@@ -197,7 +197,7 @@ authRouter.post('/auth/register', async (request, response) => {
 });
 
 // The account exists even when the e-mail cannot be sent: the app then offers
-// to resend the link instead of losing the registration.
+// to send a new code instead of losing the registration.
 async function trySendVerificationEmail(user: {
   id: string;
   email: string | null;
@@ -209,7 +209,7 @@ async function trySendVerificationEmail(user: {
     await sendVerificationEmail({ id: user.id, email: user.email });
     return true;
   } catch (error) {
-    // No e-mail address or token in the log, only the kind of failure.
+    // No e-mail address or code in the log, only the kind of failure.
     const reason =
       error instanceof AppError
         ? error.code
