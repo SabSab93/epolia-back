@@ -11,14 +11,29 @@ export const notFoundHandler: RequestHandler = (request, _response, next) => {
   );
 };
 
-// Errors raised by express.json before any route runs: invalid JSON, body too
-// large… They carry a 4xx `status` and a `type` such as 'entity.parse.failed'.
+// Errors raised by express.json (body-parser) before any route runs. Only
+// these `type` values are recognized, so another 4xx error keeps its meaning.
+const requestBodyErrorTypes = new Set([
+  'charset.unsupported',
+  'encoding.unsupported',
+  'entity.parse.failed',
+  'entity.too.large',
+  'entity.verify.failed',
+  'parameters.too.many',
+  'request.aborted',
+  'request.size.invalid',
+]);
+
 function requestBodyError(error: unknown) {
   if (typeof error !== 'object' || error === null) return undefined;
 
   const { status, type } = error as { status?: unknown; type?: unknown };
-  if (typeof type !== 'string' || typeof status !== 'number') return undefined;
-  if (status < 400 || status >= 500) return undefined;
+  if (typeof type !== 'string' || !requestBodyErrorTypes.has(type)) {
+    return undefined;
+  }
+  if (typeof status !== 'number' || status < 400 || status >= 500) {
+    return undefined;
+  }
 
   return type === 'entity.too.large'
     ? new AppError(413, 'PAYLOAD_TOO_LARGE', 'Request body is too large')

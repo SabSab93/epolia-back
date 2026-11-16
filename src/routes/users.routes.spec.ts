@@ -2,6 +2,7 @@ import {
   AccountStatus,
   AuthProvider,
   PrivacyRequestType,
+  ProfileStatus,
   UserRole,
 } from '@prisma/client';
 import express from 'express';
@@ -411,7 +412,11 @@ describe('Users routes', () => {
     }
     expect(prismaMock.studentProfile.updateMany).toHaveBeenCalledWith({
       where: { userId: userMock.id },
-      data: { title: null, description: null },
+      data: {
+        title: null,
+        description: null,
+        status: ProfileStatus.DRAFT,
+      },
     });
     expect(firstCallArg(prismaMock.user.update)).toMatchObject({
       where: { id: userMock.id },
