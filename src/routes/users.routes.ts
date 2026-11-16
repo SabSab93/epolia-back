@@ -321,9 +321,10 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
     await tx.studentHobby.deleteMany({ where: { studentId: userId } });
     await tx.studentPortfolioItem.deleteMany({ where: { studentId: userId } });
     await tx.studentAvailability.deleteMany({ where: { studentId: userId } });
+    await tx.studentVerification.deleteMany({ where: { studentId: userId } });
     // The student profile row stays: missions and DAC7 lines point to it.
-    // Kept on purpose, pending a decision on legal retention: consents (proof
-    // of acceptance), tax profile and school verification.
+    // Kept on purpose: consents (proof of acceptance) and, pending a decision
+    // on legal retention for DAC7, the tax profile.
     await tx.studentProfile.updateMany({
       where: { userId },
       data: { title: null, description: null },

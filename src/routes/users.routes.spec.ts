@@ -42,6 +42,7 @@ jest.mock('@/prisma/client', () => {
     studentHobby: { deleteMany: jest.fn() },
     studentPortfolioItem: { deleteMany: jest.fn() },
     studentAvailability: { deleteMany: jest.fn() },
+    studentVerification: { deleteMany: jest.fn() },
     studentProfile: { updateMany: jest.fn() },
     $transaction: jest.fn(),
     $queryRaw: jest.fn(),
@@ -118,6 +119,7 @@ type PrismaMock = {
   studentHobby: { deleteMany: SingleArgMock };
   studentPortfolioItem: { deleteMany: SingleArgMock };
   studentAvailability: { deleteMany: SingleArgMock };
+  studentVerification: { deleteMany: SingleArgMock };
   studentProfile: { updateMany: SingleArgMock };
   $transaction: jest.MockedFunction<TransactionMock>;
 };
@@ -401,6 +403,7 @@ describe('Users routes', () => {
       prismaMock.studentHobby,
       prismaMock.studentPortfolioItem,
       prismaMock.studentAvailability,
+      prismaMock.studentVerification,
     ]) {
       expect(studentData.deleteMany).toHaveBeenCalledWith({
         where: { studentId: userMock.id },
