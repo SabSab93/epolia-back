@@ -1,7 +1,10 @@
 import { Prisma, PricingType, UserRole } from '@prisma/client';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
-import { type AuthUser, requireAuth } from '@/middlewares/auth.middleware';
+import {
+  type AuthUser,
+  requireAuthAllowUnverified,
+} from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import {
   assertSpecialtyEligible,
@@ -159,7 +162,7 @@ function handleStudentSpecialtyPrismaError(error: unknown): never {
 
 studentSpecialtiesRouter.get(
   '/student-specialties/me',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = requireStudent(response);
     await getStudentProfile(prisma, authUser.id);
@@ -182,7 +185,7 @@ studentSpecialtiesRouter.get(
 
 studentSpecialtiesRouter.get(
   '/student-specialties/eligible',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (_request, response) => {
     const authUser = requireStudent(response);
     const profile = await getStudentProfile(prisma, authUser.id);
@@ -203,7 +206,7 @@ studentSpecialtiesRouter.get(
 
 studentSpecialtiesRouter.post(
   '/student-specialties',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = requireStudent(response);
     const body = request.body || {};
@@ -261,7 +264,7 @@ studentSpecialtiesRouter.post(
 
 studentSpecialtiesRouter.patch(
   '/student-specialties/:specialtyId',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = requireStudent(response);
     const specialtyId = cleanSpecialtyId(request.params.specialtyId, true);
@@ -327,7 +330,7 @@ studentSpecialtiesRouter.patch(
 
 studentSpecialtiesRouter.delete(
   '/student-specialties/:specialtyId',
-  requireAuth,
+  requireAuthAllowUnverified,
   async (request, response) => {
     const authUser = requireStudent(response);
     const specialtyId = cleanSpecialtyId(request.params.specialtyId, true);
