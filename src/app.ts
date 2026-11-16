@@ -37,10 +37,11 @@ app.use(
     },
   }),
 );
+// The app sends its token in the Authorization header, not in a cookie:
+// no `credentials`, so browsers never attach cookies to cross-origin calls.
 app.use(
   cors({
     origin: config.corsOrigin,
-    credentials: true,
   }),
 );
 
@@ -64,12 +65,6 @@ app.use(
   }),
 );
 
-app.use(
-  express.urlencoded({
-    extended: true,
-  }),
-);
-
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);
 app.use('/api', emailVerificationRouter);
@@ -80,7 +75,10 @@ app.use('/api', studentSpecialtiesRouter);
 app.use('/api', userProfilesRouter);
 app.use('/api', usersRouter);
 
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// Interactive API docs, admin routes included: development and tests only.
+if (config.nodeEnv !== 'production') {
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
 
 app.use(notFoundHandler);
 app.use(errorHandler);
