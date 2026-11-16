@@ -17,6 +17,10 @@ import { activateUserRole } from '@/services/user-roles';
 const scrypt = promisify(scryptCallback);
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const termsOfUseConsentType = 'TERMS_OF_USE';
+// Checked when the e-mail is unknown, so the login takes the same time
+// whether the account exists or not. No password can match it.
+const dummySalt = '0'.repeat(32);
+const dummyPasswordHash = `${dummySalt}:${'0'.repeat(128)}`;
 
 const authUserSelect = {
   id: true,
@@ -43,12 +47,14 @@ async function hashPassword(password: string) {
 
 async function verifyPassword(password: string, passwordHash: string) {
   const [salt, storedHash] = passwordHash.split(':');
+  // Hash even when the stored value is malformed, so the response time
+  // never tells such an account apart.
+  const hash = (await scrypt(password, salt || dummySalt, 64)) as Buffer;
 
   if (!salt || !storedHash) {
     return false;
   }
 
-  const hash = (await scrypt(password, salt, 64)) as Buffer;
   const storedHashBuffer = Buffer.from(storedHash, 'hex');
 
   if (hash.length !== storedHashBuffer.length) {
@@ -58,19 +64,15 @@ async function verifyPassword(password: string, passwordHash: string) {
   return timingSafeEqual(hash, storedHashBuffer);
 }
 
-function createToken(user: {
-  id: string;
-  email: string | null;
-  roles: { role: UserRole }[];
-}) {
+function createToken(user: { id: string; roles: { role: UserRole }[] }) {
   return jwt.sign(
     {
       sub: user.id,
-      email: user.email,
       roles: user.roles.map((role) => role.role),
     },
     config.jwtSecret,
     {
+      algorithm: 'HS256',
       expiresIn: config.jwtExpiresIn as SignOptions['expiresIn'],
     },
   );
@@ -250,10 +252,12 @@ authRouter.post('/auth/login', async (request, response) => {
     select: authUserSelect,
   });
 
-  if (
-    !user?.passwordHash ||
-    !(await verifyPassword(password, user.passwordHash))
-  ) {
+  const passwordMatches = await verifyPassword(
+    password,
+    user?.passwordHash ?? dummyPasswordHash,
+  );
+
+  if (!user?.passwordHash || !passwordMatches) {
     throw new AppError(401, 'INVALID_CREDENTIALS', 'Invalid email or password');
   }
 

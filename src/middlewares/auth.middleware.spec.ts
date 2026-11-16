@@ -51,6 +51,21 @@ describe('Auth middleware', () => {
     findUser.mockReset();
   });
 
+  it('refuses a token signed with another algorithm', async () => {
+    findUser.mockResolvedValue(accountWith(new Date('2026-11-01')));
+    const token = jwt.sign(
+      { sub: userId, roles: [UserRole.STUDENT] },
+      config.jwtSecret,
+      { algorithm: 'HS512' },
+    );
+
+    const response = await request(appWith(requireAuth))
+      .get('/protected')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(401);
+  });
+
   it('refuses an unconfirmed e-mail by default', async () => {
     findUser.mockResolvedValue(accountWith(null));
 
