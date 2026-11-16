@@ -43,6 +43,19 @@ app.use(
     credentials: true,
   }),
 );
+
+app.get('/api/health', (_req, res) => {
+  res.status(200).json({
+    status: 'ok',
+  });
+});
+
+// After the health check, which the host calls often from its own IP, and
+// before the body is read: invalid or oversized bodies count too.
+app.use('/api', apiRateLimit);
+app.use('/api/auth/login', loginRateLimit);
+app.use('/api/auth/register', registerRateLimit);
+
 app.use(compression());
 
 app.use(
@@ -56,17 +69,6 @@ app.use(
     extended: true,
   }),
 );
-
-app.get('/api/health', (_req, res) => {
-  res.status(200).json({
-    status: 'ok',
-  });
-});
-
-// After the health check, which the host calls often from its own IP.
-app.use('/api', apiRateLimit);
-app.use('/api/auth/login', loginRateLimit);
-app.use('/api/auth/register', registerRateLimit);
 
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);

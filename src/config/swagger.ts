@@ -471,7 +471,7 @@ export const swaggerDocument = {
           },
           400: { description: 'Validation error' },
           401: { description: 'Authentication required' },
-          403: { description: 'Forbidden' },
+          403: { description: 'Forbidden or status not allowed' },
           409: { description: 'Student profile already exists' },
         },
       },

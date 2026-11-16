@@ -3,6 +3,7 @@ import {
   AuthProvider,
   Prisma,
   PrivacyRequestType,
+  ProfileStatus,
   UserRole,
 } from '@prisma/client';
 import { Router } from 'express';
@@ -325,9 +326,10 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
     // The student profile row stays: missions and DAC7 lines point to it.
     // Kept on purpose: consents (proof of acceptance) and, pending a decision
     // on legal retention for DAC7, the tax profile.
+    // Back to DRAFT so that no listing filtering on VISIBLE shows it.
     await tx.studentProfile.updateMany({
       where: { userId },
-      data: { title: null, description: null },
+      data: { title: null, description: null, status: ProfileStatus.DRAFT },
     });
 
     return tx.user.update({

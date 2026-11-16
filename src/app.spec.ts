@@ -68,7 +68,7 @@ describe('Express app', () => {
 
   it('rejects invalid JSON with a 400 instead of a 500', async () => {
     const response = await request(app)
-      .post('/api/auth/login')
+      .post('/api/student-profiles')
       .set('Content-Type', 'application/json')
       .send('{"email":');
 
@@ -82,7 +82,7 @@ describe('Express app', () => {
 
   it('rejects a body over the size limit with a 413', async () => {
     const response = await request(app)
-      .post('/api/auth/login')
+      .post('/api/student-profiles')
       .set('Content-Type', 'application/json')
       .send(JSON.stringify({ email: 'a'.repeat(2 * 1024 * 1024) }));
 
@@ -114,10 +114,35 @@ describe('Express app', () => {
     log.mockRestore();
   });
 
-  it('limits failed logins per client', async () => {
-    const attempt = () => request(app).post('/api/auth/login').send({});
+  it('keeps the meaning of unrelated 4xx errors that carry a type', async () => {
+    const log = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const testApp = express();
 
-    for (let index = 0; index < 10; index++) {
+    testApp.get('/other', () => {
+      throw Object.assign(new Error('Forbidden'), {
+        status: 403,
+        type: 'upload.rejected',
+      });
+    });
+    testApp.use(errorHandler);
+
+    const response = await request(testApp).get('/other');
+
+    expect(response.status).toBe(500);
+    expect((response.body as ErrorBody).code).toBe('INTERNAL_SERVER_ERROR');
+    log.mockRestore();
+  });
+
+  it('limits failed logins per client, invalid bodies included', async () => {
+    const attempt = () => request(app).post('/api/auth/login').send({});
+    const invalidJson = () =>
+      request(app)
+        .post('/api/auth/login')
+        .set('Content-Type', 'application/json')
+        .send('{"email":');
+
+    for (let index = 0; index < 5; index++) {
+      expect((await invalidJson()).status).toBe(400);
       expect((await attempt()).status).toBe(400);
     }
     const blocked = await attempt();
