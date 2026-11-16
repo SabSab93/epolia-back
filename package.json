@@ -31,6 +31,7 @@
     "express-rate-limit": "^8.7.2",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
+    "prisma": "^6.19.3",
     "resend": "^6.38.1",
     "swagger-ui-express": "^5.0.1"
   },
@@ -54,7 +55,6 @@
     "husky": "^9.1.7",
     "jest": "^30.0.0",
     "prettier": "^3.4.2",
-    "prisma": "^6.19.3",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",

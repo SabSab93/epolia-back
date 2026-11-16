@@ -173,7 +173,42 @@ describe('Express app', () => {
     expect((await request(app).get('/api/health')).status).toBe(200);
   });
 
-  it('exposes Swagger UI', async () => {
+  it('does not allow cookies on cross-origin calls', async () => {
+    const response = await request(app)
+      .get('/api/health')
+      .set('Origin', 'http://localhost:8081');
+
+    expect(response.headers['access-control-allow-origin']).toBeDefined();
+    expect(
+      response.headers['access-control-allow-credentials'],
+    ).toBeUndefined();
+  });
+
+  it('does not serve Swagger UI in production', async () => {
+    const originalEnv = process.env;
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production',
+      JWT_SECRET: '0123456789abcdef0123456789abcdef',
+      CORS_ORIGIN: 'https://epolia.fr',
+      TRUST_PROXY: '1',
+    };
+
+    try {
+      let productionApp: typeof app | undefined;
+      jest.isolateModules(() => {
+        productionApp = (require('@/app') as typeof import('@/app')).default;
+      });
+
+      const response = await request(productionApp!).get('/api/docs/');
+
+      expect(response.status).toBe(404);
+    } finally {
+      process.env = originalEnv;
+    }
+  });
+
+  it('exposes Swagger UI outside production', async () => {
     const response = await request(app).get('/api/docs/');
 
     expect(response.status).toBe(200);
