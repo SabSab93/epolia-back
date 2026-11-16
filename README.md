@@ -59,10 +59,10 @@ Le fichier `.env` reste local et ne doit pas être commité.
 
 ## API
 
-| Point d'entrée | URL locale                       |
-| -------------- | -------------------------------- |
-| Swagger        | http://localhost:3000/api/docs   |
-| Health check   | http://localhost:3000/api/health |
+| Point d'entrée | URL locale                                               |
+| -------------- | -------------------------------------------------------- |
+| Swagger        | http://localhost:3000/api/docs (désactivé en production) |
+| Health check   | http://localhost:3000/api/health                         |
 
 Les routes utilisent le préfixe `/api`. L'authentification locale, les profils utilisateur et étudiant, et l'administration des utilisateurs sont implémentés.
 
