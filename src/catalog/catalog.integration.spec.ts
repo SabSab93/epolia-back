@@ -601,6 +601,35 @@ databaseTests(
       expect(response.body.code).toBe('SPECIALTY_DOMAIN_MISMATCH');
     });
 
+    it('refuses an education title longer than 150 characters', async () => {
+      const response = await request(app)
+        .post('/api/student-educations')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ title: 'a'.repeat(151) });
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'title must be at most 150 characters',
+      );
+    });
+
+    it('refuses a 21st education', async () => {
+      await prisma.studentEducation.createMany({
+        data: Array.from({ length: 20 }, (_, index) => ({
+          studentId,
+          title: `Education ${index}`,
+        })),
+      });
+      const response = await request(app)
+        .post('/api/student-educations')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ title: 'One too many' });
+      expect(response.status).toBe(409);
+      expect(response.body.code).toBe('EDUCATION_LIMIT_REACHED');
+      expect(
+        await prisma.studentEducation.count({ where: { studentId } }),
+      ).toBe(20);
+    });
+
     it('declares and reads education fields without allowing a supplied studentId to change ownership', async () => {
       const response = await request(app)
         .post('/api/student-educations')

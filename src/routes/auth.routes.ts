@@ -11,6 +11,7 @@ import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
 import { emailRegex } from '@/services/email';
 import { sendVerificationEmail } from '@/services/email-verification';
+import { assertMaxLength, maxLength } from '@/services/input-limits';
 import {
   dummyPasswordHash,
   hashPassword,
@@ -83,6 +84,8 @@ authRouter.post('/auth/register', async (request, response) => {
       'email and password with at least 8 characters are required',
     );
   }
+  assertMaxLength(email.trim(), 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     role !== undefined &&
@@ -105,6 +108,8 @@ authRouter.post('/auth/register', async (request, response) => {
       'firstName and lastName are required',
     );
   }
+  assertMaxLength(firstName.trim(), 'firstName', maxLength.name);
+  assertMaxLength(lastName.trim(), 'lastName', maxLength.name);
 
   const termsVersion = config.registrationTermsVersion;
   if (!termsVersion) {
@@ -217,6 +222,8 @@ authRouter.post('/auth/login', async (request, response) => {
       'email and password are required',
     );
   }
+  assertMaxLength(email.trim(), 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   const user = await prisma.user.findUnique({
     where: {

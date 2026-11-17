@@ -344,6 +344,39 @@ describe('Auth routes', () => {
     expect(typeof response.body.accessToken).toBe('string');
   });
 
+  it.each([
+    [
+      'firstName',
+      { firstName: 'a'.repeat(101) },
+      'firstName must be at most 100 characters',
+    ],
+    [
+      'password',
+      { password: 'a'.repeat(129) },
+      'password must be at most 128 characters',
+    ],
+  ])(
+    'rejects a registration with a too long %s',
+    async (_field, override, message) => {
+      const response = await request(createTestApp())
+        .post('/api/auth/register')
+        .send({ ...testRegistration, ...override });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(message);
+      expect(prismaMock.user.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it('rejects a login password longer than 128 characters', async () => {
+    const response = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: userMock.email, password: 'a'.repeat(129) });
+
+    expect(response.status).toBe(400);
+    expect(prismaMock.user.findUnique).not.toHaveBeenCalled();
+  });
+
   it('uses the same error for an unknown email or a wrong password', async () => {
     prismaMock.user.findUnique.mockResolvedValue(null);
 

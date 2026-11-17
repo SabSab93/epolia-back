@@ -34,14 +34,19 @@ export const swaggerDocument = {
                   'termsVersion',
                 ],
                 properties: {
-                  email: { type: 'string', example: 'user@example.com' },
+                  email: {
+                    type: 'string',
+                    maxLength: 254,
+                    example: 'user@example.com',
+                  },
                   password: {
                     type: 'string',
                     minLength: 8,
+                    maxLength: 128,
                     example: 'password123',
                   },
-                  firstName: { type: 'string', minLength: 1 },
-                  lastName: { type: 'string', minLength: 1 },
+                  firstName: { type: 'string', minLength: 1, maxLength: 100 },
+                  lastName: { type: 'string', minLength: 1, maxLength: 100 },
                   termsAccepted: { type: 'boolean', enum: [true] },
                   termsVersion: {
                     type: 'string',
@@ -97,8 +102,16 @@ export const swaggerDocument = {
                 type: 'object',
                 required: ['email', 'password'],
                 properties: {
-                  email: { type: 'string', example: 'user@example.com' },
-                  password: { type: 'string', example: 'password123' },
+                  email: {
+                    type: 'string',
+                    maxLength: 254,
+                    example: 'user@example.com',
+                  },
+                  password: {
+                    type: 'string',
+                    maxLength: 128,
+                    example: 'password123',
+                  },
                 },
               },
             },
@@ -676,6 +689,10 @@ export const swaggerDocument = {
           401: { description: 'Authentication required' },
           403: { description: 'Student role required' },
           404: { description: 'Student profile or study field not found' },
+          409: {
+            description:
+              'EDUCATION_LIMIT_REACHED: a student can have at most 20 educations',
+          },
         },
       },
     },
@@ -812,11 +829,13 @@ export const swaggerDocument = {
                   email: {
                     type: 'string',
                     format: 'email',
+                    maxLength: 254,
                     description: 'Stored in lower case.',
                   },
                   password: {
                     type: 'string',
                     minLength: 8,
+                    maxLength: 128,
                     writeOnly: true,
                     description: 'Hashed by the server.',
                   },
@@ -827,7 +846,13 @@ export const swaggerDocument = {
                     description:
                       'Required and age at least 18 unless roles is [ADMIN].',
                   },
-                  phone: { type: 'string' },
+                  phone: {
+                    type: 'string',
+                    maxLength: 20,
+                    example: '+33612345678',
+                    description:
+                      'Digits, with an optional leading + and spaces, dots or dashes.',
+                  },
                   roles: {
                     type: 'array',
                     description: 'ADMIN cannot be combined with another role.',
@@ -1012,14 +1037,21 @@ export const swaggerDocument = {
           title: {
             type: 'string',
             minLength: 1,
+            maxLength: 150,
             example: 'Licence informatique',
           },
           school: {
             type: 'string',
             nullable: true,
+            maxLength: 150,
             example: 'Universite Paris Cite',
           },
-          level: { type: 'string', nullable: true, example: 'BAC+3' },
+          level: {
+            type: 'string',
+            nullable: true,
+            maxLength: 150,
+            example: 'BAC+3',
+          },
           startDate: {
             type: 'string',
             format: 'date',
@@ -1064,20 +1096,21 @@ export const swaggerDocument = {
         properties: {
           pricingType: { type: 'string', enum: ['HOURLY', 'FIXED'] },
           priceCents: { type: 'integer', minimum: 1, maximum: 2147483647 },
-          pricingDetails: { type: 'string', nullable: true },
+          pricingDetails: { type: 'string', nullable: true, maxLength: 500 },
         },
       },
       UserProfileInput: {
         type: 'object',
         required: ['firstName'],
         properties: {
-          firstName: { type: 'string', example: 'Sabrina' },
-          lastName: { type: 'string', example: 'Hammadi' },
+          firstName: { type: 'string', maxLength: 100, example: 'Sabrina' },
+          lastName: { type: 'string', maxLength: 100, example: 'Hammadi' },
           photoUrl: {
             type: 'string',
+            maxLength: 2048,
             example: 'https://example.com/photo.jpg',
           },
-          city: { type: 'string', example: 'Paris' },
+          city: { type: 'string', maxLength: 100, example: 'Paris' },
           latitude: { type: 'number', example: 48.8566 },
           longitude: { type: 'number', example: 2.3522 },
         },
@@ -1092,9 +1125,14 @@ export const swaggerDocument = {
               'Omit to start a draft or to keep the currently selected domain.',
             example: '9324c24d-a476-41db-a0e3-12479bd81ed7',
           },
-          title: { type: 'string', example: 'Developpeuse web' },
+          title: {
+            type: 'string',
+            maxLength: 100,
+            example: 'Developpeuse web',
+          },
           description: {
             type: 'string',
+            maxLength: 2000,
             example: 'Creation de sites vitrines et applications web.',
           },
           status: {
@@ -1129,6 +1167,7 @@ export const swaggerDocument = {
           pricingDetails: {
             type: 'string',
             nullable: true,
+            maxLength: 500,
             example: 'Cours de 60 minutes',
           },
         },

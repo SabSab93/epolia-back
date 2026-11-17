@@ -6,6 +6,7 @@ import {
   requireAuthAllowUnverified,
 } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
+import { assertMaxLength, maxLength } from '@/services/input-limits';
 
 export const userProfilesRouter = Router();
 
@@ -61,6 +62,10 @@ userProfilesRouter.post(
     if (typeof body.firstName !== 'string' || body.firstName.trim() === '') {
       throw new AppError(400, 'VALIDATION_ERROR', 'firstName is required');
     }
+    assertMaxLength(body.firstName, 'firstName', maxLength.name);
+    assertMaxLength(body.lastName, 'lastName', maxLength.name);
+    assertMaxLength(body.city, 'city', maxLength.city);
+    assertMaxLength(body.photoUrl, 'photoUrl', maxLength.photoUrl);
 
     const profileData = {
       firstName: body.firstName.trim(),
@@ -162,6 +167,10 @@ userProfilesRouter.patch(
     if (body.firstName !== undefined && !firstName) {
       throw new AppError(400, 'VALIDATION_ERROR', 'firstName is required');
     }
+    assertMaxLength(body.firstName, 'firstName', maxLength.name);
+    assertMaxLength(body.lastName, 'lastName', maxLength.name);
+    assertMaxLength(body.city, 'city', maxLength.city);
+    assertMaxLength(body.photoUrl, 'photoUrl', maxLength.photoUrl);
 
     const profile = await prisma.userProfile.update({
       where: {

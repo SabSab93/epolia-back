@@ -15,6 +15,11 @@ import {
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
 import { emailRegex } from '@/services/email';
+import {
+  assertMaxLength,
+  assertPhone,
+  maxLength,
+} from '@/services/input-limits';
 import { hashPassword, minPasswordLength } from '@/services/password';
 
 const uuidRegex =
@@ -257,8 +262,14 @@ usersRouter.post('/users/local', async (request, response) => {
     );
   }
 
+  assertMaxLength(email.trim(), 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
+
   if (phone !== undefined && typeof phone !== 'string') {
     throw new AppError(400, 'VALIDATION_ERROR', 'phone must be a string');
+  }
+  if (typeof phone === 'string' && phone.trim()) {
+    assertPhone(phone.trim());
   }
 
   if (

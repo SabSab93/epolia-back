@@ -13,6 +13,7 @@ import {
   lockStudentProfile,
   unpublishStudentProfile,
 } from '@/services/student-specialties';
+import { assertMaxLength, maxLength } from '@/services/input-limits';
 
 export const studentSpecialtiesRouter = Router();
 
@@ -141,6 +142,7 @@ function cleanPricingDetails(value: unknown) {
       'pricingDetails must be a string',
     );
   }
+  assertMaxLength(value, 'pricingDetails', maxLength.pricingDetails);
 
   return value.trim() || null;
 }
