@@ -77,11 +77,35 @@ function parseTrustProxy(value: string | undefined): number {
   return Number(hops);
 }
 
+// Without it, the pg driver would silently fall back to localhost.
+const databaseUrl = process.env.DATABASE_URL?.trim();
+
+if (nodeEnv === 'production' && !databaseUrl) {
+  throw new Error('DATABASE_URL is required in production');
+}
+
+// Certificate authority of the database server (Supabase: Database Settings >
+// SSL Configuration). With it, the API encrypts the connection and checks the
+// server identity. The pg driver does not encrypt by default, so production
+// refuses to start without it.
+const databaseSslCa = process.env.DATABASE_SSL_CA?.trim();
+
+if (
+  nodeEnv === 'production' &&
+  !databaseSslCa?.includes('-----BEGIN CERTIFICATE-----')
+) {
+  throw new Error(
+    'DATABASE_SSL_CA must contain a PEM certificate in production',
+  );
+}
+
 export const config = {
   nodeEnv,
   port: Number(process.env.PORT) || 3000,
   corsOrigin,
   trustProxy,
+  databaseUrl,
+  databaseSslCa,
   jsonBodyLimit: process.env.JSON_BODY_LIMIT || '1mb',
   jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1h',

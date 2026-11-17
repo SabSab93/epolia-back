@@ -28,10 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Production dependencies only. Critical level for now: 3 known high
-      # findings come from Prisma (deepmerge-ts) until the Prisma 7 upgrade.
+      # Production dependencies only.
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=critical
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Generate Prisma client
         run: npm run prisma:generate

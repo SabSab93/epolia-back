@@ -7,6 +7,7 @@ COPY package*.json ./
 RUN npm ci
 
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npx prisma generate
 
 COPY . .
@@ -22,8 +23,9 @@ COPY package*.json ./
 # --ignore-scripts: skips the dev-only "prepare" hook (husky).
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
-# Schema and migrations, so the host can run `npx prisma migrate deploy`.
+# Schema, migrations and Prisma config, so the host can run `npx prisma migrate deploy`.
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 RUN npx prisma generate
 
 COPY --from=build /app/dist ./dist

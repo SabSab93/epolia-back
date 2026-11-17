@@ -1,8 +1,6 @@
 import { join } from 'node:path';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/prisma/client';
 import { importCatalog, readActiveCatalog } from '@root/prisma/catalog';
-
-const prisma = new PrismaClient();
 
 async function main() {
   const args = process.argv.slice(2);

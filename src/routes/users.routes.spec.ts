@@ -613,7 +613,18 @@ describe('Users routes', () => {
       new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
         code: 'P2002',
         clientVersion: 'test',
-        meta: { target: ['phone'] },
+        // Shape returned by Prisma 7 with the PostgreSQL adapter.
+        meta: {
+          modelName: 'User',
+          driverAdapterError: {
+            name: 'DriverAdapterError',
+            cause: {
+              kind: 'UniqueConstraintViolation',
+              constraint: { index: 'users_phone_key' },
+              table: 'users',
+            },
+          },
+        },
       }),
     );
 

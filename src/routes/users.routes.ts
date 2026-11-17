@@ -330,8 +330,9 @@ usersRouter.post('/users/local', async (request, response) => {
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
-      // email and phone are both unique: say which one is taken.
-      if (JSON.stringify(error.meta?.target ?? '').includes('phone')) {
+      // email and phone are both unique: say which one is taken. Prisma 7 puts
+      // the constraint name (users_phone_key) under meta.driverAdapterError.
+      if (JSON.stringify(error.meta ?? {}).includes('phone')) {
         throw new AppError(409, 'PHONE_ALREADY_USED', 'Phone already used');
       }
       throw new AppError(409, 'EMAIL_ALREADY_USED', 'Email already used');

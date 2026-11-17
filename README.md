@@ -30,6 +30,7 @@ Variables principales :
 - `NODE_ENV` : uniquement `development`, `test` ou `production`. Toute autre valeur explicite bloque le démarrage. Sans cette variable, le lancement local utilise `development` ; l'image Docker utilise `production` par défaut.
 - `PORT` : port HTTP du backend, `3000` par défaut.
 - `DATABASE_URL` et `DIRECT_URL` : connexions PostgreSQL utilisées par Prisma. Avec Supabase, `DATABASE_URL` peut utiliser une connexion poolée ; `DIRECT_URL` doit utiliser la connexion directe pour les migrations.
+- `DATABASE_SSL_CA` : obligatoire en production. Certificat de l'autorité du serveur PostgreSQL (Supabase : *Database Settings → SSL Configuration → Download certificate*), collé en entier. L'API chiffre alors la connexion et vérifie l'identité du serveur ; sans lui, le pilote `pg` de Prisma 7 se connecterait en clair. Vide en local avec la base Docker. Ne pas mettre `sslmode` dans `DATABASE_URL`.
 - `CORS_ORIGIN` : origines web autorisées, séparées par des virgules.
 - `JWT_SECRET` : obligatoire en production, avec au moins 32 caractères hors espaces de début et de fin. Les valeurs de développement `dev-secret-change-me` et `change-me-in-local-env` sont refusées.
 - `REGISTRATION_TERMS_VERSION` : version exacte des CGU présentées à l’inscription. Tant qu’aucune version n’est configurée, la création de compte renvoie `503 REGISTRATION_TERMS_UNAVAILABLE`.
