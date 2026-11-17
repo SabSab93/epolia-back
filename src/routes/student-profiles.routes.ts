@@ -15,6 +15,7 @@ import { prisma } from '@/prisma/client';
 import { isAdult } from '@/services/age';
 import {
   eligibleSpecialtyWhere,
+  getStudentProfile,
   lockStudentProfile,
   removeIneligibleSpecialties,
 } from '@/services/student-specialties';
@@ -180,7 +181,9 @@ studentProfilesRouter.get(
     }
 
     const profile = await prisma.$transaction(async (tx) => {
-      const profile = await lockStudentProfile(tx, request.params.userId);
+      // Public read: no lock. A lock here would let anyone block the
+      // student's own changes by calling this route in a loop.
+      const profile = await getStudentProfile(tx, request.params.userId);
 
       const owner = await tx.user.findUnique({
         where: { id: profile.userId },
