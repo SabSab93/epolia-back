@@ -240,11 +240,11 @@ export const swaggerDocument = {
           },
           403: {
             description:
-              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED; ADMIN remains exempt from age checks',
+              'ACCOUNT_NOT_ACTIVE, BIRTH_DATE_REQUIRED or ADULT_REQUIRED',
           },
           409: {
             description:
-              'ROLE_ACTIVATION_CONFLICT: concurrent changes prevented completion after three attempts; retry the request',
+              'ADMIN_ROLE_EXCLUSIVE: an admin account cannot have another role. ROLE_ACTIVATION_CONFLICT: concurrent changes prevented completion after three attempts; retry the request',
           },
         },
       },
@@ -807,20 +807,30 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['email', 'passwordHash'],
+                required: ['email', 'password'],
                 properties: {
-                  email: { type: 'string', format: 'email' },
-                  passwordHash: { type: 'string', writeOnly: true },
+                  email: {
+                    type: 'string',
+                    format: 'email',
+                    description: 'Stored in lower case.',
+                  },
+                  password: {
+                    type: 'string',
+                    minLength: 8,
+                    writeOnly: true,
+                    description: 'Hashed by the server.',
+                  },
                   birthDate: {
                     type: 'string',
                     format: 'date',
                     writeOnly: true,
                     description:
-                      'Required and age at least 18 unless roles includes ADMIN.',
+                      'Required and age at least 18 unless roles is [ADMIN].',
                   },
                   phone: { type: 'string' },
                   roles: {
                     type: 'array',
+                    description: 'ADMIN cannot be combined with another role.',
                     items: {
                       type: 'string',
                       enum: ['STUDENT', 'CUSTOMER', 'ADMIN'],
@@ -834,22 +844,34 @@ export const swaggerDocument = {
         security: [{ bearerAuth: [] }],
         responses: {
           201: { description: 'User created' },
-          400: { description: 'Validation error' },
+          400: {
+            description:
+              'VALIDATION_ERROR, or ADMIN_ROLE_EXCLUSIVE when ADMIN is combined with another role',
+          },
           403: { description: 'Admin role required' },
+          409: { description: 'EMAIL_ALREADY_USED or PHONE_ALREADY_USED' },
         },
       },
     },
     '/api/users/{userId}/roles': {
       post: {
         summary:
-          'Assign a role to an active user (ADMIN exempt from age checks)',
+          'Assign a role to an active user (ADMIN exempt from age checks, never combined with another role)',
         tags: ['UsersAdmin'],
         security: [{ bearerAuth: [] }],
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'Role assigned' },
-          400: { description: 'Validation error' },
-          403: { description: 'Admin role required' },
+          400: { description: 'Invalid user id or role' },
+          403: {
+            description:
+              'Admin role required, ACCOUNT_NOT_ACTIVE or no adult birth date',
+          },
+          404: { description: 'User not found' },
+          409: {
+            description:
+              'ADMIN_ROLE_EXCLUSIVE: an admin account cannot have another role',
+          },
         },
       },
     },
@@ -869,8 +891,12 @@ export const swaggerDocument = {
         ],
         responses: {
           204: { description: 'Role removed' },
-          400: { description: 'Validation error' },
+          400: { description: 'Invalid user id or role' },
           403: { description: 'Admin role required' },
+          404: { description: 'User not found' },
+          409: {
+            description: 'LAST_ADMIN: the last active admin keeps the role',
+          },
         },
       },
     },
@@ -882,8 +908,13 @@ export const swaggerDocument = {
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'Status updated' },
-          400: { description: 'Validation error' },
+          400: { description: 'Invalid user id or status' },
           403: { description: 'Admin role required' },
+          404: { description: 'User not found' },
+          409: {
+            description:
+              'LAST_ADMIN (the last active admin stays active) or ACCOUNT_ANONYMIZED',
+          },
         },
       },
     },
@@ -895,7 +926,12 @@ export const swaggerDocument = {
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'Deletion request created' },
+          400: { description: 'Invalid user id' },
           403: { description: 'Admin role required' },
+          404: { description: 'User not found' },
+          409: {
+            description: 'ACCOUNT_ANONYMIZED or DELETION_ALREADY_REQUESTED',
+          },
         },
       },
     },
@@ -907,7 +943,13 @@ export const swaggerDocument = {
         parameters: [{ $ref: '#/components/parameters/UserId' }],
         responses: {
           200: { description: 'User anonymized' },
+          400: { description: 'Invalid user id' },
           403: { description: 'Admin role required' },
+          404: { description: 'User not found' },
+          409: {
+            description:
+              'LAST_ADMIN (the last active admin cannot be anonymized) or ACCOUNT_ANONYMIZED',
+          },
         },
       },
     },

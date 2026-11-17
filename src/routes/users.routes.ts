@@ -6,7 +6,7 @@ import {
   ProfileStatus,
   UserRole,
 } from '@prisma/client';
-import { Router } from 'express';
+import { type Response, Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import {
   type AuthUser,
@@ -14,6 +14,11 @@ import {
 } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
+import { emailRegex } from '@/services/email';
+import { hashPassword, minPasswordLength } from '@/services/password';
+
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const userSelect = {
   id: true,
@@ -56,6 +61,85 @@ usersRouter.use((_request, response, next) => {
   next();
 });
 
+// Checked before Prisma: an invalid id would otherwise answer 500.
+usersRouter.param('userId', (_request, _response, next, userId: string) => {
+  if (!uuidRegex.test(userId)) {
+    next(new AppError(400, 'VALIDATION_ERROR', 'userId is invalid'));
+    return;
+  }
+
+  next();
+});
+
+type AdminAction =
+  | 'USER_CREATED'
+  | 'ROLE_ADDED'
+  | 'ROLE_REMOVED'
+  | 'STATUS_CHANGED'
+  | 'DELETION_REQUESTED'
+  | 'USER_ANONYMIZED'
+  | 'USER_VIEWED';
+
+function actingAdminId(response: Response): string {
+  return (response.locals.authUser as AuthUser).id;
+}
+
+// One line per admin action. A change is logged in the same transaction as
+// the change itself. A read is logged before the data is sent, with how the
+// account was found (never the e-mail itself).
+async function logAdminAction(
+  db: Prisma.TransactionClient,
+  adminId: string,
+  action: AdminAction,
+  targetId: string,
+  details?: Prisma.InputJsonValue,
+): Promise<void> {
+  await db.adminAuditLog.create({
+    data: {
+      adminUserId: adminId,
+      action,
+      targetType: 'USER',
+      targetId,
+      details,
+    },
+  });
+}
+
+// Refuses to leave the platform without an active admin. The ADMIN role
+// rows are locked so that two admins cannot remove each other at once.
+async function assertAnotherActiveAdmin(
+  tx: Prisma.TransactionClient,
+  userId: string,
+): Promise<void> {
+  await tx.$queryRaw`SELECT user_id FROM user_roles WHERE role = 'ADMIN' FOR UPDATE`;
+  const otherAdmins = await tx.userRoleAssignment.count({
+    where: {
+      role: UserRole.ADMIN,
+      userId: { not: userId },
+      user: { status: AccountStatus.ACTIVE },
+    },
+  });
+
+  if (otherAdmins === 0) {
+    throw new AppError(
+      409,
+      'LAST_ADMIN',
+      'At least one active admin is required',
+    );
+  }
+}
+
+function isAdmin(user: { roles: { role: UserRole }[] }): boolean {
+  return user.roles.some(({ role }) => role === UserRole.ADMIN);
+}
+
+// An anonymized account stays anonymized: no reactivation, no new request.
+function assertNotAnonymized(user: { anonymizedAt: Date | null }): void {
+  if (user.anonymizedAt) {
+    throw new AppError(409, 'ACCOUNT_ANONYMIZED', 'Account is anonymized');
+  }
+}
+
 usersRouter.get('/users/by-email', async (request, response) => {
   const email = request.query.email;
 
@@ -64,7 +148,7 @@ usersRouter.get('/users/by-email', async (request, response) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: email.trim() },
+    where: { email: email.trim().toLowerCase() },
     select: userSelect,
   });
 
@@ -72,6 +156,15 @@ usersRouter.get('/users/by-email', async (request, response) => {
     throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
   }
 
+  await logAdminAction(
+    prisma,
+    actingAdminId(response),
+    'USER_VIEWED',
+    user.id,
+    {
+      lookup: 'EMAIL',
+    },
+  );
   response.status(200).json(user);
 });
 
@@ -110,6 +203,15 @@ usersRouter.get(
       throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
     }
 
+    await logAdminAction(
+      prisma,
+      actingAdminId(response),
+      'USER_VIEWED',
+      authAccount.user.id,
+      {
+        lookup: 'AUTH_ACCOUNT',
+      },
+    );
     response.status(200).json(authAccount.user);
   },
 );
@@ -126,23 +228,32 @@ usersRouter.get('/users/:userId', async (request, response) => {
     throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
   }
 
+  await logAdminAction(
+    prisma,
+    actingAdminId(response),
+    'USER_VIEWED',
+    user.id,
+    {
+      lookup: 'ID',
+    },
+  );
   response.status(200).json(user);
 });
 
 usersRouter.post('/users/local', async (request, response) => {
   const body = request.body || {};
-  const { email, passwordHash, phone, roles } = body;
+  const { email, password, phone, roles } = body;
 
   if (
     typeof email !== 'string' ||
-    email.trim().length === 0 ||
-    typeof passwordHash !== 'string' ||
-    passwordHash.trim().length === 0
+    !emailRegex.test(email.trim()) ||
+    typeof password !== 'string' ||
+    password.length < minPasswordLength
   ) {
     throw new AppError(
       400,
       'VALIDATION_ERROR',
-      'email and passwordHash are required',
+      'email and password with at least 8 characters are required',
     );
   }
 
@@ -159,25 +270,62 @@ usersRouter.post('/users/local', async (request, response) => {
   }
 
   const userRoles = roles ? [...new Set(roles as UserRole[])] : undefined;
+  // An admin account is admin only: no student or customer role.
+  if (userRoles?.includes(UserRole.ADMIN) && userRoles.length > 1) {
+    throw new AppError(
+      400,
+      'ADMIN_ROLE_EXCLUSIVE',
+      'ADMIN cannot be combined with another role',
+    );
+  }
   const birthDate = userRoles?.includes(UserRole.ADMIN)
     ? null
     : parseAdultBirthDate(body.birthDate);
-  const user = await prisma.user.create({
-    data: {
-      email: email.trim(),
-      passwordHash: passwordHash.trim(),
-      birthDate,
-      phone: phone ? phone.trim() : undefined,
-      roles: userRoles?.length
-        ? {
-            create: userRoles.map((role) => ({ role })),
-          }
-        : undefined,
-    },
-    select: userSelect,
-  });
+  const passwordHash = await hashPassword(password);
 
-  response.status(201).json(user);
+  try {
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email: email.trim().toLowerCase(),
+          passwordHash,
+          birthDate,
+          phone: phone ? phone.trim() : undefined,
+          roles: userRoles?.length
+            ? {
+                create: userRoles.map((role) => ({ role })),
+              }
+            : undefined,
+        },
+        select: userSelect,
+      });
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'USER_CREATED',
+        created.id,
+        {
+          roles: userRoles ?? [],
+        },
+      );
+      return created;
+    });
+
+    response.status(201).json(user);
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === 'P2002'
+    ) {
+      // email and phone are both unique: say which one is taken.
+      if (JSON.stringify(error.meta?.target ?? '').includes('phone')) {
+        throw new AppError(409, 'PHONE_ALREADY_USED', 'Phone already used');
+      }
+      throw new AppError(409, 'EMAIL_ALREADY_USED', 'Email already used');
+    }
+
+    throw error;
+  }
 });
 
 async function lockUser(tx: Prisma.TransactionClient, userId: string) {
@@ -187,6 +335,8 @@ async function lockUser(tx: Prisma.TransactionClient, userId: string) {
     select: {
       status: true,
       birthDate: true,
+      anonymizedAt: true,
+      deletionRequestedAt: true,
       roles: { select: { role: true } },
     },
   });
@@ -210,13 +360,23 @@ usersRouter.post('/users/:userId/roles', async (request, response) => {
     const user = await lockUser(tx, request.params.userId);
     if (user.status !== AccountStatus.ACTIVE)
       throw new AppError(403, 'ACCOUNT_NOT_ACTIVE', 'Account is not active');
+    // An admin account is admin only: ADMIN never shares an account with
+    // a student or customer role, in either direction.
+    const otherRoles = user.roles.filter(({ role }) => role !== roleValue);
     if (
-      roleValue !== UserRole.ADMIN &&
-      !user.roles.some(({ role }) => role === UserRole.ADMIN)
+      otherRoles.length > 0 &&
+      (roleValue === UserRole.ADMIN || isAdmin(user))
     ) {
+      throw new AppError(
+        409,
+        'ADMIN_ROLE_EXCLUSIVE',
+        'An admin account cannot have another role',
+      );
+    }
+    if (roleValue !== UserRole.ADMIN) {
       assertAdult(user.birthDate);
     }
-    return tx.userRoleAssignment.upsert({
+    const assignment = await tx.userRoleAssignment.upsert({
       where: {
         userId_role: {
           userId: request.params.userId,
@@ -229,6 +389,19 @@ usersRouter.post('/users/:userId/roles', async (request, response) => {
         role: roleValue,
       },
     });
+    // Logged only when the role is new, so the log shows real changes.
+    if (!user.roles.some(({ role }) => role === roleValue)) {
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'ROLE_ADDED',
+        request.params.userId,
+        {
+          role: roleValue,
+        },
+      );
+    }
+    return assignment;
   });
   response.status(200).json(assignment);
 });
@@ -240,11 +413,26 @@ usersRouter.delete('/users/:userId/roles/:role', async (request, response) => {
     throw new AppError(400, 'VALIDATION_ERROR', 'role is invalid');
   }
 
-  await prisma.userRoleAssignment.deleteMany({
-    where: {
-      userId,
-      role: role as UserRole,
-    },
+  await prisma.$transaction(async (tx) => {
+    const target = await lockUser(tx, userId);
+    if (role === UserRole.ADMIN && isAdmin(target)) {
+      await assertAnotherActiveAdmin(tx, userId);
+    }
+    const removed = await tx.userRoleAssignment.deleteMany({
+      where: {
+        userId,
+        role: role as UserRole,
+      },
+    });
+    if (removed.count > 0) {
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'ROLE_REMOVED',
+        userId,
+        { role },
+      );
+    }
   });
 
   response.status(204).send();
@@ -262,17 +450,30 @@ usersRouter.patch('/users/:userId/status', async (request, response) => {
   }
 
   const user = await prisma.$transaction(async (tx) => {
-    if (status === AccountStatus.ACTIVE) {
-      const target = await lockUser(tx, request.params.userId);
-      if (!target.roles.some(({ role }) => role === UserRole.ADMIN)) {
-        assertAdult(target.birthDate);
-      }
+    const target = await lockUser(tx, request.params.userId);
+    assertNotAnonymized(target);
+    if (status === AccountStatus.ACTIVE && !isAdmin(target)) {
+      assertAdult(target.birthDate);
     }
-    return tx.user.update({
+    if (status !== AccountStatus.ACTIVE && isAdmin(target)) {
+      await assertAnotherActiveAdmin(tx, request.params.userId);
+    }
+    const updated = await tx.user.update({
       where: { id: request.params.userId },
       data: { status: status as AccountStatus },
       select: userSelect,
     });
+    // Logged only when the status really changes.
+    if (target.status !== status) {
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'STATUS_CHANGED',
+        request.params.userId,
+        { from: target.status, to: status },
+      );
+    }
+    return updated;
   });
 
   response.status(200).json(user);
@@ -282,6 +483,17 @@ usersRouter.post(
   '/users/:userId/deletion-request',
   async (request, response) => {
     const user = await prisma.$transaction(async (tx) => {
+      const target = await lockUser(tx, request.params.userId);
+      assertNotAnonymized(target);
+      // One request per account: a retry must not replace the first date,
+      // which starts the legal deadline to answer.
+      if (target.deletionRequestedAt) {
+        throw new AppError(
+          409,
+          'DELETION_ALREADY_REQUESTED',
+          'A deletion request already exists for this account',
+        );
+      }
       await tx.privacyRequest.create({
         data: {
           userId: request.params.userId,
@@ -289,13 +501,20 @@ usersRouter.post(
         },
       });
 
-      return tx.user.update({
+      const updated = await tx.user.update({
         where: { id: request.params.userId },
         data: {
           deletionRequestedAt: new Date(),
         },
         select: userSelect,
       });
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'DELETION_REQUESTED',
+        request.params.userId,
+      );
+      return updated;
     });
 
     response.status(200).json(user);
@@ -307,6 +526,11 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
   const anonymizedAt = new Date();
 
   const user = await prisma.$transaction(async (tx) => {
+    const target = await lockUser(tx, userId);
+    assertNotAnonymized(target);
+    if (isAdmin(target)) {
+      await assertAnotherActiveAdmin(tx, userId);
+    }
     await tx.authAccount.deleteMany({
       where: { userId },
     });
@@ -335,7 +559,7 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
       data: { title: null, description: null, status: ProfileStatus.DRAFT },
     });
 
-    return tx.user.update({
+    const anonymized = await tx.user.update({
       where: { id: userId },
       data: {
         email: null,
@@ -349,6 +573,13 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
       },
       select: userSelect,
     });
+    await logAdminAction(
+      tx,
+      actingAdminId(response),
+      'USER_ANONYMIZED',
+      userId,
+    );
+    return anonymized;
   });
 
   response.status(200).json(user);
