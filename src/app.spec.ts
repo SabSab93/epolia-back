@@ -194,6 +194,7 @@ describe('Express app', () => {
       TRUST_PROXY: '1',
       DATABASE_SSL_CA:
         '-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----',
+      DATABASE_URL: 'postgresql://user:pass@db.example.test/epolia',
     };
 
     try {

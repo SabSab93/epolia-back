@@ -77,6 +77,13 @@ function parseTrustProxy(value: string | undefined): number {
   return Number(hops);
 }
 
+// Without it, the pg driver would silently fall back to localhost.
+const databaseUrl = process.env.DATABASE_URL?.trim();
+
+if (nodeEnv === 'production' && !databaseUrl) {
+  throw new Error('DATABASE_URL is required in production');
+}
+
 // Certificate authority of the database server (Supabase: Database Settings >
 // SSL Configuration). With it, the API encrypts the connection and checks the
 // server identity. The pg driver does not encrypt by default, so production
@@ -97,7 +104,7 @@ export const config = {
   port: Number(process.env.PORT) || 3000,
   corsOrigin,
   trustProxy,
-  databaseUrl: process.env.DATABASE_URL,
+  databaseUrl,
   databaseSslCa,
   jsonBodyLimit: process.env.JSON_BODY_LIMIT || '1mb',
   jwtSecret,

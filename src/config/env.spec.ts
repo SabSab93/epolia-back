@@ -45,6 +45,8 @@ describe('Environment configuration', () => {
       process.env.CORS_ORIGIN = 'https://epolia.fr';
       process.env.TRUST_PROXY = '1';
       process.env.DATABASE_SSL_CA = testCa;
+      process.env.DATABASE_URL =
+        'postgresql://user:pass@db.example.test/epolia';
 
       expect(loadConfig().nodeEnv).toBe(value);
     },
@@ -119,6 +121,18 @@ describe('Environment configuration', () => {
       process.env.CORS_ORIGIN = 'https://epolia.fr';
       process.env.TRUST_PROXY = '1';
       process.env.DATABASE_SSL_CA = testCa;
+      process.env.DATABASE_URL =
+        'postgresql://user:pass@db.example.test/epolia';
+    });
+
+    it.each([undefined, '', '  '])('requires DATABASE_URL: %j', (value) => {
+      if (value === undefined) {
+        delete process.env.DATABASE_URL;
+      } else {
+        process.env.DATABASE_URL = value;
+      }
+
+      expect(loadConfig).toThrow('DATABASE_URL is required in production');
     });
 
     it.each([undefined, '', 'not-a-certificate'])(
