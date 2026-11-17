@@ -368,6 +368,15 @@ describe('Auth routes', () => {
     },
   );
 
+  it('rejects an e-mail longer than 254 characters before checking its format', async () => {
+    const response = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: `a@${'a.'.repeat(200)}fr`, password: 'password123' });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('email must be at most 254 characters');
+  });
+
   it('rejects a login password longer than 128 characters', async () => {
     const response = await request(createTestApp())
       .post('/api/auth/login')

@@ -71,6 +71,9 @@ function formatUser(user: {
 authRouter.post('/auth/register', async (request, response) => {
   const body = request.body || {};
   const { email, password, role, firstName, lastName } = body;
+  // Lengths first: the e-mail regex must never run on a huge input.
+  assertMaxLength(email, 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     typeof email !== 'string' ||
@@ -84,8 +87,6 @@ authRouter.post('/auth/register', async (request, response) => {
       'email and password with at least 8 characters are required',
     );
   }
-  assertMaxLength(email.trim(), 'email', maxLength.email);
-  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     role !== undefined &&
@@ -209,6 +210,9 @@ async function trySendVerificationEmail(user: {
 authRouter.post('/auth/login', async (request, response) => {
   const body = request.body || {};
   const { email, password } = body;
+  // Lengths first: the e-mail regex must never run on a huge input.
+  assertMaxLength(email, 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     typeof email !== 'string' ||
@@ -222,8 +226,6 @@ authRouter.post('/auth/login', async (request, response) => {
       'email and password are required',
     );
   }
-  assertMaxLength(email.trim(), 'email', maxLength.email);
-  assertMaxLength(password, 'password', maxLength.password);
 
   const user = await prisma.user.findUnique({
     where: {

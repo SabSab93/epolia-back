@@ -248,6 +248,9 @@ usersRouter.get('/users/:userId', async (request, response) => {
 usersRouter.post('/users/local', async (request, response) => {
   const body = request.body || {};
   const { email, password, phone, roles } = body;
+  // Lengths first: the e-mail regex must never run on a huge input.
+  assertMaxLength(email, 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     typeof email !== 'string' ||
@@ -262,13 +265,11 @@ usersRouter.post('/users/local', async (request, response) => {
     );
   }
 
-  assertMaxLength(email.trim(), 'email', maxLength.email);
-  assertMaxLength(password, 'password', maxLength.password);
-
   if (phone !== undefined && typeof phone !== 'string') {
     throw new AppError(400, 'VALIDATION_ERROR', 'phone must be a string');
   }
   if (typeof phone === 'string' && phone.trim()) {
+    assertMaxLength(phone, 'phone', maxLength.phone);
     assertPhone(phone.trim());
   }
 
@@ -301,7 +302,8 @@ usersRouter.post('/users/local', async (request, response) => {
           email: email.trim().toLowerCase(),
           passwordHash,
           birthDate,
-          phone: phone ? phone.trim() : undefined,
+          // A blank phone is not stored (it would clash on the unique index).
+          phone: phone?.trim() || undefined,
           roles: userRoles?.length
             ? {
                 create: userRoles.map((role) => ({ role })),

@@ -25,8 +25,9 @@ export function assertMaxLength(
   field: string,
   max: number,
 ): void {
-  // Measured once trimmed, as the value is stored.
-  if (typeof value === 'string' && value.trim().length > max) {
+  // Measured as sent, spaces included: a password is hashed untrimmed, so
+  // trimming here would let padding get past the limit.
+  if (typeof value === 'string' && value.length > max) {
     throw new AppError(
       400,
       'VALIDATION_ERROR',

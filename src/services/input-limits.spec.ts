@@ -2,10 +2,14 @@ import { AppError } from '@/errors/app-error';
 import { assertMaxLength, assertPhone } from '@/services/input-limits';
 
 describe('input limits', () => {
-  it('accepts a text at the maximum length, once trimmed', () => {
-    expect(() =>
-      assertMaxLength(` ${'a'.repeat(10)} `, 'title', 10),
-    ).not.toThrow();
+  it('accepts a text at the maximum length', () => {
+    expect(() => assertMaxLength('a'.repeat(10), 'title', 10)).not.toThrow();
+  });
+
+  it('counts surrounding spaces, so padding cannot get past the limit', () => {
+    expect(() => assertMaxLength(`${'a'.repeat(10)} `, 'password', 10)).toThrow(
+      'password must be at most 10 characters',
+    );
   });
 
   it('refuses a text over the maximum length', () => {
