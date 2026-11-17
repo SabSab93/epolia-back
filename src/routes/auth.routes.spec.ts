@@ -9,6 +9,22 @@ import { errorHandler } from '@/middlewares/error.middleware';
 import { prisma } from '@/prisma/client';
 import { authRouter } from '@/routes/auth.routes';
 
+// Real scrypt with a call counter, so a test can check that the login always
+// computes a hash. Not a jest.fn: `jest.resetAllMocks()` would erase it.
+// Only counts the callback `scrypt` that auth.routes.ts uses: switching to
+// another hash function means updating this mock too.
+jest.mock('crypto', () => {
+  const actual = jest.requireActual<typeof import('crypto')>('crypto');
+  const scrypt = Object.assign(
+    (...args: Parameters<typeof actual.scrypt>) => {
+      scrypt.calls += 1;
+      return actual.scrypt(...args);
+    },
+    { calls: 0 },
+  );
+  return { ...actual, scrypt };
+});
+
 jest.mock('@/prisma/client', () => {
   const mockPrisma = {
     user: {
@@ -358,6 +374,45 @@ describe('Auth routes', () => {
       code: 'INVALID_CREDENTIALS',
       message: 'Invalid email or password',
     });
+  });
+
+  // Without a hash, these cases answer faster and reveal who has an account.
+  it.each([
+    ['an unknown e-mail', null],
+    ['an account without password', { ...userMock, passwordHash: null }],
+    ['an empty stored hash', { ...userMock, passwordHash: '' }],
+    ['a malformed stored hash', { ...userMock, passwordHash: 'no-separator' }],
+  ])('computes a hash for %s', async (_case, account) => {
+    const { scrypt } = jest.requireMock<{ scrypt: { calls: number } }>(
+      'crypto',
+    );
+    const callsBefore = scrypt.calls;
+    prismaMock.user.findUnique.mockResolvedValue(account);
+
+    const response = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: userMock.email, password: 'password123' });
+
+    expect(response.status).toBe(401);
+    expect(scrypt.calls - callsBefore).toBe(1);
+  });
+
+  it('keeps the e-mail out of the access token', async () => {
+    const salt = 'test-salt';
+    const hash = scryptSync('password123', salt, 64).toString('hex');
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      passwordHash: `${salt}:${hash}`,
+    });
+
+    const response = await request(createTestApp())
+      .post('/api/auth/login')
+      .send({ email: userMock.email, password: 'password123' });
+
+    expect(response.status).toBe(200);
+    expect(
+      jwt.verify(response.body.accessToken, config.jwtSecret),
+    ).not.toHaveProperty('email');
   });
 
   it('rejects login for inactive accounts', async () => {

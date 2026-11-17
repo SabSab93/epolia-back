@@ -15,7 +15,6 @@ export type AuthUser = {
 
 type JwtPayload = {
   sub?: string;
-  email?: string | null;
   roles?: UserRole[];
 };
 
@@ -54,7 +53,9 @@ async function authenticate(
 
   try {
     const token = authorization.replace('Bearer ', '');
-    const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
+    const payload = jwt.verify(token, config.jwtSecret, {
+      algorithms: ['HS256'],
+    }) as JwtPayload;
 
     if (
       !payload.sub ||
