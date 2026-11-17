@@ -15,6 +15,7 @@ import { prisma } from '@/prisma/client';
 import { isAdult } from '@/services/age';
 import {
   eligibleSpecialtyWhere,
+  getStudentProfile,
   lockStudentProfile,
   removeIneligibleSpecialties,
 } from '@/services/student-specialties';
@@ -179,53 +180,59 @@ studentProfilesRouter.get(
       throw new AppError(400, 'VALIDATION_ERROR', 'userId is invalid');
     }
 
-    const profile = await prisma.$transaction(async (tx) => {
-      const profile = await lockStudentProfile(tx, request.params.userId);
+    // Public read: no lock. A lock here would let anyone block the
+    // student's own changes by calling this route in a loop. RepeatableRead
+    // makes the four reads below see the same moment, without locking.
+    const profile = await prisma.$transaction(
+      async (tx) => {
+        const profile = await getStudentProfile(tx, request.params.userId);
 
-      const owner = await tx.user.findUnique({
-        where: { id: profile.userId },
-        select: { status: true, birthDate: true },
-      });
-      if (
-        profile.status !== ProfileStatus.VISIBLE ||
-        !profile.domainId ||
-        owner?.status !== AccountStatus.ACTIVE ||
-        !isAdult(owner.birthDate)
-      ) {
-        throw new AppError(
-          404,
-          'STUDENT_PROFILE_NOT_FOUND',
-          'Student profile not found',
-        );
-      }
+        const owner = await tx.user.findUnique({
+          where: { id: profile.userId },
+          select: { status: true, birthDate: true },
+        });
+        if (
+          profile.status !== ProfileStatus.VISIBLE ||
+          !profile.domainId ||
+          owner?.status !== AccountStatus.ACTIVE ||
+          !isAdult(owner.birthDate)
+        ) {
+          throw new AppError(
+            404,
+            'STUDENT_PROFILE_NOT_FOUND',
+            'Student profile not found',
+          );
+        }
 
-      const verification = await tx.studentVerification.findFirst({
-        where: { studentId: profile.userId },
-        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
-        select: { status: true },
-      });
-      const invalidSpecialties = await tx.studentSpecialty.count({
-        where: {
-          studentId: profile.userId,
-          specialty: {
-            NOT: eligibleSpecialtyWhere(profile.userId, profile.domainId),
+        const verification = await tx.studentVerification.findFirst({
+          where: { studentId: profile.userId },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          select: { status: true },
+        });
+        const invalidSpecialties = await tx.studentSpecialty.count({
+          where: {
+            studentId: profile.userId,
+            specialty: {
+              NOT: eligibleSpecialtyWhere(profile.userId, profile.domainId),
+            },
           },
-        },
-      });
+        });
 
-      if (
-        verification?.status !== VerificationStatus.APPROVED ||
-        invalidSpecialties > 0
-      ) {
-        throw new AppError(
-          404,
-          'STUDENT_PROFILE_NOT_FOUND',
-          'Student profile not found',
-        );
-      }
+        if (
+          verification?.status !== VerificationStatus.APPROVED ||
+          invalidSpecialties > 0
+        ) {
+          throw new AppError(
+            404,
+            'STUDENT_PROFILE_NOT_FOUND',
+            'Student profile not found',
+          );
+        }
 
-      return profile;
-    });
+        return profile;
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
 
     response.status(200).json(profile);
   },

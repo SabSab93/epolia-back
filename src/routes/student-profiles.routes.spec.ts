@@ -310,6 +310,12 @@ describe('Student profile routes', () => {
       title: 'Developpeuse web',
       status: ProfileStatus.VISIBLE,
     });
+    // Public read: no SELECT ... FOR UPDATE on the profile, but one
+    // consistent snapshot for all its reads.
+    expect(prismaMock.$queryRaw).not.toHaveBeenCalled();
+    expect(prismaMock.$transaction).toHaveBeenCalledWith(expect.any(Function), {
+      isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead,
+    });
   });
 
   it('returns 404 when a student profile does not exist', async () => {
