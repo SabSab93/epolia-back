@@ -19,11 +19,9 @@
     "prisma:studio": "prisma studio",
     "prepare": "husky"
   },
-  "prisma": {
-    "seed": "ts-node -r tsconfig-paths/register prisma/seed-catalog.ts"
-  },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
@@ -31,7 +29,7 @@
     "express-rate-limit": "^8.7.4",
     "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
-    "prisma": "^6.19.3",
+    "prisma": "7.10.1",
     "resend": "^6.38.1",
     "swagger-ui-express": "^5.0.1"
   },

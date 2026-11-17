@@ -3,6 +3,7 @@ jest.mock('dotenv/config', () => ({}));
 
 const originalEnv = process.env;
 const validJwtSecret = '0123456789abcdef0123456789abcdef';
+const testCa = '-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----';
 
 function loadConfig() {
   return (require('@/config/env') as typeof import('@/config/env')).config;
@@ -17,6 +18,7 @@ describe('Environment configuration', () => {
     delete process.env.CORS_ORIGIN;
     delete process.env.PORT;
     delete process.env.TRUST_PROXY;
+    delete process.env.DATABASE_SSL_CA;
   });
 
   afterEach(() => {
@@ -42,6 +44,7 @@ describe('Environment configuration', () => {
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
       process.env.TRUST_PROXY = '1';
+      process.env.DATABASE_SSL_CA = testCa;
 
       expect(loadConfig().nodeEnv).toBe(value);
     },
@@ -115,6 +118,26 @@ describe('Environment configuration', () => {
       process.env.JWT_SECRET = validJwtSecret;
       process.env.CORS_ORIGIN = 'https://epolia.fr';
       process.env.TRUST_PROXY = '1';
+      process.env.DATABASE_SSL_CA = testCa;
+    });
+
+    it.each([undefined, '', 'not-a-certificate'])(
+      'requires the database certificate: %j',
+      (value) => {
+        if (value === undefined) {
+          delete process.env.DATABASE_SSL_CA;
+        } else {
+          process.env.DATABASE_SSL_CA = value;
+        }
+
+        expect(loadConfig).toThrow(
+          'DATABASE_SSL_CA must contain a PEM certificate in production',
+        );
+      },
+    );
+
+    it('reads the database certificate', () => {
+      expect(loadConfig().databaseSslCa).toBe(testCa);
     });
 
     it.each([undefined, '', '  '])('requires TRUST_PROXY: %j', (value) => {

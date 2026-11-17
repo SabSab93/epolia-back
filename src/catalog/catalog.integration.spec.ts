@@ -36,9 +36,15 @@ import {
 jest.mock('@/prisma/client', () => {
   const { PrismaClient } =
     jest.requireActual<typeof import('@prisma/client')>('@prisma/client');
+  const { PrismaPg } =
+    jest.requireActual<typeof import('@prisma/adapter-pg')>(
+      '@prisma/adapter-pg',
+    );
   return {
     prisma: new PrismaClient({
-      datasourceUrl: process.env.CATALOG_TEST_DATABASE_URL,
+      adapter: new PrismaPg({
+        connectionString: process.env.CATALOG_TEST_DATABASE_URL,
+      }),
     }),
   };
 });

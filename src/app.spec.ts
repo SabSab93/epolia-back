@@ -192,6 +192,8 @@ describe('Express app', () => {
       JWT_SECRET: '0123456789abcdef0123456789abcdef',
       CORS_ORIGIN: 'https://epolia.fr',
       TRUST_PROXY: '1',
+      DATABASE_SSL_CA:
+        '-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----',
     };
 
     try {
