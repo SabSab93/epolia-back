@@ -595,6 +595,34 @@ describe('Users routes', () => {
     expect(response.body.code).toBe('PHONE_ALREADY_USED');
   });
 
+  it('does not record a status that did not change', async () => {
+    prismaMock.user.update.mockResolvedValue(userMock);
+
+    const response = await request(createTestApp())
+      .patch(`/api/users/${userMock.id}/status`)
+      .set('Authorization', adminAuthorizationHeader())
+      .send({ status: AccountStatus.ACTIVE });
+
+    expect(response.status).toBe(200);
+    expect(prismaMock.adminAuditLog.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses a second deletion request for the same account', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({
+      ...userMock,
+      deletionRequestedAt: new Date('2026-11-01'),
+    });
+
+    const response = await request(createTestApp())
+      .post(`/api/users/${userMock.id}/deletion-request`)
+      .set('Authorization', adminAuthorizationHeader());
+
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('DELETION_ALREADY_REQUESTED');
+    expect(prismaMock.privacyRequest.create).not.toHaveBeenCalled();
+    expect(prismaMock.user.update).not.toHaveBeenCalled();
+  });
+
   it('refuses to suspend the last active admin', async () => {
     prismaMock.user.findUnique.mockResolvedValue(adminUserMock);
     prismaMock.userRoleAssignment.count.mockResolvedValue(0);
@@ -884,9 +912,7 @@ describe('Users routes', () => {
       });
 
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe(
-      'ADMIN cannot be combined with another role',
-    );
+    expect(response.body.code).toBe('ADMIN_ROLE_EXCLUSIVE');
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 

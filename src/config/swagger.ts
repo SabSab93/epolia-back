@@ -844,7 +844,10 @@ export const swaggerDocument = {
         security: [{ bearerAuth: [] }],
         responses: {
           201: { description: 'User created' },
-          400: { description: 'Validation error' },
+          400: {
+            description:
+              'VALIDATION_ERROR, or ADMIN_ROLE_EXCLUSIVE when ADMIN is combined with another role',
+          },
           403: { description: 'Admin role required' },
           409: { description: 'EMAIL_ALREADY_USED or PHONE_ALREADY_USED' },
         },
@@ -926,7 +929,9 @@ export const swaggerDocument = {
           400: { description: 'Invalid user id' },
           403: { description: 'Admin role required' },
           404: { description: 'User not found' },
-          409: { description: 'ACCOUNT_ANONYMIZED' },
+          409: {
+            description: 'ACCOUNT_ANONYMIZED or DELETION_ALREADY_REQUESTED',
+          },
         },
       },
     },

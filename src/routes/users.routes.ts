@@ -18,7 +18,7 @@ import { emailRegex } from '@/services/email';
 import { hashPassword, minPasswordLength } from '@/services/password';
 
 const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 const userSelect = {
   id: true,
@@ -80,21 +80,23 @@ type AdminAction =
   | 'USER_ANONYMIZED'
   | 'USER_VIEWED';
 
-// One line per admin action, written in the same transaction as the action.
-// A read is logged before the data is sent, with how the account was found
-// (never the e-mail itself).
+function actingAdminId(response: Response): string {
+  return (response.locals.authUser as AuthUser).id;
+}
+
+// One line per admin action. A change is logged in the same transaction as
+// the change itself. A read is logged before the data is sent, with how the
+// account was found (never the e-mail itself).
 async function logAdminAction(
-  tx: Prisma.TransactionClient,
-  response: Response,
+  db: Prisma.TransactionClient,
+  adminId: string,
   action: AdminAction,
   targetId: string,
   details?: Prisma.InputJsonValue,
 ): Promise<void> {
-  const admin = response.locals.authUser as AuthUser;
-
-  await tx.adminAuditLog.create({
+  await db.adminAuditLog.create({
     data: {
-      adminUserId: admin.id,
+      adminUserId: adminId,
       action,
       targetType: 'USER',
       targetId,
@@ -154,9 +156,15 @@ usersRouter.get('/users/by-email', async (request, response) => {
     throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
   }
 
-  await logAdminAction(prisma, response, 'USER_VIEWED', user.id, {
-    lookup: 'EMAIL',
-  });
+  await logAdminAction(
+    prisma,
+    actingAdminId(response),
+    'USER_VIEWED',
+    user.id,
+    {
+      lookup: 'EMAIL',
+    },
+  );
   response.status(200).json(user);
 });
 
@@ -195,9 +203,15 @@ usersRouter.get(
       throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
     }
 
-    await logAdminAction(prisma, response, 'USER_VIEWED', authAccount.user.id, {
-      lookup: 'AUTH_ACCOUNT',
-    });
+    await logAdminAction(
+      prisma,
+      actingAdminId(response),
+      'USER_VIEWED',
+      authAccount.user.id,
+      {
+        lookup: 'AUTH_ACCOUNT',
+      },
+    );
     response.status(200).json(authAccount.user);
   },
 );
@@ -214,9 +228,15 @@ usersRouter.get('/users/:userId', async (request, response) => {
     throw new AppError(404, 'USER_NOT_FOUND', 'User not found');
   }
 
-  await logAdminAction(prisma, response, 'USER_VIEWED', user.id, {
-    lookup: 'ID',
-  });
+  await logAdminAction(
+    prisma,
+    actingAdminId(response),
+    'USER_VIEWED',
+    user.id,
+    {
+      lookup: 'ID',
+    },
+  );
   response.status(200).json(user);
 });
 
@@ -254,7 +274,7 @@ usersRouter.post('/users/local', async (request, response) => {
   if (userRoles?.includes(UserRole.ADMIN) && userRoles.length > 1) {
     throw new AppError(
       400,
-      'VALIDATION_ERROR',
+      'ADMIN_ROLE_EXCLUSIVE',
       'ADMIN cannot be combined with another role',
     );
   }
@@ -279,9 +299,15 @@ usersRouter.post('/users/local', async (request, response) => {
         },
         select: userSelect,
       });
-      await logAdminAction(tx, response, 'USER_CREATED', created.id, {
-        roles: userRoles ?? [],
-      });
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'USER_CREATED',
+        created.id,
+        {
+          roles: userRoles ?? [],
+        },
+      );
       return created;
     });
 
@@ -310,6 +336,7 @@ async function lockUser(tx: Prisma.TransactionClient, userId: string) {
       status: true,
       birthDate: true,
       anonymizedAt: true,
+      deletionRequestedAt: true,
       roles: { select: { role: true } },
     },
   });
@@ -364,9 +391,15 @@ usersRouter.post('/users/:userId/roles', async (request, response) => {
     });
     // Logged only when the role is new, so the log shows real changes.
     if (!user.roles.some(({ role }) => role === roleValue)) {
-      await logAdminAction(tx, response, 'ROLE_ADDED', request.params.userId, {
-        role: roleValue,
-      });
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'ROLE_ADDED',
+        request.params.userId,
+        {
+          role: roleValue,
+        },
+      );
     }
     return assignment;
   });
@@ -392,7 +425,13 @@ usersRouter.delete('/users/:userId/roles/:role', async (request, response) => {
       },
     });
     if (removed.count > 0) {
-      await logAdminAction(tx, response, 'ROLE_REMOVED', userId, { role });
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'ROLE_REMOVED',
+        userId,
+        { role },
+      );
     }
   });
 
@@ -424,13 +463,16 @@ usersRouter.patch('/users/:userId/status', async (request, response) => {
       data: { status: status as AccountStatus },
       select: userSelect,
     });
-    await logAdminAction(
-      tx,
-      response,
-      'STATUS_CHANGED',
-      request.params.userId,
-      { from: target.status, to: status },
-    );
+    // Logged only when the status really changes.
+    if (target.status !== status) {
+      await logAdminAction(
+        tx,
+        actingAdminId(response),
+        'STATUS_CHANGED',
+        request.params.userId,
+        { from: target.status, to: status },
+      );
+    }
     return updated;
   });
 
@@ -441,7 +483,17 @@ usersRouter.post(
   '/users/:userId/deletion-request',
   async (request, response) => {
     const user = await prisma.$transaction(async (tx) => {
-      assertNotAnonymized(await lockUser(tx, request.params.userId));
+      const target = await lockUser(tx, request.params.userId);
+      assertNotAnonymized(target);
+      // One request per account: a retry must not replace the first date,
+      // which starts the legal deadline to answer.
+      if (target.deletionRequestedAt) {
+        throw new AppError(
+          409,
+          'DELETION_ALREADY_REQUESTED',
+          'A deletion request already exists for this account',
+        );
+      }
       await tx.privacyRequest.create({
         data: {
           userId: request.params.userId,
@@ -458,7 +510,7 @@ usersRouter.post(
       });
       await logAdminAction(
         tx,
-        response,
+        actingAdminId(response),
         'DELETION_REQUESTED',
         request.params.userId,
       );
@@ -521,7 +573,12 @@ usersRouter.post('/users/:userId/anonymize', async (request, response) => {
       },
       select: userSelect,
     });
-    await logAdminAction(tx, response, 'USER_ANONYMIZED', userId);
+    await logAdminAction(
+      tx,
+      actingAdminId(response),
+      'USER_ANONYMIZED',
+      userId,
+    );
     return anonymized;
   });
 
