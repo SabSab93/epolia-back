@@ -226,23 +226,19 @@ describe('Activating a role on the authenticated account', () => {
     },
   );
 
-  it('keeps ADMIN exempt from age checks but still refuses self-assignment of ADMIN', async () => {
+  it('refuses a student or customer role on an admin account, and self-assignment of ADMIN', async () => {
     db.user.findUnique.mockResolvedValue({
       ...account,
       birthDate: null,
       roles: [{ role: UserRole.ADMIN }],
     });
-    db.user.findUniqueOrThrow.mockResolvedValue({
-      ...account,
-      birthDate: null,
-      roles: [{ role: UserRole.ADMIN }, { role: UserRole.CUSTOMER }],
-    });
     const response = await request(app)
       .post('/api/auth/roles')
       .set('Authorization', authorization([UserRole.ADMIN]))
       .send({ role: UserRole.CUSTOMER });
-    expect(response.status).toBe(200);
-    expect(response.body.user.roles).toContain(UserRole.ADMIN);
+    expect(response.status).toBe(409);
+    expect(response.body.code).toBe('ADMIN_ROLE_EXCLUSIVE');
+    expect(db.userRoleAssignment.createMany).not.toHaveBeenCalled();
     const forbidden = await request(app)
       .post('/api/auth/roles')
       .set('Authorization', authorization([UserRole.ADMIN]))

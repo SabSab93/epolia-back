@@ -4,6 +4,8 @@ import { AppError } from '@/errors/app-error';
 
 const sendTimeoutMs = 10_000;
 
+export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 type Email = {
   to: string;
   subject: string;

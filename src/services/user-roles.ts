@@ -29,9 +29,15 @@ export async function activateUserRole(
               'Account is not active',
             );
           }
-          if (!current.roles.some(({ role }) => role === UserRole.ADMIN)) {
-            assertAdult(current.birthDate);
+          // An admin account is admin only: no student or customer role.
+          if (current.roles.some(({ role }) => role === UserRole.ADMIN)) {
+            throw new AppError(
+              409,
+              'ADMIN_ROLE_EXCLUSIVE',
+              'An admin account cannot have another role',
+            );
           }
+          assertAdult(current.birthDate);
           await tx.userRoleAssignment.createMany({
             data: { userId, role },
             skipDuplicates: true,

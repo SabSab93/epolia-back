@@ -1,6 +1,4 @@
 import { AccountStatus, Prisma, UserRole } from '@prisma/client';
-import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
 import jwt, { type SignOptions } from 'jsonwebtoken';
 import { Router } from 'express';
 import { config } from '@/config/env';
@@ -11,16 +9,17 @@ import {
 } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
+import { emailRegex } from '@/services/email';
 import { sendVerificationEmail } from '@/services/email-verification';
+import {
+  dummyPasswordHash,
+  hashPassword,
+  minPasswordLength,
+  verifyPassword,
+} from '@/services/password';
 import { activateUserRole } from '@/services/user-roles';
 
-const scrypt = promisify(scryptCallback);
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const termsOfUseConsentType = 'TERMS_OF_USE';
-// Checked when the e-mail is unknown, so the login takes the same time
-// whether the account exists or not. No password can match it.
-const dummySalt = '0'.repeat(32);
-const dummyPasswordHash = `${dummySalt}:${'0'.repeat(128)}`;
 
 const authUserSelect = {
   id: true,
@@ -37,32 +36,6 @@ const authUserSelect = {
 } satisfies Prisma.UserSelect;
 
 export const authRouter = Router();
-
-async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString('hex');
-  const hash = (await scrypt(password, salt, 64)) as Buffer;
-
-  return `${salt}:${hash.toString('hex')}`;
-}
-
-async function verifyPassword(password: string, passwordHash: string) {
-  const [salt, storedHash] = passwordHash.split(':');
-  // Hash even when the stored value is malformed, so the response time
-  // never tells such an account apart.
-  const hash = (await scrypt(password, salt || dummySalt, 64)) as Buffer;
-
-  if (!salt || !storedHash) {
-    return false;
-  }
-
-  const storedHashBuffer = Buffer.from(storedHash, 'hex');
-
-  if (hash.length !== storedHashBuffer.length) {
-    return false;
-  }
-
-  return timingSafeEqual(hash, storedHashBuffer);
-}
 
 function createToken(user: { id: string; roles: { role: UserRole }[] }) {
   return jwt.sign(
@@ -102,7 +75,7 @@ authRouter.post('/auth/register', async (request, response) => {
     typeof email !== 'string' ||
     !emailRegex.test(email.trim()) ||
     typeof password !== 'string' ||
-    password.length < 8
+    password.length < minPasswordLength
   ) {
     throw new AppError(
       400,
