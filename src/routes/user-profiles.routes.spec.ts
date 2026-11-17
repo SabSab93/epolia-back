@@ -158,6 +158,17 @@ describe('User profile routes', () => {
     expect(prismaMock.userProfile.create).not.toHaveBeenCalled();
   });
 
+  it('rejects a city longer than 100 characters', async () => {
+    const response = await request(createTestApp())
+      .post('/api/user-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({ firstName: 'Camille', city: 'a'.repeat(101) });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('city must be at most 100 characters');
+    expect(prismaMock.userProfile.create).not.toHaveBeenCalled();
+  });
+
   it('rejects profile creation with an invalid latitude', async () => {
     const response = await request(createTestApp())
       .post('/api/user-profiles')

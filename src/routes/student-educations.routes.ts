@@ -7,6 +7,11 @@ import {
 } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import {
+  assertMaxLength,
+  maxEducationsPerStudent,
+  maxLength,
+} from '@/services/input-limits';
+import {
   getStudentProfile,
   lockStudentProfile,
   removeIneligibleSpecialties,
@@ -122,6 +127,9 @@ function cleanEducation(value: unknown, creating = false) {
   }
 
   const body = value as Record<string, unknown>;
+  assertMaxLength(body.title, 'title', maxLength.educationText);
+  assertMaxLength(body.school, 'school', maxLength.educationText);
+  assertMaxLength(body.level, 'level', maxLength.educationText);
   return {
     title: cleanText(
       body.title,
@@ -204,6 +212,17 @@ studentEducationsRouter.post(
           ...educationResponse,
         });
         if (existing) return { education: existing, status: 200 };
+      }
+
+      const educationCount = await tx.studentEducation.count({
+        where: { studentId: user.id },
+      });
+      if (educationCount >= maxEducationsPerStudent) {
+        throw new AppError(
+          409,
+          'EDUCATION_LIMIT_REACHED',
+          `A student can have at most ${maxEducationsPerStudent} educations`,
+        );
       }
 
       await assertStudyField(tx, data.studyFieldId);

@@ -284,6 +284,23 @@ describe('Student specialty routes', () => {
     });
   });
 
+  it('rejects pricing details longer than 500 characters', async () => {
+    const response = await request(createTestApp())
+      .post('/api/student-specialties')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({
+        specialtyId,
+        pricingType: PricingType.HOURLY,
+        priceCents: 2500,
+        pricingDetails: 'a'.repeat(501),
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      'pricingDetails must be at most 500 characters',
+    );
+  });
+
   it('rejects non-positive prices', async () => {
     const response = await request(createTestApp())
       .post('/api/student-specialties')

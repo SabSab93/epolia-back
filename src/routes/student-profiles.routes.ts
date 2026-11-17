@@ -13,6 +13,7 @@ import {
 } from '@/middlewares/auth.middleware';
 import { prisma } from '@/prisma/client';
 import { isAdult } from '@/services/age';
+import { assertMaxLength, maxLength } from '@/services/input-limits';
 import {
   eligibleSpecialtyWhere,
   getStudentProfile,
@@ -126,6 +127,12 @@ studentProfilesRouter.post(
     if (body.title !== undefined && !title) {
       throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
     }
+    assertMaxLength(body.title, 'title', maxLength.profileTitle);
+    assertMaxLength(
+      body.description,
+      'description',
+      maxLength.profileDescription,
+    );
 
     try {
       const profile = await prisma.studentProfile.create({
@@ -256,6 +263,12 @@ studentProfilesRouter.patch(
     if (body.title !== undefined && !title) {
       throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
     }
+    assertMaxLength(body.title, 'title', maxLength.profileTitle);
+    assertMaxLength(
+      body.description,
+      'description',
+      maxLength.profileDescription,
+    );
 
     try {
       const profile = await prisma.$transaction(async (tx) => {

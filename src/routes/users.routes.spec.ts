@@ -335,6 +335,42 @@ describe('Users routes', () => {
     expect(prismaMock.user.create).not.toHaveBeenCalled();
   });
 
+  it('rejects an invalid phone number', async () => {
+    const response = await request(createTestApp())
+      .post('/api/users/local')
+      .set('Authorization', adminAuthorizationHeader())
+      .send({
+        birthDate: '2000-01-01',
+        email: 'user@example.com',
+        password: 'password123',
+        phone: 'not-a-phone',
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe('phone is invalid');
+    expect(prismaMock.user.create).not.toHaveBeenCalled();
+  });
+
+  it('does not store a blank phone number', async () => {
+    prismaMock.user.create.mockResolvedValue(userMock);
+
+    const response = await request(createTestApp())
+      .post('/api/users/local')
+      .set('Authorization', adminAuthorizationHeader())
+      .send({
+        birthDate: '2000-01-01',
+        email: 'user@example.com',
+        password: 'password123',
+        phone: '   ',
+      });
+
+    expect(response.status).toBe(201);
+    expect(
+      firstCallArg<{ data: { phone?: string } }>(prismaMock.user.create).data
+        .phone,
+    ).toBeUndefined();
+  });
+
   it('answers 409 when the e-mail is already used', async () => {
     prismaMock.user.create.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {

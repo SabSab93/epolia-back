@@ -212,6 +212,19 @@ describe('Student profile routes', () => {
     expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
   });
 
+  it('rejects a description longer than 2000 characters', async () => {
+    const response = await request(createTestApp())
+      .post('/api/student-profiles')
+      .set('Authorization', `Bearer ${createAccessToken()}`)
+      .send({ description: 'a'.repeat(2001) });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      'description must be at most 2000 characters',
+    );
+    expect(prismaMock.studentProfile.create).not.toHaveBeenCalled();
+  });
+
   it('rejects profile creation with an invalid domain id', async () => {
     const response = await request(createTestApp())
       .post('/api/student-profiles')

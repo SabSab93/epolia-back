@@ -11,6 +11,7 @@ import { prisma } from '@/prisma/client';
 import { assertAdult, parseAdultBirthDate } from '@/services/age';
 import { emailRegex } from '@/services/email';
 import { sendVerificationEmail } from '@/services/email-verification';
+import { assertMaxLength, maxLength } from '@/services/input-limits';
 import {
   dummyPasswordHash,
   hashPassword,
@@ -70,6 +71,9 @@ function formatUser(user: {
 authRouter.post('/auth/register', async (request, response) => {
   const body = request.body || {};
   const { email, password, role, firstName, lastName } = body;
+  // Lengths first: the e-mail regex must never run on a huge input.
+  assertMaxLength(email, 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     typeof email !== 'string' ||
@@ -105,6 +109,8 @@ authRouter.post('/auth/register', async (request, response) => {
       'firstName and lastName are required',
     );
   }
+  assertMaxLength(firstName.trim(), 'firstName', maxLength.name);
+  assertMaxLength(lastName.trim(), 'lastName', maxLength.name);
 
   const termsVersion = config.registrationTermsVersion;
   if (!termsVersion) {
@@ -204,6 +210,9 @@ async function trySendVerificationEmail(user: {
 authRouter.post('/auth/login', async (request, response) => {
   const body = request.body || {};
   const { email, password } = body;
+  // Lengths first: the e-mail regex must never run on a huge input.
+  assertMaxLength(email, 'email', maxLength.email);
+  assertMaxLength(password, 'password', maxLength.password);
 
   if (
     typeof email !== 'string' ||
