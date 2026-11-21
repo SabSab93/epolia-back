@@ -82,5 +82,10 @@
       "^@/(.*)$": "<rootDir>/$1",
       "^@root/(.*)$": "<rootDir>/../$1"
     }
+  },
+  "overrides": {
+    "@prisma/config@7.10.1": {
+      "effect": "3.22.1"
+    }
   }
 }
