@@ -15,6 +15,21 @@ const directoryUnavailable = {
 };
 
 export const catalogPaths = {
+  '/api/education-catalog/candidates': {
+    get: {
+      tags: ['Catalog'],
+      summary: 'List the V1 non-Cesu service candidates and study fields',
+      description:
+        'Editorial catalog for private clients. A candidate is not a published or bookable service.',
+      responses: {
+        200: {
+          description: 'Catalog ordered by reference',
+          content: directoryList('EducationServiceCandidate'),
+        },
+        503: directoryUnavailable,
+      },
+    },
+  },
   '/api/education-catalog/campuses': {
     get: {
       tags: ['Catalog'],
