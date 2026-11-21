@@ -755,6 +755,7 @@ model AdminAuditLog {
 }
 
 model EducationDirectoryCampus {
+  address   String?
   id        String @id
   label     String
   city      String
@@ -765,6 +766,7 @@ model EducationDirectoryCampus {
 }
 
 model EducationDirectoryOffer {
+  detail   String?
   id       String @id
   campusId String @map("campus_id")
   label    String

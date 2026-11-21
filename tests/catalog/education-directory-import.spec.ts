@@ -33,6 +33,41 @@ it('conserve deux lieux pour la même action et indexe les noms usuels', () => {
   }
 });
 
+it('conserve les adresses et les caractéristiques des offres homonymes', () => {
+  const { campuses, offers } = readDirectory([
+    {
+      ...sample,
+      ens_adresse: '4 rue Bisson',
+      af_duree_cycle_standard: '1 an',
+      af_modalites_scolarite: 'temps plein',
+    },
+    {
+      ...sample,
+      ens_adresse: '4 rue Bisson',
+      action_de_formation_af_identifiant_onisep: 'AF.101',
+      af_duree_cycle_standard: '2 ans',
+      af_modalites_scolarite: 'cours en présentiel',
+    },
+    {
+      ...sample,
+      ens_url_et_id_onisep: 'https://www.onisep.fr/ENS.11',
+      ens_adresse: '8 route de la Jonelière',
+    },
+    { ...sample, ens_url_et_id_onisep: 'https://www.onisep.fr/ENS.12' },
+  ]);
+  expect(campuses.map((row) => row.address)).toEqual([
+    '4 rue Bisson',
+    '8 route de la Jonelière',
+    null,
+  ]);
+  expect(offers.map((row) => row.detail)).toEqual([
+    '1 an · temps plein',
+    '2 ans · cours en présentiel',
+    null,
+    null,
+  ]);
+});
+
 it('refuse un export vide, incomplet ou dupliqué avant écriture', () => {
   for (const rows of [[], [{}], [sample, sample]])
     expect(() => readDirectory(rows)).toThrow();

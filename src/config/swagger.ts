@@ -56,11 +56,16 @@ export const swaggerDocument = {
     schemas: {
       EducationCampus: {
         type: 'object',
-        required: ['id', 'label', 'city'],
+        required: ['id', 'label', 'city', 'address'],
         properties: {
           id: { type: 'string' },
           label: { type: 'string' },
           city: { type: 'string' },
+          address: {
+            type: 'string',
+            nullable: true,
+            description: 'Campus street address from the education directory',
+          },
         },
       },
       EducationOffer: {
@@ -70,6 +75,7 @@ export const swaggerDocument = {
           'campusId',
           'campusLabel',
           'label',
+          'detail',
           'level',
           'studyFieldId',
         ],
@@ -77,6 +83,12 @@ export const swaggerDocument = {
           id: { type: 'string' },
           campusId: { type: 'string' },
           campusLabel: { type: 'string' },
+          detail: {
+            type: 'string',
+            nullable: true,
+            description:
+              'Duration and attendance mode where known; includes the source reference for otherwise identical options',
+          },
           label: { type: 'string' },
           level: { type: 'string', nullable: true },
           studyFieldId: { type: 'string', format: 'uuid', nullable: true },

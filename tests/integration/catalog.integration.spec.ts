@@ -335,6 +335,66 @@ databaseTests(
       expect((await addSpecialty('Site vitrine')).status).toBe(201);
     });
 
+    it('distinguishes homonymous campuses and every offer, even with identical attendance details', async () => {
+      const key = randomUUID().replaceAll('-', '');
+      const first = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'a' + key,
+          label: 'École test',
+          city: 'Nantes',
+          address: '4 rue Bisson',
+          searchKey: key,
+          offers: {
+            create: [
+              ['AF.1', '1 an · temps plein'],
+              ['AF.2', '2 ans · temps plein'],
+              ['AF.3', '2 ans · temps plein'],
+            ].map(([ref, detail]) => ({
+              id: 'a' + key + ':' + ref,
+              label: 'Même cursus',
+              detail,
+            })),
+          },
+        },
+      });
+      const second = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'b' + key,
+          label: first.label,
+          city: first.city,
+          address: '8 route de la Jonelière',
+          searchKey: key,
+        },
+      });
+      try {
+        const campuses = await request(app)
+          .get('/api/education-catalog/campuses')
+          .query({ q: key })
+          .expect(200);
+        expect(
+          campuses.body.map((campus: { address: string }) => campus.address),
+        ).toEqual([first.address, second.address]);
+        const offers = await request(app)
+          .get('/api/education-catalog/campuses/' + first.id + '/offers')
+          .expect(200);
+        expect(
+          offers.body.map((offer: { detail: string }) => offer.detail),
+        ).toEqual([
+          '1 an · temps plein',
+          '2 ans · temps plein · Réf. AF.2',
+          '2 ans · temps plein · Réf. AF.3',
+        ]);
+        const service = await request(app)
+          .get('/api/education-catalog/campuses/' + second.id + '/offers')
+          .expect(200);
+        expect(service.body).toEqual([]);
+      } finally {
+        await prisma.educationDirectoryCampus.deleteMany({
+          where: { id: { in: [first.id, second.id] } },
+        });
+      }
+    });
+
     it('saves a specific catalog offer without opening specialties, including on later PATCHes', async () => {
       const campusId = 'ENS.23533';
       const generalId = campusId + ':AF.133640';

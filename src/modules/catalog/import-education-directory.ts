@@ -14,7 +14,13 @@ export function readDirectory(rows: unknown) {
     throw new Error('Export Onisep vide ou illisible.');
   const campuses = new Map<
     string,
-    { id: string; label: string; city: string; searchKey: string }
+    {
+      id: string;
+      label: string;
+      city: string;
+      address: string | null;
+      searchKey: string;
+    }
   >();
   const offers = new Map<
     string,
@@ -23,6 +29,7 @@ export function readDirectory(rows: unknown) {
       campusId: string;
       label: string;
       level: string | null;
+      detail: string | null;
       rncp: string | null;
     }
   >();
@@ -44,12 +51,17 @@ export function readDirectory(rows: unknown) {
       id: campusId,
       label: school,
       city,
+      address: text(row.ens_adresse) || null,
       searchKey: schoolSearchKey(school, city, text(row.ens_code_uai)),
     });
     offers.set(id, {
       id,
       campusId,
       label,
+      detail:
+        [text(row.af_duree_cycle_standard), text(row.af_modalites_scolarite)]
+          .filter(Boolean)
+          .join(' · ') || null,
       level: text(row.for_niveau_de_sortie) || null,
       rncp:
         /\/rncp\/(\d+)\/?$/i.exec(text(row.for_url_referentiel))?.[1] ?? null,
