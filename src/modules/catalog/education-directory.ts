@@ -38,7 +38,10 @@ export async function searchCampuses(q: string) {
   const words = q.split(/\s+/).map(normalizeSchoolSearch).filter(Boolean);
   if (!words.length) return [];
   return prisma.educationDirectoryCampus.findMany({
-    where: { AND: words.map((word) => ({ searchKey: { contains: word } })) },
+    where: {
+      inGrenobleArea: true,
+      AND: words.map((word) => ({ searchKey: { contains: word } })),
+    },
     select: campusSelect,
     orderBy: [{ label: 'asc' }, { city: 'asc' }, { id: 'asc' }],
     take: 40,
@@ -47,7 +50,7 @@ export async function searchCampuses(q: string) {
 
 export async function getCampusOffers(campusId: string) {
   const campus = await prisma.educationDirectoryCampus.findUnique({
-    where: { id: campusId },
+    where: { id: campusId, inGrenobleArea: true },
     select: {
       label: true,
       offers: { orderBy: [{ label: 'asc' }, { id: 'asc' }] },
@@ -90,7 +93,10 @@ export async function getCatalogOffer(
 ) {
   const track = id === fullStackTrack;
   const row = await db.educationDirectoryOffer.findUnique({
-    where: { id: track ? fullStackCourse : id },
+    where: {
+      id: track ? fullStackCourse : id,
+      campus: { inGrenobleArea: true },
+    },
     include: includeCampus,
   });
   if (!row || (track && !hasFullStackTrack(row))) return null;

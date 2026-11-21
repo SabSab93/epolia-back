@@ -18,7 +18,8 @@ export const catalogPaths = {
   '/api/education-catalog/campuses': {
     get: {
       tags: ['Catalog'],
-      summary: 'Search campuses by school name or city',
+      summary:
+        'Search campuses in Grenoble-Alpes-Métropole by school name or city',
       parameters: [
         {
           name: 'q',
@@ -48,7 +49,9 @@ export const catalogPaths = {
           content: directoryList('EducationOffer'),
         },
         400: { description: 'Invalid campus ID' },
-        404: { description: 'Unknown campus' },
+        404: {
+          description: 'Unknown campus or campus outside the directory area',
+        },
         503: directoryUnavailable,
       },
     },
@@ -82,7 +85,9 @@ export const catalogPaths = {
           },
         },
         400: { description: 'Invalid offer ID' },
-        404: { description: 'Unknown offer' },
+        404: {
+          description: 'Unknown offer or offer outside the directory area',
+        },
         503: directoryUnavailable,
       },
     },

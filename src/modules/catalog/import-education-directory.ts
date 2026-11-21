@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { prisma } from '@/prisma/client';
+import { isGrenobleCampus } from '@/modules/catalog/grenoble-perimeter';
 import { schoolSearchKey } from '@/modules/catalog/education-directory-keys';
 
 const source =
@@ -20,6 +21,7 @@ export function readDirectory(rows: unknown) {
       city: string;
       address: string | null;
       searchKey: string;
+      inGrenobleArea: boolean;
     }
   >();
   const offers = new Map<
@@ -34,12 +36,13 @@ export function readDirectory(rows: unknown) {
     }
   >();
   for (const row of rows) {
+    const city = text(row?.ens_commune);
+    if (!isGrenobleCampus(text(row?.ens_departement), city)) continue;
     const campusId = /\/(ENS\.\d+)\/?$/.exec(
       text(row?.ens_url_et_id_onisep),
     )?.[1];
     const action = text(row?.action_de_formation_af_identifiant_onisep);
     const school = text(row?.lieu_denseignement_ens_libelle);
-    const city = text(row?.ens_commune);
     const label = text(row?.formation_for_libelle);
     if (!campusId || !/^AF\.\d+$/.test(action) || !school || !city || !label) {
       throw new Error('Ligne incomplète dans l’export Onisep. Import annulé.');
@@ -52,6 +55,7 @@ export function readDirectory(rows: unknown) {
       label: school,
       city,
       address: text(row.ens_adresse) || null,
+      inGrenobleArea: true,
       searchKey: schoolSearchKey(school, city, text(row.ens_code_uai)),
     });
     offers.set(id, {
@@ -67,6 +71,10 @@ export function readDirectory(rows: unknown) {
         /\/rncp\/(\d+)\/?$/i.exec(text(row.for_url_referentiel))?.[1] ?? null,
     });
   }
+  if (!campuses.size)
+    throw new Error(
+      'Aucun campus de Grenoble-Alpes-Métropole dans cet export. Import annulé.',
+    );
   return { campuses: [...campuses.values()], offers: [...offers.values()] };
 }
 
@@ -87,10 +95,12 @@ async function main() {
   const { campuses, offers } = readDirectory(rows);
   await prisma.$transaction(
     async (tx) => {
-      const previousCount = await tx.educationDirectoryOffer.count();
+      const previousCount = await tx.educationDirectoryOffer.count({
+        where: { campus: { inGrenobleArea: true } },
+      });
       if (offers.length < previousCount / 2)
         throw new Error(
-          'Plus de la moitié des offres manquent. Vérifiez le fichier national.',
+          'Plus de la moitié des offres locales manquent. Vérifiez l’export Onisep.',
         );
       await tx.educationDirectoryOffer.deleteMany();
       await tx.educationDirectoryCampus.deleteMany();
@@ -109,7 +119,7 @@ async function main() {
     campuses.length +
       ' campus et ' +
       offers.length +
-      ' offres Onisep importés.',
+      ' offres Onisep importés pour Grenoble-Alpes-Métropole.',
   );
 }
 

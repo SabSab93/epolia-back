@@ -755,6 +755,7 @@ model AdminAuditLog {
 }
 
 model EducationDirectoryCampus {
+  inGrenobleArea Boolean @default(false) @map("in_grenoble_area")
   address   String?
   id        String @id
   label     String

@@ -341,8 +341,9 @@ databaseTests(
         data: {
           id: 'a' + key,
           label: 'École test',
-          city: 'Nantes',
-          address: '4 rue Bisson',
+          city: 'Grenoble',
+          inGrenobleArea: true,
+          address: '4 rue des Écoles',
           searchKey: key,
           offers: {
             create: [
@@ -362,7 +363,8 @@ databaseTests(
           id: 'b' + key,
           label: first.label,
           city: first.city,
-          address: '8 route de la Jonelière',
+          inGrenobleArea: true,
+          address: '8 rue des Arts',
           searchKey: key,
         },
       });
@@ -391,6 +393,82 @@ databaseTests(
       } finally {
         await prisma.educationDirectoryCampus.deleteMany({
           where: { id: { in: [first.id, second.id] } },
+        });
+      }
+    });
+
+    it('restricts direct offer IDs to the local area and preserves existing student snapshots', async () => {
+      const key = randomUUID().replaceAll('-', '');
+      const outside = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'outside' + key,
+          label: 'École hors territoire',
+          city: 'Fontaine',
+          searchKey: key,
+          offers: {
+            create: { id: 'offsite' + key, label: 'Cursus hors territoire' },
+          },
+        },
+      });
+      const offerId = 'offsite' + key;
+      const auth = 'Bearer ' + token;
+      try {
+        await request(app)
+          .get('/api/education-catalog/campuses')
+          .query({ q: key })
+          .expect(200, []);
+        await request(app)
+          .get('/api/education-catalog/campuses/' + outside.id + '/offers')
+          .expect(404);
+        await request(app)
+          .get('/api/education-catalog/offers/' + offerId + '/candidates')
+          .expect(404);
+        const create = (body: object) =>
+          request(app)
+            .post('/api/student-educations')
+            .set('Authorization', auth)
+            .send(body);
+        await create({ catalogOfferId: offerId }).expect(404);
+        const manual = await create({
+          catalogOfferId: null,
+          title: 'Formation hors catalogue',
+        }).expect(201);
+        expect(manual.body.studyFieldId).toBeNull();
+        await request(app)
+          .patch('/api/student-educations/' + manual.body.id)
+          .set('Authorization', auth)
+          .send({ catalogOfferId: offerId })
+          .expect(404);
+
+        const past = await prisma.studentEducation.create({
+          data: {
+            source: 'CATALOG',
+            catalogCampusId: outside.id,
+            catalogOfferId: offerId,
+            studentId,
+            title: 'Ancien cursus',
+            school: outside.label,
+          },
+        });
+        const resumed = await request(app)
+          .get('/api/student-educations/me')
+          .set('Authorization', auth)
+          .expect(200);
+        expect(resumed.body).toContainEqual(
+          expect.objectContaining({
+            id: past.id,
+            title: past.title,
+            school: outside.label,
+          }),
+        );
+        await request(app)
+          .patch('/api/student-educations/' + past.id)
+          .set('Authorization', auth)
+          .send({ endDate: '2028-06-30' })
+          .expect(200);
+      } finally {
+        await prisma.educationDirectoryCampus.delete({
+          where: { id: outside.id },
         });
       }
     });
