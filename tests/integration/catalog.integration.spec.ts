@@ -18,6 +18,7 @@ import { prisma } from '@/prisma/client';
 import { studentEducationsRouter } from '@/modules/students/educations/student-educations.routes';
 import { studentProfilesRouter } from '@/modules/students/student-profiles.routes';
 import { studentSpecialtiesRouter } from '@/modules/students/specialties/student-specialties.routes';
+import { educationDirectoryRouter } from '@/modules/catalog/education-directory.routes';
 import { studyFieldsRouter } from '@/modules/catalog/study-fields.routes';
 import {
   lockStudentProfile,
@@ -88,6 +89,7 @@ databaseTests(
     app.use(
       '/api',
       studyFieldsRouter,
+      educationDirectoryRouter,
       studentEducationsRouter,
       studentSpecialtiesRouter,
       studentProfilesRouter,
@@ -331,6 +333,299 @@ databaseTests(
         status: ProfileStatus.DRAFT,
       });
       expect((await addSpecialty('Site vitrine')).status).toBe(201);
+    });
+
+    it('distinguishes homonymous campuses and every offer, even with identical attendance details', async () => {
+      const key = randomUUID().replaceAll('-', '');
+      const first = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'a' + key,
+          label: 'École test',
+          city: 'Grenoble',
+          inGrenobleArea: true,
+          address: '4 rue des Écoles',
+          searchKey: key,
+          offers: {
+            create: [
+              ['AF.1', '1 an · temps plein'],
+              ['AF.2', '2 ans · temps plein'],
+              ['AF.3', '2 ans · temps plein'],
+            ].map(([ref, detail]) => ({
+              id: 'a' + key + ':' + ref,
+              label: 'Même cursus',
+              detail,
+            })),
+          },
+        },
+      });
+      const second = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'b' + key,
+          label: first.label,
+          city: first.city,
+          inGrenobleArea: true,
+          address: '8 rue des Arts',
+          searchKey: key,
+        },
+      });
+      try {
+        const campuses = await request(app)
+          .get('/api/education-catalog/campuses')
+          .query({ q: key })
+          .expect(200);
+        expect(
+          campuses.body.map((campus: { address: string }) => campus.address),
+        ).toEqual([first.address, second.address]);
+        const offers = await request(app)
+          .get('/api/education-catalog/campuses/' + first.id + '/offers')
+          .expect(200);
+        expect(
+          offers.body.map((offer: { detail: string }) => offer.detail),
+        ).toEqual([
+          '1 an · temps plein',
+          '2 ans · temps plein · Réf. AF.2',
+          '2 ans · temps plein · Réf. AF.3',
+        ]);
+        const service = await request(app)
+          .get('/api/education-catalog/campuses/' + second.id + '/offers')
+          .expect(200);
+        expect(service.body).toEqual([]);
+      } finally {
+        await prisma.educationDirectoryCampus.deleteMany({
+          where: { id: { in: [first.id, second.id] } },
+        });
+      }
+    });
+
+    it('restricts direct offer IDs to the local area and preserves existing student snapshots', async () => {
+      const key = randomUUID().replaceAll('-', '');
+      const outside = await prisma.educationDirectoryCampus.create({
+        data: {
+          id: 'outside' + key,
+          label: 'École hors territoire',
+          city: 'Fontaine',
+          searchKey: key,
+          offers: {
+            create: { id: 'offsite' + key, label: 'Cursus hors territoire' },
+          },
+        },
+      });
+      const offerId = 'offsite' + key;
+      const auth = 'Bearer ' + token;
+      try {
+        await request(app)
+          .get('/api/education-catalog/campuses')
+          .query({ q: key })
+          .expect(200, []);
+        await request(app)
+          .get('/api/education-catalog/campuses/' + outside.id + '/offers')
+          .expect(404);
+        await request(app)
+          .get('/api/education-catalog/offers/' + offerId + '/candidates')
+          .expect(404);
+        const create = (body: object) =>
+          request(app)
+            .post('/api/student-educations')
+            .set('Authorization', auth)
+            .send(body);
+        await create({ catalogOfferId: offerId }).expect(404);
+        const manual = await create({
+          catalogOfferId: null,
+          title: 'Formation hors catalogue',
+        }).expect(201);
+        expect(manual.body.studyFieldId).toBeNull();
+        await request(app)
+          .patch('/api/student-educations/' + manual.body.id)
+          .set('Authorization', auth)
+          .send({ catalogOfferId: offerId })
+          .expect(404);
+
+        const past = await prisma.studentEducation.create({
+          data: {
+            source: 'CATALOG',
+            catalogCampusId: outside.id,
+            catalogOfferId: offerId,
+            studentId,
+            title: 'Ancien cursus',
+            school: outside.label,
+          },
+        });
+        const resumed = await request(app)
+          .get('/api/student-educations/me')
+          .set('Authorization', auth)
+          .expect(200);
+        expect(resumed.body).toContainEqual(
+          expect.objectContaining({
+            id: past.id,
+            title: past.title,
+            school: outside.label,
+          }),
+        );
+        await request(app)
+          .patch('/api/student-educations/' + past.id)
+          .set('Authorization', auth)
+          .send({ endDate: '2028-06-30' })
+          .expect(200);
+      } finally {
+        await prisma.educationDirectoryCampus.delete({
+          where: { id: outside.id },
+        });
+      }
+    });
+
+    it('saves a specific catalog offer without opening specialties, including on later PATCHes', async () => {
+      const campusId = 'ENS.23533';
+      const generalId = campusId + ':AF.133640';
+      const offerId = generalId + ':full-stack';
+      const campus = await prisma.educationDirectoryCampus.findUniqueOrThrow({
+        where: { id: campusId },
+      });
+      const auth = 'Bearer ' + token;
+      const key = randomUUID();
+      const create = () =>
+        request(app)
+          .post('/api/student-educations')
+          .set('Authorization', auth)
+          .set('Idempotency-Key', key)
+          .send({
+            catalogOfferId: offerId,
+            startDate: relativeDay(-5).toISOString().slice(0, 10),
+            endDate: relativeDay(5).toISOString().slice(0, 10),
+          });
+      const preview = await request(app)
+        .get('/api/education-catalog/offers/' + offerId + '/candidates')
+        .expect(200);
+      expect(preview.body.candidates).toHaveLength(3);
+      const general = await request(app)
+        .get('/api/education-catalog/offers/' + generalId + '/candidates')
+        .expect(200);
+      expect(general.body.candidates).toEqual([]);
+      const created = await create();
+      expect(created.status).toBe(201);
+      expect(created.body).toMatchObject({
+        source: 'CATALOG',
+        catalogOfferId: offerId,
+        catalogCampusId: campus.id,
+        title: 'MBA Développeur Full-stack',
+        school: campus.label,
+        studyFieldId: null,
+      });
+      const edit = (fields: object) =>
+        request(app)
+          .patch('/api/student-educations/' + created.body.id)
+          .set('Authorization', auth)
+          .send(fields);
+      await edit({ studyFieldId: fields.get('Test Developpement') }).expect(
+        400,
+      );
+      await edit({ title: 'Other diploma' }).expect(400);
+      await edit({ catalogOfferId: 'unknown-replacement' }).expect(404);
+      const eligibility = await request(app)
+        .get('/api/student-specialties/eligible')
+        .set('Authorization', auth)
+        .expect(200);
+      expect(eligibility.body).toEqual([]);
+      expect((await addSpecialty('Site vitrine')).body.code).toBe(
+        'SPECIALTY_NOT_ELIGIBLE',
+      );
+
+      expect((await create()).body.id).toBe(created.body.id);
+      const resumed = await request(app)
+        .get('/api/student-educations/me')
+        .set('Authorization', auth)
+        .expect(200);
+      expect(resumed.body[0]).toMatchObject({
+        catalogOfferId: offerId,
+        title: created.body.title,
+        school: campus.label,
+      });
+      await edit({ endDate: null }).expect(200);
+      await edit({ catalogOfferId: offerId, endDate: null }).expect(200);
+      const manual = await edit({
+        catalogOfferId: null,
+        title: 'Autre formation',
+      }).expect(200);
+      expect(manual.body).toMatchObject({
+        source: 'MANUAL',
+        catalogOfferId: null,
+        catalogCampusId: null,
+        studyFieldId: null,
+        school: null,
+        level: null,
+      });
+      await edit({ studyFieldId: fields.get('Test Developpement') }).expect(
+        400,
+      );
+    });
+
+    it('preserves snapshots, date edits and idempotent retries for a retired offer', async () => {
+      const offer = await prisma.educationDirectoryOffer.create({
+        data: {
+          id: 'retired-' + randomUUID(),
+          label: 'Formation à retirer',
+          campusId: 'ENS.23533',
+        },
+      });
+      const auth = 'Bearer ' + token;
+      const key = randomUUID();
+      const create = () =>
+        request(app)
+          .post('/api/student-educations')
+          .set('Authorization', auth)
+          .set('Idempotency-Key', key)
+          .send({ catalogOfferId: offer.id });
+      const declaration = await create().expect(201);
+      await prisma.educationDirectoryOffer.delete({ where: { id: offer.id } });
+      expect((await create().expect(200)).body.id).toBe(declaration.body.id);
+      const edit = await request(app)
+        .patch('/api/student-educations/' + declaration.body.id)
+        .set('Authorization', auth)
+        .send({ catalogOfferId: offer.id, endDate: '2028-01-01' })
+        .expect(200);
+      expect(edit.body).toMatchObject({
+        title: offer.label,
+        endDate: '2028-01-01',
+        catalogOfferId: offer.id,
+        studyFieldId: null,
+      });
+    });
+
+    it('keeps a free declaration unlinked and revokes old offerings on conversion', async () => {
+      const auth = 'Bearer ' + token;
+      const create = (data: object) =>
+        request(app)
+          .post('/api/student-educations')
+          .set('Authorization', auth)
+          .send(data);
+      await create({
+        catalogOfferId: null,
+        title: 'Training',
+        studyFieldId: fields.get('Test Developpement'),
+      }).expect(400);
+      await create({ catalogOfferId: 'missing-offer' }).expect(404);
+      const manual = await create({
+        catalogOfferId: null,
+        title: 'New training',
+        school: 'My campus',
+      }).expect(201);
+      expect(manual.body).toMatchObject({
+        source: 'MANUAL',
+        studyFieldId: null,
+      });
+      const row = await education('Test Developpement');
+      expect((await addSpecialty('Site vitrine')).status).toBe(201);
+      await request(app)
+        .patch('/api/student-educations/' + row.id)
+        .set('Authorization', auth)
+        .send({ catalogOfferId: null, title: 'Free declaration' })
+        .expect(200);
+      expect(
+        (
+          await request(app)
+            .get('/api/student-specialties/me')
+            .set('Authorization', auth)
+        ).body,
+      ).toEqual([]);
     });
 
     it('replays education creation once per key without merging distinct entries', async () => {

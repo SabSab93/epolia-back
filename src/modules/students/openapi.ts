@@ -161,7 +161,7 @@ export const studentsPaths = {
     post: {
       summary: 'Declare an education for the authenticated student',
       description:
-        'Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. A new education returns a visible profile to DRAFT.',
+        'Catalog selections store server-resolved labels and family. A free directory declaration (catalogOfferId: null) grants no specialty. Older clients can still declare an explicit family. Eligibility requires a study field and both dates covering today (UTC civil date, inclusive). Incomplete, past or future educations grant no eligibility. A new education returns a visible profile to DRAFT.',
       tags: ['StudentEducation'],
       security: [{ bearerAuth: [] }],
       parameters: [
@@ -204,7 +204,11 @@ export const studentsPaths = {
         },
         401: { description: 'Authentication required' },
         403: { description: 'Student role required' },
-        404: { description: 'Student profile or study field not found' },
+        404: {
+          description:
+            'Student profile, catalog offer or study field not found',
+        },
+        503: { description: 'Education directory unavailable' },
         409: {
           description:
             'EDUCATION_LIMIT_REACHED: a student can have at most 20 educations',
@@ -216,6 +220,8 @@ export const studentsPaths = {
     patch: {
       summary:
         'Update an owned education and remove ineligible profile specialties',
+      description:
+        'Catalog labels and family are server-controlled. Date-only edits work after retirement. To replace the selection send another offer ID, or catalogOfferId: null and a title to switch to a free declaration.',
       tags: ['StudentEducation'],
       security: [{ bearerAuth: [] }],
       parameters: [{ $ref: '#/components/parameters/EducationId' }],
@@ -242,8 +248,9 @@ export const studentsPaths = {
         403: { description: 'Student role required' },
         404: {
           description:
-            'Owned education, student profile or study field not found',
+            'Owned education, student profile, catalog offer or study field not found',
         },
+        503: { description: 'Education directory unavailable' },
       },
     },
     delete: {

@@ -1,4 +1,5 @@
 import { AppError } from '@/errors/app-error';
+import { readDirectoryId } from '@/modules/catalog/education-directory-access';
 import { uuidRegex } from '@/validation/input-formats';
 import { assertMaxLength, maxLength } from '@/validation/input-limits';
 
@@ -85,11 +86,16 @@ export function cleanEducation(value: unknown, creating = false) {
   assertMaxLength(body.title, 'title', maxLength.educationText);
   assertMaxLength(body.school, 'school', maxLength.educationText);
   assertMaxLength(body.level, 'level', maxLength.educationText);
+  const catalogOfferId =
+    body.catalogOfferId == null
+      ? body.catalogOfferId
+      : readDirectoryId(body.catalogOfferId, 'catalogOfferId');
   return {
+    catalogOfferId,
     title: cleanText(
       body.title,
       'title',
-      creating || body.title !== undefined,
+      (creating && !catalogOfferId) || body.title !== undefined,
     ) as string | undefined,
     school: cleanText(body.school, 'school'),
     level: cleanText(body.level, 'level'),

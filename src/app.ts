@@ -13,6 +13,7 @@ import {
   registerRateLimit,
 } from '@/middlewares/rate-limit.middleware';
 import { authRouter } from '@/modules/auth/auth.routes';
+import { educationDirectoryRouter } from '@/modules/catalog/education-directory.routes';
 import { domainsRouter } from '@/modules/catalog/domains.routes';
 import { emailVerificationRouter } from '@/modules/auth/email/email-verification.routes';
 import { studyFieldsRouter } from '@/modules/catalog/study-fields.routes';
@@ -67,6 +68,7 @@ app.use(
 
 app.use('/api', authRouter);
 app.use('/api', domainsRouter);
+app.use('/api', educationDirectoryRouter);
 app.use('/api', emailVerificationRouter);
 app.use('/api', studyFieldsRouter);
 app.use('/api', studentEducationsRouter);

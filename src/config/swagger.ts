@@ -54,6 +54,55 @@ export const swaggerDocument = {
       },
     },
     schemas: {
+      EducationCampus: {
+        type: 'object',
+        required: ['id', 'label', 'city', 'address'],
+        properties: {
+          id: { type: 'string' },
+          label: { type: 'string' },
+          city: { type: 'string' },
+          address: {
+            type: 'string',
+            nullable: true,
+            description: 'Campus street address from the education directory',
+          },
+        },
+      },
+      EducationOffer: {
+        type: 'object',
+        required: [
+          'id',
+          'campusId',
+          'campusLabel',
+          'label',
+          'detail',
+          'level',
+          'studyFieldId',
+        ],
+        properties: {
+          id: { type: 'string' },
+          campusId: { type: 'string' },
+          campusLabel: { type: 'string' },
+          detail: {
+            type: 'string',
+            nullable: true,
+            description:
+              'Duration and attendance mode where known; includes the source reference for otherwise identical options',
+          },
+          label: { type: 'string' },
+          level: { type: 'string', nullable: true },
+          studyFieldId: { type: 'string', format: 'uuid', nullable: true },
+        },
+      },
+      EducationServiceCandidate: {
+        type: 'object',
+        required: ['id', 'label', 'description'],
+        properties: {
+          id: { type: 'string' },
+          label: { type: 'string' },
+          description: { type: 'string' },
+        },
+      },
       StudyField: {
         type: 'object',
         required: ['id', 'label'],
@@ -75,12 +124,30 @@ export const swaggerDocument = {
       StudentEducationInput: {
         allOf: [
           { $ref: '#/components/schemas/StudentEducationUpdate' },
-          { type: 'object', required: ['title'] },
+          {
+            anyOf: [
+              { type: 'object', required: ['title'] },
+              {
+                type: 'object',
+                required: ['catalogOfferId'],
+                properties: {
+                  catalogOfferId: { type: 'string', minLength: 1 },
+                },
+              },
+            ],
+          },
         ],
       },
       StudentEducationUpdate: {
         type: 'object',
         properties: {
+          catalogOfferId: {
+            type: 'string',
+            nullable: true,
+            maxLength: 255,
+            description:
+              'Opaque offer ID for a catalog selection. Send null and a title for a free declaration. For a catalog offer send only the ID and personal dates. Omitting this property on a PATCH preserves the current entry mode.',
+          },
           title: {
             type: 'string',
             minLength: 1,
@@ -124,10 +191,19 @@ export const swaggerDocument = {
           { $ref: '#/components/schemas/StudentEducationInput' },
           {
             type: 'object',
-            required: ['id', 'studentId', 'studyFieldId'],
+            required: [
+              'id',
+              'studentId',
+              'studyFieldId',
+              'source',
+              'catalogCampusId',
+              'catalogOfferId',
+            ],
             properties: {
               id: { type: 'string', format: 'uuid' },
               studentId: { type: 'string', format: 'uuid' },
+              source: { type: 'string', enum: ['LEGACY', 'MANUAL', 'CATALOG'] },
+              catalogCampusId: { type: 'string', nullable: true },
               studyField: {
                 allOf: [{ $ref: '#/components/schemas/StudyField' }],
                 nullable: true,
