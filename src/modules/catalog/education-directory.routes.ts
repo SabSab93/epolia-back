@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import {
   getCampusOffers,
-  getOfferCandidates,
+  listOfferCandidates,
+  listServiceCandidates,
   searchCampuses,
 } from '@/modules/catalog/education-directory';
 import {
@@ -12,6 +13,13 @@ import {
 } from '@/modules/catalog/education-directory-access';
 
 export const educationDirectoryRouter = Router();
+
+educationDirectoryRouter.get(
+  '/education-catalog/candidates',
+  async (_request, response) => {
+    response.json(await readDirectory(() => listServiceCandidates()));
+  },
+);
 
 educationDirectoryRouter.get(
   '/education-catalog/campuses',
@@ -45,7 +53,7 @@ educationDirectoryRouter.get(
   async (request, response) => {
     const offerId = readDirectoryId(request.params.offerId, 'offerId');
     await requireCatalogOffer(offerId);
-    const candidates = await readDirectory(() => getOfferCandidates(offerId));
+    const candidates = await readDirectory(() => listOfferCandidates(offerId));
     response.json({ offerId, candidates });
   },
 );

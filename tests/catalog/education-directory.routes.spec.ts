@@ -37,6 +37,16 @@ describe('Education directory routes', () => {
     expect(directory.searchCampuses).toHaveBeenCalledTimes(2);
   });
 
+  it('reports a failed candidate catalog read as unavailable', async () => {
+    jest
+      .mocked(directory.listServiceCandidates)
+      .mockRejectedValueOnce(new Error('unavailable'));
+    const failed = await request(app)
+      .get(base + 'candidates')
+      .expect(503);
+    expect(failed.body.code).toBe('EDUCATION_CATALOG_UNAVAILABLE');
+  });
+
   it('distinguishes an unknown campus or offer from a catalogued campus with no offers', async () => {
     jest
       .mocked(directory.getCampusOffers)
@@ -52,6 +62,6 @@ describe('Education directory routes', () => {
     await request(app)
       .get(base + 'offers/missing/candidates')
       .expect(404);
-    expect(directory.getOfferCandidates).not.toHaveBeenCalled();
+    expect(directory.listOfferCandidates).not.toHaveBeenCalled();
   });
 });

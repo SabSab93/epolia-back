@@ -778,3 +778,25 @@ model EducationDirectoryOffer {
   @@index([campusId])
   @@map("education_directory_offers")
 }
+
+model NonCesuServiceCandidate {
+  reference        Int                     @id
+  label            String                  @unique
+  studyDomain      String                  @map("study_domain")
+  otherStudyDomain String?                 @map("other_study_domain")
+  trainingExamples String                  @map("training_examples")
+  family           String
+  description      String
+  offers           OfferServiceCandidate[]
+
+  @@map("non_cesu_service_candidates")
+}
+
+model OfferServiceCandidate {
+  offerId          String                  @map("offer_id")
+  serviceReference Int                     @map("service_reference")
+  service          NonCesuServiceCandidate @relation(fields: [serviceReference], references: [reference], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([offerId, serviceReference])
+  @@map("offer_service_candidates")
+}

@@ -103,27 +103,38 @@ export async function getCatalogOffer(
   return asOffer(row, track);
 }
 
-// Proposition éditoriale du pilote. Ces identifiants ne sont pas des spécialités activables.
-export function getOfferCandidates(id: string) {
-  if (id !== fullStackTrack) return [];
-  return [
-    {
-      id: 'installation-numerique',
-      label: 'Installation de matériel et de logiciels',
-      description:
-        'Aider à mettre en service un ordinateur ou un logiciel courant au domicile du particulier.',
+const previewSelect = {
+  reference: true,
+  label: true,
+  description: true,
+} as const;
+
+export async function listServiceCandidates() {
+  const services = await prisma.nonCesuServiceCandidate.findMany({
+    select: {
+      ...previewSelect,
+      family: true,
+      studyDomain: true,
+      otherStudyDomain: true,
+      trainingExamples: true,
     },
-    {
-      id: 'aide-numerique',
-      label: 'Aide numérique à domicile',
-      description:
-        'Accompagner le particulier pour utiliser sa messagerie ou rejoindre une visioconférence.',
-    },
-    {
-      id: 'initiation-bureautique',
-      label: 'Initiation à la bureautique',
-      description:
-        'Apprendre à rédiger et à mettre en forme un courrier personnel.',
-    },
-  ];
+    orderBy: { reference: 'asc' },
+  });
+  return services.map((service) => ({
+    ...service,
+    id: 'hors-cesu-' + service.reference,
+  }));
+}
+
+export async function listOfferCandidates(offerId: string) {
+  const services = await prisma.nonCesuServiceCandidate.findMany({
+    select: previewSelect,
+    where: { offers: { some: { offerId } } },
+    orderBy: { reference: 'asc' },
+  });
+  return services.map(({ reference, label, description }) => ({
+    id: 'hors-cesu-' + reference,
+    label,
+    description,
+  }));
 }

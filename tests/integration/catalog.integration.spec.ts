@@ -473,6 +473,61 @@ databaseTests(
       }
     });
 
+    it('lists the 106 non-Cesu candidates and filters them for an interior design course', async () => {
+      const base = '/api/education-catalog/';
+      const catalog = await request(app)
+        .get(base + 'candidates')
+        .expect(200);
+      const references = catalog.body.map(
+        (entry: { reference: number }) => entry.reference,
+      );
+      expect(references).toEqual(
+        Array.from({ length: 106 }, (_, index) => 101 + index),
+      );
+      for (const entry of catalog.body) {
+        expect(Object.keys(entry).sort()).toEqual([
+          'description',
+          'family',
+          'id',
+          'label',
+          'otherStudyDomain',
+          'reference',
+          'studyDomain',
+          'trainingExamples',
+        ]);
+      }
+      expect(catalog.body[0]).toMatchObject({
+        id: 'hors-cesu-101',
+        label: 'Conseil en décoration intérieure',
+        studyDomain: 'Architecture et design d’espace',
+        otherStudyDomain: null,
+        trainingExamples: expect.stringContaining('DN MADE'),
+        description: expect.stringContaining('Exclure plans techniques'),
+      });
+      const offerId = 'ENS.14777:AF.130823';
+      const design = await request(app)
+        .get(base + 'offers/' + offerId + '/candidates')
+        .expect(200);
+      expect(design.body.offerId).toBe(offerId);
+      expect(design.body.candidates).toEqual(
+        catalog.body
+          .filter((entry: { reference: number }) =>
+            [101, 102, 103, 104, 174].includes(entry.reference),
+          )
+          .map(
+            ({
+              id,
+              label,
+              description,
+            }: {
+              id: string;
+              label: string;
+              description: string;
+            }) => ({ id, label, description }),
+          ),
+      );
+    });
+
     it('saves a specific catalog offer without opening specialties, including on later PATCHes', async () => {
       const campusId = 'ENS.23533';
       const generalId = campusId + ':AF.133640';
@@ -495,7 +550,17 @@ databaseTests(
       const preview = await request(app)
         .get('/api/education-catalog/offers/' + offerId + '/candidates')
         .expect(200);
-      expect(preview.body.candidates).toHaveLength(3);
+      expect(
+        preview.body.candidates.map(
+          (candidate: { id: string }) => candidate.id,
+        ),
+      ).toEqual([
+        'hors-cesu-161',
+        'hors-cesu-162',
+        'hors-cesu-163',
+        'hors-cesu-164',
+        'hors-cesu-167',
+      ]);
       const general = await request(app)
         .get('/api/education-catalog/offers/' + generalId + '/candidates')
         .expect(200);
