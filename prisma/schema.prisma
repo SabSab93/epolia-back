@@ -786,7 +786,6 @@ model NonCesuServiceCandidate {
   otherStudyDomain String?                 @map("other_study_domain")
   trainingExamples String                  @map("training_examples")
   family           String
-  reviewPoint      String                  @map("review_point")
   description      String
   offers           OfferServiceCandidate[]
 

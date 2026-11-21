@@ -62,6 +62,6 @@ describe('Education directory routes', () => {
     await request(app)
       .get(base + 'offers/missing/candidates')
       .expect(404);
-    expect(directory.listServiceCandidates).not.toHaveBeenCalled();
+    expect(directory.listOfferCandidates).not.toHaveBeenCalled();
   });
 });

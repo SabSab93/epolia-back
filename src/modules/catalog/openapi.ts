@@ -91,7 +91,7 @@ export const catalogPaths = {
                   candidates: {
                     type: 'array',
                     items: {
-                      $ref: '#/components/schemas/EducationServiceCandidate',
+                      $ref: '#/components/schemas/EducationServicePreview',
                     },
                   },
                 },

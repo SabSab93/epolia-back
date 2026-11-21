@@ -103,14 +103,38 @@ export async function getCatalogOffer(
   return asOffer(row, track);
 }
 
-export async function listServiceCandidates(offerId?: string) {
+const previewSelect = {
+  reference: true,
+  label: true,
+  description: true,
+} as const;
+
+export async function listServiceCandidates() {
   const services = await prisma.nonCesuServiceCandidate.findMany({
-    where: offerId === undefined ? {} : { offers: { some: { offerId } } },
+    select: {
+      ...previewSelect,
+      family: true,
+      studyDomain: true,
+      otherStudyDomain: true,
+      trainingExamples: true,
+    },
     orderBy: { reference: 'asc' },
   });
   return services.map((service) => ({
     ...service,
-    // A preview ID must stay distinct from an activatable specialty UUID.
     id: 'hors-cesu-' + service.reference,
+  }));
+}
+
+export async function listOfferCandidates(offerId: string) {
+  const services = await prisma.nonCesuServiceCandidate.findMany({
+    select: previewSelect,
+    where: { offers: { some: { offerId } } },
+    orderBy: { reference: 'asc' },
+  });
+  return services.map(({ reference, label, description }) => ({
+    id: 'hors-cesu-' + reference,
+    label,
+    description,
   }));
 }

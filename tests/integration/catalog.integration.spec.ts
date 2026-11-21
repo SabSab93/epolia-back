@@ -484,6 +484,18 @@ databaseTests(
       expect(references).toEqual(
         Array.from({ length: 106 }, (_, index) => 101 + index),
       );
+      for (const entry of catalog.body) {
+        expect(Object.keys(entry).sort()).toEqual([
+          'description',
+          'family',
+          'id',
+          'label',
+          'otherStudyDomain',
+          'reference',
+          'studyDomain',
+          'trainingExamples',
+        ]);
+      }
       expect(catalog.body[0]).toMatchObject({
         id: 'hors-cesu-101',
         label: 'Conseil en décoration intérieure',
@@ -498,9 +510,21 @@ databaseTests(
         .expect(200);
       expect(design.body.offerId).toBe(offerId);
       expect(design.body.candidates).toEqual(
-        catalog.body.filter((entry: { reference: number }) =>
-          [101, 102, 103, 104, 174].includes(entry.reference),
-        ),
+        catalog.body
+          .filter((entry: { reference: number }) =>
+            [101, 102, 103, 104, 174].includes(entry.reference),
+          )
+          .map(
+            ({
+              id,
+              label,
+              description,
+            }: {
+              id: string;
+              label: string;
+              description: string;
+            }) => ({ id, label, description }),
+          ),
       );
     });
 
@@ -528,9 +552,15 @@ databaseTests(
         .expect(200);
       expect(
         preview.body.candidates.map(
-          (candidate: { reference: number }) => candidate.reference,
+          (candidate: { id: string }) => candidate.id,
         ),
-      ).toEqual([161, 162, 163, 164, 167]);
+      ).toEqual([
+        'hors-cesu-161',
+        'hors-cesu-162',
+        'hors-cesu-163',
+        'hors-cesu-164',
+        'hors-cesu-167',
+      ]);
       const general = await request(app)
         .get('/api/education-catalog/offers/' + generalId + '/candidates')
         .expect(200);

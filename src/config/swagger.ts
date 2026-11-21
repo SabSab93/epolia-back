@@ -94,7 +94,18 @@ export const swaggerDocument = {
           studyFieldId: { type: 'string', format: 'uuid', nullable: true },
         },
       },
+      EducationServicePreview: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['id', 'label', 'description'],
+        properties: {
+          id: { type: 'string' },
+          label: { type: 'string' },
+          description: { type: 'string' },
+        },
+      },
       EducationServiceCandidate: {
+        additionalProperties: false,
         type: 'object',
         required: [
           'id',
@@ -105,7 +116,6 @@ export const swaggerDocument = {
           'studyDomain',
           'otherStudyDomain',
           'trainingExamples',
-          'reviewPoint',
         ],
         properties: {
           id: { type: 'string' },
@@ -114,7 +124,6 @@ export const swaggerDocument = {
           studyDomain: { type: 'string' },
           otherStudyDomain: { type: 'string', nullable: true },
           trainingExamples: { type: 'string' },
-          reviewPoint: { type: 'string' },
           label: { type: 'string' },
           description: { type: 'string' },
         },
