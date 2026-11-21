@@ -1,4 +1,5 @@
 import { Prisma } from '@prisma/client';
+import { educationChanges } from '@/modules/students/educations/student-education-selection';
 import { Router } from 'express';
 import { AppError } from '@/errors/app-error';
 import { requireAuthAllowUnverified } from '@/modules/auth/auth.middleware';
@@ -79,9 +80,8 @@ studentEducationsRouter.post(
     const key = request.get('Idempotency-Key');
     const creationKey =
       key === undefined ? undefined : cleanId(key, 'Idempotency-Key');
-    const data = cleanEducation(request.body ?? {}, true);
-    assertDateOrder(data.startDate, data.endDate);
-
+    const input = cleanEducation(request.body ?? {}, true);
+    assertDateOrder(input.startDate, input.endDate);
     const { education, status } = await prisma.$transaction(async (tx) => {
       await lockStudentProfile(tx, user.id);
       if (creationKey) {
@@ -103,6 +103,7 @@ studentEducationsRouter.post(
         );
       }
 
+      const data = await educationChanges(tx, input);
       await assertStudyField(tx, data.studyFieldId);
       const created = await tx.studentEducation.create({
         data: { ...data, title: data.title!, studentId: user.id, creationKey },
@@ -123,8 +124,7 @@ studentEducationsRouter.patch(
   async (request, response) => {
     const user = requireStudent(response);
     const id = cleanId(request.params.educationId, 'educationId');
-    const data = cleanEducation(request.body ?? {});
-
+    const input = cleanEducation(request.body ?? {});
     const education = await prisma.$transaction(async (tx) => {
       const profile = await lockStudentProfile(tx, user.id);
       const existing = await tx.studentEducation.findFirst({
@@ -139,6 +139,7 @@ studentEducationsRouter.patch(
         );
       }
 
+      const data = await educationChanges(tx, input, existing);
       assertDateOrder(
         data.startDate === undefined ? existing.startDate : data.startDate,
         data.endDate === undefined ? existing.endDate : data.endDate,

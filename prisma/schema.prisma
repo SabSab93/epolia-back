@@ -334,11 +334,20 @@ model StudyFieldSpecialty {
   @@map("study_field_specialties")
 }
 
+enum StudentEducationSource {
+  LEGACY
+  MANUAL
+  CATALOG
+}
+
 model StudentEducation {
   id           String    @id @default(uuid()) @db.Uuid
   studentId    String    @map("student_id") @db.Uuid
   studyFieldId String?   @map("study_field_id") @db.Uuid
   creationKey  String?   @map("creation_key") @db.Uuid
+  source       StudentEducationSource @default(LEGACY)
+  catalogOfferId String? @map("catalog_offer_id") @db.VarChar(255)
+  catalogCampusId String? @map("catalog_campus_id") @db.VarChar(255)
   title        String
   school       String?
   level        String?
@@ -743,4 +752,26 @@ model AdminAuditLog {
   @@index([targetId])
   @@index([createdAt])
   @@map("admin_audit_logs")
+}
+
+model EducationDirectoryCampus {
+  id        String @id
+  label     String
+  city      String
+  searchKey String @map("search_key")
+  offers    EducationDirectoryOffer[]
+
+  @@map("education_directory_campuses")
+}
+
+model EducationDirectoryOffer {
+  id       String @id
+  campusId String @map("campus_id")
+  label    String
+  level    String?
+  rncp     String?
+  campus   EducationDirectoryCampus @relation(fields: [campusId], references: [id], onDelete: Cascade)
+
+  @@index([campusId])
+  @@map("education_directory_offers")
 }
