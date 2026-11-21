@@ -12,15 +12,15 @@ import {
   loginRateLimit,
   registerRateLimit,
 } from '@/middlewares/rate-limit.middleware';
-import { authRouter } from '@/routes/auth.routes';
-import { domainsRouter } from '@/routes/domains.routes';
-import { emailVerificationRouter } from '@/routes/email-verification.routes';
-import { studyFieldsRouter } from '@/routes/study-fields.routes';
-import { studentEducationsRouter } from '@/routes/student-educations.routes';
-import { studentProfilesRouter } from '@/routes/student-profiles.routes';
-import { studentSpecialtiesRouter } from '@/routes/student-specialties.routes';
-import { userProfilesRouter } from '@/routes/user-profiles.routes';
-import { usersRouter } from '@/routes/users.routes';
+import { authRouter } from '@/modules/auth/auth.routes';
+import { domainsRouter } from '@/modules/catalog/domains.routes';
+import { emailVerificationRouter } from '@/modules/auth/email/email-verification.routes';
+import { studyFieldsRouter } from '@/modules/catalog/study-fields.routes';
+import { studentEducationsRouter } from '@/modules/students/educations/student-educations.routes';
+import { studentProfilesRouter } from '@/modules/students/student-profiles.routes';
+import { studentSpecialtiesRouter } from '@/modules/students/specialties/student-specialties.routes';
+import { userProfilesRouter } from '@/modules/profiles/user-profiles.routes';
+import { usersRouter } from '@/modules/admin-users/users.routes';
 
 const app = express();
 

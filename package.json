@@ -13,7 +13,7 @@
     "test": "jest",
     "catalog:import": "ts-node -r tsconfig-paths/register prisma/seed-catalog.ts",
     "catalog:check": "ts-node -r tsconfig-paths/register prisma/check-catalog.ts",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
@@ -67,21 +67,25 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "src/**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@prisma/client$": "<rootDir>/../node_modules/.prisma/client/default.js",
-      "^@/(.*)$": "<rootDir>/$1",
-      "^@root/(.*)$": "<rootDir>/../$1"
-    }
+      "^@prisma/client$": "<rootDir>/node_modules/.prisma/client/default.js",
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "^@root/(.*)$": "<rootDir>/$1"
+    },
+    "roots": [
+      "<rootDir>/tests",
+      "<rootDir>/src"
+    ]
   },
   "overrides": {
     "@prisma/config@7.10.1": {

@@ -1,0 +1,286 @@
+import {
+  AccountStatus,
+  Prisma,
+  ProfileStatus,
+  VerificationStatus,
+} from '@prisma/client';
+import { Router } from 'express';
+import { AppError } from '@/errors/app-error';
+import { isAdult } from '@/modules/auth/age';
+import { requireAuthAllowUnverified } from '@/modules/auth/auth.middleware';
+import {
+  eligibleSpecialtyWhere,
+  getStudentProfile,
+  lockStudentProfile,
+  removeIneligibleSpecialties,
+} from '@/modules/students/eligibility';
+import { requireStudent } from '@/modules/students/require-student';
+import { prisma } from '@/prisma/client';
+import { uuidRegex, cleanOptionalText } from '@/validation/input-formats';
+import { assertMaxLength, maxLength } from '@/validation/input-limits';
+
+export const studentProfilesRouter = Router();
+
+function cleanProfileStatus(value: unknown) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (
+    typeof value !== 'string' ||
+    !Object.values(ProfileStatus).includes(value as ProfileStatus)
+  ) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'status is invalid');
+  }
+
+  if (value === ProfileStatus.VISIBLE) {
+    throw new AppError(
+      403,
+      'PROFILE_PUBLICATION_NOT_AVAILABLE',
+      'Publication requires verified educations and a dedicated publication review',
+    );
+  }
+
+  // Suspension is a moderation decision, never a self-service status.
+  if (value === ProfileStatus.SUSPENDED) {
+    throw new AppError(
+      403,
+      'PROFILE_STATUS_NOT_ALLOWED',
+      'Only moderation can suspend a profile',
+    );
+  }
+
+  return value as ProfileStatus;
+}
+
+function cleanDomainId(value: unknown) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new AppError(400, 'VALIDATION_ERROR', 'domainId is invalid');
+  }
+
+  const domainId = value.trim();
+
+  if (!uuidRegex.test(domainId)) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'domainId is invalid');
+  }
+
+  return domainId;
+}
+
+function handleStudentProfilePrismaError(error: unknown): never {
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2002'
+  ) {
+    throw new AppError(
+      409,
+      'STUDENT_PROFILE_ALREADY_EXISTS',
+      'Student profile already exists',
+    );
+  }
+
+  if (
+    error instanceof Prisma.PrismaClientKnownRequestError &&
+    error.code === 'P2003'
+  ) {
+    throw new AppError(404, 'DOMAIN_NOT_FOUND', 'Domain not found');
+  }
+
+  throw error;
+}
+
+studentProfilesRouter.post(
+  '/student-profiles',
+  requireAuthAllowUnverified,
+  async (request, response) => {
+    const authUser = requireStudent(response);
+
+    const body = request.body || {};
+    const title = cleanOptionalText(body.title);
+    const status = cleanProfileStatus(body.status);
+    const domainId = cleanDomainId(body.domainId);
+
+    if (body.title !== undefined && !title) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
+    }
+    assertMaxLength(body.title, 'title', maxLength.profileTitle);
+    assertMaxLength(
+      body.description,
+      'description',
+      maxLength.profileDescription,
+    );
+
+    try {
+      const profile = await prisma.studentProfile.create({
+        data: {
+          userId: authUser.id,
+          domainId,
+          title,
+          description: cleanOptionalText(body.description),
+          status: status ?? ProfileStatus.DRAFT,
+        },
+      });
+
+      response.status(201).json(profile);
+    } catch (error) {
+      handleStudentProfilePrismaError(error);
+    }
+  },
+);
+
+studentProfilesRouter.get(
+  '/student-profiles/me',
+  requireAuthAllowUnverified,
+  async (_request, response) => {
+    const authUser = requireStudent(response);
+
+    const profile = await prisma.studentProfile.findUnique({
+      where: {
+        userId: authUser.id,
+      },
+    });
+
+    if (!profile) {
+      throw new AppError(
+        404,
+        'STUDENT_PROFILE_NOT_FOUND',
+        'Student profile not found',
+      );
+    }
+
+    response.status(200).json(profile);
+  },
+);
+
+studentProfilesRouter.get(
+  '/users/:userId/student-profile',
+  async (request, response) => {
+    if (!uuidRegex.test(request.params.userId)) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'userId is invalid');
+    }
+
+    // Public read: no lock. A lock here would let anyone block the
+    // student's own changes by calling this route in a loop. RepeatableRead
+    // makes the four reads below see the same moment, without locking.
+    const profile = await prisma.$transaction(
+      async (tx) => {
+        const profile = await getStudentProfile(tx, request.params.userId);
+
+        const owner = await tx.user.findUnique({
+          where: { id: profile.userId },
+          select: { status: true, birthDate: true },
+        });
+        if (
+          profile.status !== ProfileStatus.VISIBLE ||
+          !profile.domainId ||
+          owner?.status !== AccountStatus.ACTIVE ||
+          !isAdult(owner.birthDate)
+        ) {
+          throw new AppError(
+            404,
+            'STUDENT_PROFILE_NOT_FOUND',
+            'Student profile not found',
+          );
+        }
+
+        const verification = await tx.studentVerification.findFirst({
+          where: { studentId: profile.userId },
+          orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+          select: { status: true },
+        });
+        const invalidSpecialties = await tx.studentSpecialty.count({
+          where: {
+            studentId: profile.userId,
+            specialty: {
+              NOT: eligibleSpecialtyWhere(profile.userId, profile.domainId),
+            },
+          },
+        });
+
+        if (
+          verification?.status !== VerificationStatus.APPROVED ||
+          invalidSpecialties > 0
+        ) {
+          throw new AppError(
+            404,
+            'STUDENT_PROFILE_NOT_FOUND',
+            'Student profile not found',
+          );
+        }
+
+        return profile;
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead },
+    );
+
+    response.status(200).json(profile);
+  },
+);
+
+studentProfilesRouter.patch(
+  '/student-profiles/me',
+  requireAuthAllowUnverified,
+  async (request, response) => {
+    const authUser = requireStudent(response);
+
+    const body = request.body || {};
+    const title = cleanOptionalText(body.title);
+    const status = cleanProfileStatus(body.status);
+    const domainId = cleanDomainId(body.domainId);
+
+    if (body.title !== undefined && !title) {
+      throw new AppError(400, 'VALIDATION_ERROR', 'title must be a string');
+    }
+    assertMaxLength(body.title, 'title', maxLength.profileTitle);
+    assertMaxLength(
+      body.description,
+      'description',
+      maxLength.profileDescription,
+    );
+
+    try {
+      const profile = await prisma.$transaction(async (tx) => {
+        const existingProfile = await lockStudentProfile(tx, authUser.id);
+        // Only moderation can lift a suspension.
+        if (
+          existingProfile.status === ProfileStatus.SUSPENDED &&
+          status !== undefined
+        ) {
+          throw new AppError(
+            403,
+            'PROFILE_SUSPENDED',
+            'A suspended profile can only be reinstated by moderation',
+          );
+        }
+        const domainChanged =
+          domainId !== undefined && domainId !== existingProfile.domainId;
+        const updatedProfile = await tx.studentProfile.update({
+          where: { userId: authUser.id },
+          data: {
+            domainId,
+            title: title ?? undefined,
+            description: cleanOptionalText(body.description),
+            status:
+              domainChanged && existingProfile.status === ProfileStatus.VISIBLE
+                ? ProfileStatus.DRAFT
+                : status,
+          },
+        });
+
+        if (domainChanged) {
+          await removeIneligibleSpecialties(tx, authUser.id, domainId);
+        }
+
+        return updatedProfile;
+      });
+
+      response.status(200).json(profile);
+    } catch (error) {
+      handleStudentProfilePrismaError(error);
+    }
+  },
+);

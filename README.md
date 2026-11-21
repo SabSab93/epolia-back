@@ -83,6 +83,14 @@ Un code à 6 chiffres est envoyé par e-mail et saisi dans l'application (issue 
 - **Avant confirmation** : la connexion et la création du profil restent possibles. Les futures routes de contact, de mission, de paiement et de publication du profil devront exiger `emailVerified` (disponible dans `response.locals.authUser`).
 - Adresse confirmée, compte actif (`status`) et étudiant approuvé (`StudentVerification`) restent trois états distincts.
 
+## Où ajouter du code ?
+
+Dans `src/modules/`, chaque domaine regroupe ses routes Express, ses règles métier et ses chemins OpenAPI. Par exemple, les formations se trouvent dans `students/educations/`. Monter les nouveaux routeurs dans `src/app.ts`. Les validations communes sont dans `src/validation/`.
+
+Les types partagés restent dans le domaine qui les définit, comme `auth/auth-user.ts` pour l’utilisateur connecté. Un type utilisé dans un seul fichier reste près de sa fonction. Pour une requête Prisma, réutiliser les types générés.
+
+Les suites Jest suivent les mêmes domaines dans `tests/`. Les scénarios qui utilisent PostgreSQL et leurs données de départ se trouvent dans `tests/integration/`.
+
 ## Imports internes
 
 Utiliser des alias pour les imports locaux, y compris dans les tests :

@@ -75,7 +75,7 @@ npm run build
 ```
 
 Pour les tests PostgreSQL, utiliser une base jetable avec la migration initiale,
-`src/catalog/legacy-fixture.sql`, puis la migration additive. Exécuter ensuite :
+`tests/integration/legacy-fixture.sql`, puis la migration additive. Exécuter ensuite :
 
 ```sh
 CATALOG_TEST_DATABASE_URL=<URL_TEST> npm test -- --runInBand
